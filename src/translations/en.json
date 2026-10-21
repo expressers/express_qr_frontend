@@ -1,0 +1,388 @@
+{
+  "components": {
+    "FormGeneratorQrc": {
+      "title": "QR Code Generator",
+      "description": "Create your QR Code quickly and easily.",
+      "placeholder": "Add your link",
+      "button": "Generate",
+      "formatsLabel": "Formats",
+      "typesLabel": "Types",
+      "typeLink": "Link",
+      "readyTitle": "Your QR Code is ready",
+      "readyDescription": "Scan it and check your magical QR code",
+      "formatPlaceholder": "Format"
+    },
+    "UserMenu": {
+      "myAccount": "My Account",
+      "dashboard": "Dashboard"
+    },
+    "header": {
+      "account": "Account",
+      "free": "Free",
+      "pro": "Professional",
+      "profile": "Profile",
+      "myProfile": "My profile",
+      "buttons": {
+        "createAccount": "Sign up",
+        "signIn": "Sign in"
+      }
+    },
+    "SidebarAppPrivate": {
+      "brand": "BISC8R",
+      "menu": {
+        "dashboard": "Dashboard",
+        "myQrcodes": "My QR Codes",
+        "createQrcodes": "Create QR Codes",
+        "settings": "Settings",
+        "subscription": "Subscription",
+        "reports": "Statistic"
+      }
+    },
+    "CreateQrcode": {
+      "title": "Create QR codes",
+      "description": "Fill in the fields below to create your custom QR code.",
+      "select": {
+        "label": "Types",
+        "placeholder": "Select type",
+        "urlLabel": "URL types",
+        "static": "Static",
+        "dynamic": "Dynamic"
+      },
+      "form": {
+        "typeLabel": "URL Type",
+        "titleLabel": "Title",
+        "titlePlaceholder": "Enter the title",
+        "urlLabel": "Destination URL",
+        "urlPlaceholder": "Enter your URL",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Enter your tags",
+        "descriptionLabel": "Description",
+        "descriptionPlaceholder": "Enter the description"
+      },
+      "button": {
+        "generate": "Generate QR Code"
+      },
+      "validation": {
+        "requiredType": "Type is required",
+        "requiredTitle": "Title is required",
+        "minTitle": "Title must be at least 3 characters long",
+        "requiredUrl": "URL is required",
+        "invalidUrl": "Enter a valid URL",
+        "toastSucces": "QR code created successfully!",
+        "toastError": "Error creating QR code!",
+        "execeedeLim": "You have exceeded the limit.",
+        "btnAction": "Subscribe"
+      }
+    }
+  },
+  "layout": {
+    "ProfileLayout": {
+      "menu": {
+        "profile": "Profile",
+        "security": "Security",
+        "delete": "Delete",
+        "logout": "Logout"
+      },
+      "logoutConfirm": "Are you sure you want to log out?",
+      "deleteConfirm": "Are you sure you want to delete your account?",
+      "messages": {
+        "logoutSuccess": "Logged out successfully.",
+        "deleteSuccess": "Account deleted successfully."
+      },
+      "alertDialog": {
+        "dialogTitle": "Are you sure?",
+        "dialogDescription": "This action cannot be undone. This will permanently delete your account and remove your data from our servers.",
+        "dialogCancel": "Cancel",
+        "dialogAction": "Continue"
+      }
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "totalQrcodes": "Total QR Codes",
+      "myQrcodes": "My QR Codes",
+      "viewAll": "View all",
+      "noTitle": "Untitled",
+      "noLink": "No link"
+    },
+    "SignIn": {
+      "welcome": "Welcome Back",
+      "subtitle": "Login to start creating stunning QR codes.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "rememberMe": "Remember Me",
+      "forgotPassword": "Forgot Password?",
+      "login": "Login",
+      "orContinue": "Or continue with",
+      "continueGoogle": "Continue with Google",
+      "noAccount": "Don't have an account?",
+      "signupHere": "Sign up here",
+      "validation": {
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email",
+        "passwordRequired": "Password is required",
+        "min": "Must contain at least 8 characters",
+        "number": "Password must contain at least one number",
+        "letter": "Password must contain at least one letter",
+        "special": "Password must contain at least one special character"
+      }
+    },
+    "SignUp": {
+      "title": "Create Account",
+      "subtitle": "Sign up to start creating stunning qr codes.",
+      "firstName": "First Name",
+      "firstNamePlaceholder": "Enter your first name",
+      "lastName": "Last Name",
+      "lastNamePlaceholder": "Enter your last name",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "password": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "confirmPassword": "Confirm Password",
+      "confirmPasswordPlaceholder": "Re-enter your password",
+      "button": "Create Account",
+      "orContinue": "Or continue with",
+      "continueGoogle": "Continue with Google",
+      "haveAccount": "Already have an account?",
+      "signinHere": "Sign in here",
+      "validation": {
+        "firstNameRequired": "Enter your first name",
+        "firstNameMin": "The first name must contain at least 3 characters",
+        "lastNameRequired": "Enter your last name",
+        "lastNameMin": "The last name must contain at least 3 characters",
+        "emailRequired": "Email is required",
+        "emailInvalid": "Enter a valid email address",
+        "passwordRequired": "Password is required",
+        "passwordMin": "Password must contain at least 8 characters",
+        "passwordNumber": "Password must include at least one number",
+        "passwordLetter": "Password must include at least one letter",
+        "passwordSpecial": "Password must include at least one special character",
+        "confpasswordRequired": "Confirm your password",
+        "passwordMatch": "Passwords must match."
+      }
+    },
+    "Subscriber": {
+      "title": "Plans and Pricing",
+      "description": "Whether you want to share quick links or promote your business with style,<br/> generate your personalized QR Codes with Bisc8Qr.",
+      "tabs": {
+        "weekly": "Weekly",
+        "monthly": "Monthly",
+        "annual": "Annual"
+      },
+      "popular": "Most Popular",
+      "currentPlan": "Current Plan",
+      "continue": "Continue",
+      "plans": {
+        "free": {
+          "title": "Free",
+          "description": "Perfect for those who create QR Codes occasionally  or are discovering Bisc8Qr for the first time.",
+          "price": "0 kz",
+          "subText": "Enjoy Bisc8Qr for free",
+          "note": "For individual, non-commercial use only",
+          "features": [
+            "Generate and download up to 30 <br/>QR Codes",
+            "10 monthly creations available",
+            "Each QR Code expires after 3 days"
+          ]
+        },
+        "ultimate": {
+          "title": "Ultimate",
+          "description": "The ideal option for those who create and share  unlimited<br/> QR Codes all day, every day.",
+          "price": "1000 kz",
+          "subText": "Per week, billed weekly.",
+          "note": "For individual solo use",
+          "features": [
+            "No limits on QR Code generation",
+            "Unlimited creations per month",
+            "QR Codes with no expiration date",
+            "Custom design for each QR Code",
+            "Recover archived QR Codes"
+          ]
+        },
+        "teams": {
+          "title": "Teams",
+          "description": "Ideal for small teams that need a powerful and <br/>robust file sharing solution.",
+          "price": "4000 kz",
+          "subText": "Per user / month, billed annually.",
+          "note": "Up to 25 members",
+          "features": [
+            "Everything in Ultimate, plus:",
+            "Team creation",
+            "Up to 25 team members",
+            "Centralized billing"
+          ]
+        }
+      }
+    },
+    "MyProfile": {
+      "title": "My Profile",
+      "avatarAlt": "User photo",
+      "form": {
+        "firstName": {
+          "label": "First name",
+          "placeholder": "First name",
+          "required": "First name is required",
+          "min": "First name must be at least 3 characters"
+        },
+        "lastName": {
+          "label": "Last name",
+          "placeholder": "Last name",
+          "required": "Last name is required",
+          "min": "Last name must be at least 3 characters"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Your email",
+          "required": "Email is required"
+        },
+        "phone": {
+          "label": "Phone",
+          "placeholder": "Your phone"
+        },
+        "country": {
+          "label": "Country",
+          "placeholder": "Your country"
+        },
+        "address": {
+          "label": "City",
+          "placeholder": "Your city"
+        },
+        "button": {
+          "update": "Update"
+        }
+      }
+    },
+    "UpdatePassword": {
+      "title": "Security",
+      "fields": {
+        "oldPassword": {
+          "label": "Old Password",
+          "placeholder": "Enter your old password"
+        },
+        "newPassword": {
+          "label": "New Password",
+          "placeholder": "Enter your new password"
+        }
+      },
+      "button": {
+        "submit": "Update"
+      },
+      "validation": {
+        "requiredOld": "Old password is required",
+        "requiredNew": "New password is required",
+        "min": "Must contain at least 8 characters",
+        "number": "Password must contain at least one number",
+        "letter": "Password must contain at least one letter",
+        "special": "Password must contain at least one special character",
+        "match": "Passwords must be different"
+      }
+    },
+    "ForgotPassword": {
+      "title": "Forgot your password?",
+      "subtitle": "Please enter the email address associated with your account and we will send you <br /> a link to reset your password.",
+      "email": "Email",
+      "emailPlaceholder": "Enter your email",
+      "button": "Reset password",
+      "backToLogin": "Back to login",
+      "validation": {
+        "requiredEmail": "Email is required",
+        "invalidEmail": "Please enter a valid email address"
+      }
+    },
+    "ResetPassword": {
+      "title": "Reset password",
+      "subtitle": "Set a new password for your account. Make sure to <br /> choose a strong password that only you know.",
+      "newPassword": "New password",
+      "newPasswordPlaceholder": "Enter the new password",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordPlaceholder": "Re-enter the new password",
+      "button": "Reset password",
+      "back": "Back",
+      "validation": {
+        "requiredNew": "Password is required",
+        "requiredConfirm": "Password confirmation is required",
+        "min": "Password must be at least 8 characters long",
+        "number": "Password must contain at least one number",
+        "letter": "Password must contain at least one letter",
+        "special": "Password must contain at least one special character",
+        "match": "Passwords must match"
+      }
+    },
+    "Verifyaccount": {
+      "title": "Verify your email",
+      "subtitle": "We’ve sent a verification link to your email address. Click the link in the email to activate your account.",
+      "description": "Didn’t receive the email? Check your spam folder or contact support.",
+      "codePlaceholder": "Enter the verification code",
+      "button": "Back to Login"
+    },
+    "MyQrcodes": {
+      "title": "My QR Codes",
+      "filter": "Filter by status",
+      "all": "All",
+      "active": "Active",
+      "inactive": "Inactive",
+      "noQr": "No QR codes"
+    },
+    "VerifyEmail": {
+      "verifyingTitle": "Verifying account...",
+      "verifyingSubtitle": "Please wait while we validate your email.",
+      "successTitle": "Account Verified!",
+      "successDescription": "Your account has been successfully verified. You can now log in to the platform.",
+      "redirectMessage": "You will be redirected automatically in 5 seconds...",
+      "errorTitle": "Verification Error",
+      "errorDescription": "An error occurred while verifying your account. Please try again or contact support.",
+      "buttonLogin": "Sign In Now",
+      "invalidToken": "Invalid or expired token",
+      "tokenNotProvided": "Verification token not provided",
+      "verifyError": "Error verifying account",
+      "verifyFailure": "Verification failed"
+    },
+    "QrcodeEdit": {
+      "editQrCode": "Edit Qr Code",
+      "static": "Static",
+      "dynamic": "Dynamic",
+      "active": "Active",
+      "inactive": "Inactive",
+      "title": "Title",
+      "titlePlaceholder": "Add a title",
+      "link": "Destination URL",
+      "linkPlaceholder": "Add the URL",
+      "tags": "Tags",
+      "tagsPlaceholder": "Add tags",
+      "description": "Description",
+      "descriptionPlaceholder": "Add description",
+      "save": "Save"
+    },
+    "Subscription": {
+      "title": "Subscription",
+      "planButton": "Plan",
+      "price": "Price",
+      "startDate": "Start date",
+      "endDate": "End date",
+      "table": {
+        "type": "Type",
+        "inUse": "In use",
+        "limit": "Limit",
+        "remaining": "Remaining",
+        "usage": "Usage (%)"
+      },
+      "limit": "Limit",
+      "type": {
+        "static": "Static",
+        "Dynamic": "Dynamic",
+        "total": "Total"
+      },
+      "plan": {
+        "BUSINESS": "Business",
+        "FREE": "Free",
+        "PROFESSIONAL":"Professional"
+      },
+      "footer": {
+        "limited": "* Your plan has defined limits for QR Code creation.",
+        "unlimited": "* “Unlimited” means your plan has no restrictions for this type of QR Code."
+      }
+    }
+  }
+}

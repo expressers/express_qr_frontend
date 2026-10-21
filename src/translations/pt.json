@@ -1,0 +1,391 @@
+{
+  "components": {
+    "FormGeneratorQrc": {
+      "title": "Gerador de QR Code",
+      "description": "Crie o seu QR Code de forma rápida e simples.",
+      "placeholder": "Adicione seu link",
+      "button": "Gerar",
+      "formatsLabel": "Formatos",
+      "typesLabel": "Tipos",
+      "typeLink": "Link",
+      "readyTitle": "Seu QR Code está pronto",
+      "readyDescription": "Faça uma leitura e verifique o seu código QR mágico",
+      "formatPlaceholder": "Formato"
+    },
+    "UserMenu": {
+      "myAccount": "Minha Conta",
+      "dashboard": "Painel"
+    },
+    "header": {
+      "account": "Conta",
+      "free": "Grátis",
+      "pro": "Profissional",
+      "profile": "Perfil",
+      "myProfile": "Meu perfil",
+      "buttons": {
+        "createAccount": "Criar conta",
+        "signIn": "Entrar"
+      }
+    },
+    "SidebarAppPrivate": {
+      "brand": "BISC8R",
+      "menu": {
+        "dashboard": "Painel",
+        "myQrcodes": "Meus QR Codes",
+        "createQrcodes": "Criar QR Codes",
+        "settings": "Configurações",
+        "subscription": "Subscrição",
+        "reports": "Estatística"
+      }
+    },
+    "CreateQrcode": {
+      "title": "Criar códigos Qr",
+      "description": "Preenche os campos abaixo para criar o teu código QR personalizado.",
+
+      "select": {
+        "label": "Tipos",
+        "placeholder": "Seleciona o tipo",
+        "urlLabel": "Tipos da URL",
+        "static": "Estático",
+        "dynamic": "Dinâmico"
+      },
+      "form": {
+        "typeLabel": "Tipo da URL",
+        "titleLabel": "Título",
+        "titlePlaceholder": "Digita o título",
+        "urlLabel": "URL de destino",
+        "urlPlaceholder": "Digita a tua URL",
+        "tagsLabel": "Tags",
+        "tagsPlaceholder": "Digita as tuas tags",
+        "descriptionLabel": "Descrição",
+        "descriptionPlaceholder": "Digita a descrição"
+      },
+      "button": {
+        "generate": "Gerar QR Code"
+      },
+
+      "validation": {
+        "requiredType": "O tipo é obrigatório",
+        "requiredTitle": "O título é obrigatório",
+        "minTitle": "O título deve conter no mínimo 3 caracteres",
+        "requiredUrl": "A URL é obrigatória",
+        "invalidUrl": "Digite uma URL válida",
+        "toastSucces": "Qrcode criado com sucesso!",
+        "toastError": "Erro ao criar o Qrcode!",
+        "execeedeLim": "Você excedeu limite",
+        "btnAction": "Subscrever"
+      }
+    }
+  },
+
+  "layout": {
+    "ProfileLayout": {
+      "menu": {
+        "profile": "Perfil",
+        "security": "Segurança",
+        "delete": "Apagar",
+        "logout": "Sair"
+      },
+      "logoutConfirm": "Tem certeza de que deseja sair?",
+      "deleteConfirm": "Tem certeza de que deseja apagar a sua conta?",
+      "messages": {
+        "logoutSuccess": "Sessão encerrada com sucesso.",
+        "deleteSuccess": "Conta apagada com sucesso."
+      },
+      "alertDialog": {
+        "dialogTitle": "Tem a certeza?",
+        "dialogDescription": "Esta ação é irreversível. Irá eliminar permanentemente a sua conta e remover os seus dados dos nossos servidores.",
+        "dialogCancel": "Cancelar",
+        "dialogAction": "Continuar"
+      }
+    }
+  },
+  "pages": {
+    "dashboard": {
+      "totalQrcodes": "Total de codigos QR",
+      "myQrcodes": "Meus codigos QR",
+      "viewAll": "Ver todos",
+      "noTitle": "Sem título",
+      "noLink": "Sem link"
+    },
+    "SignIn": {
+      "welcome": "Bem-vindo de volta",
+      "subtitle": "Entre para começar a criar QR Codes incríveis.",
+      "email": "Email",
+      "emailPlaceholder": "Digite o seu email",
+      "password": "Senha",
+      "passwordPlaceholder": "Digite a sua senha",
+      "rememberMe": "Lembrar-me",
+      "forgotPassword": "Esqueceu a senha?",
+      "login": "Entrar",
+      "orContinue": "Ou continue com",
+      "continueGoogle": "Continuar com o Google",
+      "noAccount": "Não tem uma conta?",
+      "signupHere": "Cadastre-se aqui",
+      "validation": {
+        "emailRequired": "O email é obrigatório",
+        "emailInvalid": "Digite um email válido",
+        "passwordRequired": "Password é obrigatória",
+        "min": "Deve conter no mínimo 8 caracteres",
+        "number": "A senha deve conter pelo menos um número",
+        "letter": "A senha deve conter pelo menos uma letra",
+        "special": "A senha deve conter pelo menos um caractere especial"
+      }
+    },
+    "SignUp": {
+      "title": "Criar Conta",
+      "subtitle": "Cadastre-se para começar a criar qr codes incríveis.",
+      "firstName": "Primeiro Nome",
+      "firstNamePlaceholder": "Digite o seu primeiro nome",
+      "lastName": "Último Nome",
+      "lastNamePlaceholder": "Digite o seu último nome",
+      "email": "Email",
+      "emailPlaceholder": "Digite o seu email",
+      "password": "Senha",
+      "passwordPlaceholder": "Digite a sua senha",
+      "confirmPassword": "Confirmar Senha",
+      "confirmPasswordPlaceholder": "Digite novamente a sua senha",
+      "button": "Criar Conta",
+      "orContinue": "Ou continue com",
+      "continueGoogle": "Continuar com o Google",
+      "haveAccount": "Já tem uma conta?",
+      "signinHere": "Entrar aqui",
+      "validation": {
+        "firstNameRequired": "Digite seu nome",
+        "firstNameMin": "O primeiro nome deve conter no mínimo 3 caracteres",
+        "lastNameRequired": "Digite seu nome",
+        "lastNameMin": "O último nome deve conter no mínimo 3 caracteres",
+        "emailRequired": "O email é obrigatório",
+        "emailInvalid": "Digite um email válido",
+        "passwordRequired": "A senha é obrigatória",
+        "passwordMin": "A senha deve conter no mínimo 8 caracteres",
+        "passwordNumber": "A senha deve conter pelo menos um número",
+        "passwordLetter": "A senha deve conter pelo menos uma letra",
+        "passwordSpecial": "A senha deve conter pelo menos um caractere especial",
+        "confpasswordRequired": "Confirme a senha",
+        "passwordMatch": "As senhas devem ser iguais."
+      }
+    },
+    "Subscriber": {
+      "title": "Planos e preços",
+      "description": "Não importa se quer compartilhar links rápidos ou divulgar seu negócio com estilo.<br/> Gere seus QR Codes personalizados com o Bisc8Qr.",
+      "tabs": {
+        "weekly": "Semanal",
+        "monthly": "Mensal",
+        "annual": "Anual"
+      },
+      "popular": "Mais popular",
+      "currentPlan": "Plano atual",
+      "continue": "Continuar",
+      "plans": {
+        "free": {
+          "title": "Grátis",
+          "description": "Perfeito para quem cria QR Codes de vez em quando ou está conhecendo o Bisc8Qr pela primeira vez.",
+          "price": "0 kz",
+          "subText": "Aproveite o Bisc8Qr de forma gratuita",
+          "note": "Apenas para uso individual, não comercial",
+          "features": [
+            "Gere e baixe até 30 QR Codes por mês",
+            "10 criações mensais disponíveis",
+            "Cada QR Code expira após 3 dias"
+          ]
+        },
+        "ultimate": {
+          "title": "Ultimate",
+          "description": "A opção ideal para quem cria e compartilha QR Codes ilimitados o dia todo, todos os dias.",
+          "price": "1000 kz",
+          "subText": "Por semana, cobrado semanalmente.",
+          "note": "Para uso individual solo",
+          "features": [
+            "Sem limites na geração de QR Codes",
+            "Criações ilimitadas por mês",
+            "QR Codes sem data de expiração",
+            "Design personalizado para cada QR Code",
+            "Recupere QR Codes arquivados"
+          ]
+        },
+        "teams": {
+          "title": "Teams",
+          "description": "Ideal para pequenas equipes que precisam de uma solução de compartilhamento de arquivos poderosa e robusta.",
+          "price": "4000 kz",
+          "subText": "Por usuário / mês, cobrado anualmente.",
+          "note": "Até 25 membros",
+          "features": [
+            "Tudo no Ultimate, além de:",
+            "Criação de equipe",
+            "Até 25 membros na sua equipe",
+            "Cobrança centralizada"
+          ]
+        }
+      }
+    },
+    "MyProfile": {
+      "title": "Meu perfil",
+      "avatarAlt": "Foto do usuário",
+      "form": {
+        "firstName": {
+          "label": "Primeiro nome",
+          "placeholder": "Primeiro nome",
+          "required": "O primeiro nome é obrigatório",
+          "min": "O primeiro nome deve conter no mínimo 3 caracteres"
+        },
+        "lastName": {
+          "label": "Último nome",
+          "placeholder": "Último nome",
+          "required": "O último nome é obrigatório",
+          "min": "O último nome deve conter no mínimo 3 caracteres"
+        },
+        "email": {
+          "label": "Email",
+          "placeholder": "Seu email",
+          "required": "O email é obrigatório"
+        },
+        "phone": {
+          "label": "Telefone",
+          "placeholder": "Seu telefone"
+        },
+        "country": {
+          "label": "País",
+          "placeholder": "Seu país"
+        },
+        "address": {
+          "label": "Cidade",
+          "placeholder": "Sua cidade"
+        },
+        "button": {
+          "update": "Atualizar"
+        }
+      }
+    },
+    "UpdatePassword": {
+      "title": "Segurança",
+      "fields": {
+        "oldPassword": {
+          "label": "Senha antiga",
+          "placeholder": "Digite a senha antiga"
+        },
+        "newPassword": {
+          "label": "Nova senha",
+          "placeholder": "Digite a nova senha"
+        }
+      },
+      "button": {
+        "submit": "Atualizar"
+      },
+      "validation": {
+        "requiredOld": "A senha antiga é obrigatória",
+        "requiredNew": "A nova senha é obrigatória",
+        "min": "Deve conter no mínimo 8 caracteres",
+        "number": "A senha deve conter pelo menos um número",
+        "letter": "A senha deve conter pelo menos uma letra",
+        "special": "A senha deve conter pelo menos um caractere especial",
+        "match": "As senhas devem ser diferentes"
+      }
+    },
+    "ForgotPassword": {
+      "title": "Esqueceu a senha?",
+      "subtitle": " Por favor, introduza o endereço de e-mail associado à sua conta e enviaremos <br /> um link para redefinir a sua palavra-passe.",
+      "email": "Email",
+      "emailPlaceholder": "Digite o seu email",
+      "button": "Repor a senha",
+      "backToLogin": "Voltar ao login",
+      "validation": {
+        "requiredEmail": "O email é obrigatório",
+        "invalidEmail": "Por favor, insira um endereço de email válido"
+      }
+    },
+    "ResetPassword": {
+      "title": "Redefinir senha",
+      "subtitle": " Define uma nova senha para a tua conta. Certifica-te de <br /> escolher uma senha forte que só tu conheças.",
+      "newPassword": "Nova senha",
+      "newPasswordPlaceholder": "Digite a nova senha",
+      "confirmNewPassword": "Confirmar nova senha",
+      "confirmNewPasswordPlaceholder": "Digite novamente a nova senha",
+      "button": "Redefinir senha",
+      "back": "Voltar",
+      "validation": {
+        "requiredNew": "A senha é obrigatória",
+        "requiredConfirm": "A confirmação da nova senha é obrigatória",
+        "min": "A senha deve ter no mínimo 8 caracteres",
+        "number": "A senha deve conter pelo menos um número",
+        "letter": "A senha deve conter pelo menos uma letra",
+        "special": "A senha deve conter pelo menos um caractere especial",
+        "match": "As senhas devem coincidir"
+      }
+    },
+    "Verifyaccount": {
+      "title": "Verifique o seu email",
+      "subtitle": " Enviámos um link de verificação para o seu endereço de email. Clique no link do email para ativar a sua conta.",
+      "description": "  Não recebeu o email? Verifique a pasta de spam ou contacte o suporte.",
+      "codePlaceholder": "Digite o código de verificação",
+      "button": "Voltar ao Login"
+    },
+    "MyQrcodes": {
+      "title": "Meus QR Codes",
+      "filter": "Filtrar por status",
+      "all": "Todos",
+      "active": "Activo",
+      "inactive": "Desactivo",
+      "noQr": "Sem qrcodes"
+    },
+    "VerifyEmail": {
+      "verifyingTitle": "Verificando conta...",
+      "verifyingSubtitle": "Aguarde enquanto validamos o seu email.",
+      "successTitle": "Conta Verificada!",
+      "successDescription": "A sua conta foi verificada com sucesso. Já pode iniciar sessão na plataforma.",
+      "redirectMessage": "Você será redirecionado automaticamente em 5 segundos...",
+      "errorTitle": "Erro na Verificação",
+      "errorDescription": "Ocorreu um erro ao verificar a sua conta. Por favor, tente novamente ou contacte o suporte.",
+      "buttonLogin": "Iniciar Sessão Agora",
+      "invalidToken": "Token inválido ou expirado",
+      "tokenNotProvided": "Token de verificação não fornecido",
+      "verifyError": "Erro ao verificar conta",
+      "verifyFailure": "Falha na verificação"
+    },
+    "QrcodeEdit": {
+      "editQrCode": "Editar Qr code",
+      "static": "Estatico",
+      "dynamic": "Dinamico",
+      "active": "Activo",
+      "inactive": "Desactivo",
+      "title": "Título",
+      "titlePlaceholder": "Adiciona um título",
+      "link": "URL de distino",
+      "linkPlaceholder": "Adiciona a URL",
+      "tags": "Tags",
+      "tagsPlaceholder": "adiciona tags",
+      "description": "Descrição",
+      "descriptionPlaceholder": "adicionar descrição",
+      "save": "Salvar"
+    },
+    "Subscription": {
+      "title": "Subscrição",
+      "planButton": "Plano",
+      "price": "Preço",
+      "startDate": "Data inicial",
+      "endDate": "Data final",
+      "table": {
+        "type": "Tipo",
+        "inUse": "Em uso",
+        "limit": "Limite",
+        "remaining": "Restante",
+        "usage": "Uso (%)"
+      },
+      "limit": "Limite",
+      "type": {
+        "static": "Estático",
+        "Dynamic": "Dinamico",
+        "total": "Total"
+      },
+      "plan": {
+        "BUSINESS": "Negócios",
+        "FREE": "Grátis",
+        "PROFESSIONAL": "Profissional"
+      },
+      "footer": {
+        "limited": "* Seu plano possui limites definidos para criação de QR Codes.",
+        "unlimited": "* “Ilimitado” significa que seu plano não possui restrição para este tipo de QR Code."
+      }
+    }
+  }
+}
