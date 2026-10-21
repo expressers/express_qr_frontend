@@ -1,0 +1,12 @@
+export { Home } from "./home";
+export { SignIn } from "./signin";
+export { SignUp } from "./signup";
+export { ForgotPassword } from "./forgotPassword";
+export { ResetPassword } from "./resetPassword";
+export { Verifyaccount } from "./verifyaccount";
+export { VerifyEmail } from "./verifyEmail";
+export { NotFound } from "./notFound";
+export { Subscriber } from "./subscriber";
+export { About } from "./about";
+export { Construction } from "./construction";
+export { Redirect } from "./redirect";
