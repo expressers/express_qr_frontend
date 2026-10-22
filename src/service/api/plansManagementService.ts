@@ -1,7 +1,7 @@
 import apiClient from "./apiClient";
 import type { ApiEnvelope } from "./qrCodeService";
 
-export type PlanName = "FREE" | "PROFESSIONAL" | "BUSINESS" | "INTERNAL";
+export type PlanName = "FREE" | "PRO" | "PREMIUM" | "INTERNAL";
 
 export interface PlanFeatures {
   customColors?: boolean;

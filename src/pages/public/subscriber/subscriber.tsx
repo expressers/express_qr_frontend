@@ -72,7 +72,7 @@ function Subscriber() {
             <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3">
               {plans.map((plan) => {
                 const isFree = plan.name === "FREE";
-                const recommended = plan.name === "PROFESSIONAL";
+                const recommended = plan.name === "PRO";
                 const upgradeHref = buildUpgradeMailto({
                   planName: plan.displayName,
                   accountEmail: state.user_email,
