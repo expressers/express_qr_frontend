@@ -1,21 +1,30 @@
 import type { User } from "./userTypes";
 
-function readStoredUser(): Record<string, string | null> {
+type Stored = Record<string, unknown>;
+
+function readStoredUser(): Stored {
   try {
-    return JSON.parse(localStorage.getItem("user") || "{}");
+    const parsed = JSON.parse(localStorage.getItem("user") || "{}");
+    return parsed && typeof parsed === "object" ? parsed : {};
   } catch {
     return {};
   }
 }
 
+const str = (value: unknown): string | null =>
+  typeof value === "string" ? value : null;
+
 const user = readStoredUser();
 
 // O reducer guarda o estado com chaves `user_*` (UPDATE) ou `id/name/...` (LOGIN).
 export const InitialState: User = {
-  user_id: user?.user_id ?? user?.id ?? null,
-  user_name: user?.user_name ?? user?.name ?? null,
-  user_email: user?.user_email ?? user?.email ?? null,
-  user_photo: user?.user_photo ?? user?.photo ?? null,
-  user_role: user?.user_role ?? user?.role ?? null,
-  user_phone: user?.user_phone ?? user?.phone ?? null,
+  user_id: str(user.user_id) ?? str(user.id),
+  user_name: str(user.user_name) ?? str(user.name),
+  user_email: str(user.user_email) ?? str(user.email),
+  user_photo: str(user.user_photo) ?? str(user.photo),
+  user_role: str(user.user_role) ?? str(user.role),
+  user_phone: str(user.user_phone) ?? str(user.phone),
+  user_permissions: Array.isArray(user.user_permissions)
+    ? user.user_permissions.filter((p): p is string => typeof p === "string")
+    : null,
 };

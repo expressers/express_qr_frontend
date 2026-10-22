@@ -18,13 +18,18 @@ import {
 import { QrTypeBadge } from "@/components/cardQrcode";
 import { QrTypeSelector } from "@/components/createQrcode";
 import { QrPreviewPanel } from "@/components/previewQRCode";
+import { QrColorsSection } from "@/components/qrColors";
 import { useCreateQrcode, useGetMeplan, useLang } from "@/hooks";
 import { getImageUrl } from "@/config";
-import { getTypeUsage } from "@/utils";
+import { getTypeUsage, previewContent } from "@/utils";
 
 function QrcodeGenerator() {
   const { data: myPlan, isLoading: isLoadingPlan, refetch: refetchPlan } = useGetMeplan();
-  const { onSubmit, form, isLoading, data } = useCreateQrcode({ onSettled: refetchPlan });
+  const canUseColors = myPlan?.plan.features.customColors === true;
+  const { onSubmit, form, isLoading, data, colors, setColors, colorsValid } = useCreateQrcode({
+    onSettled: refetchPlan,
+    canUseColors,
+  });
   const { translations } = useLang();
   const t = translations.components.CreateQrcode;
   const [isOpenDownload, setIsOpenDownload] = useState(false);
@@ -42,6 +47,18 @@ function QrcodeGenerator() {
   useEffect(() => {
     if (data) previewRef.current?.scrollIntoView({ block: "nearest" });
   }, [data]);
+
+  // Sem plano Pro/Premium o QR é sempre preto sobre branco, como o do servidor.
+  const liveColors = canUseColors ? colors : { dark: "#000000", light: "#FFFFFF" };
+  const { content: liveContent, sample: liveSample } = previewContent({
+    type: selectedType,
+    draft: draftUrl ?? "",
+  });
+  const liveHint = liveSample
+    ? t.preview.liveSample
+    : selectedType === "DYNAMIC"
+      ? t.preview.liveDynamic
+      : t.preview.liveStatic;
 
   const resultContent = data ? (data.targetUrl ?? data.staticContent ?? "") : "";
 
@@ -165,6 +182,12 @@ function QrcodeGenerator() {
               />
             </div>
 
+            <QrColorsSection
+              colors={colors}
+              onChange={setColors}
+              access={isLoadingPlan ? "loading" : canUseColors ? "enabled" : "locked"}
+            />
+
             {/* Guardar fixo acima da barra inferior no telemóvel */}
             <div className="sticky bottom-[calc(var(--mobile-nav-h)+env(safe-area-inset-bottom))] z-(--z-header) -mx-4 flex flex-col gap-2 border-t bg-background px-4 py-3 md:static md:mx-0 md:border-0 md:bg-transparent md:p-0">
               {selectedAtLimit && (
@@ -179,7 +202,7 @@ function QrcodeGenerator() {
                 type="submit"
                 size="lg"
                 className="w-full md:w-auto md:self-start"
-                disabled={isLoading || selectedAtLimit}>
+                disabled={isLoading || selectedAtLimit || (canUseColors && !colorsValid)}>
                 {isLoading && <Spinner />}
                 {t.button.generate}
               </Button>
@@ -190,6 +213,7 @@ function QrcodeGenerator() {
         <aside ref={previewRef} className="w-full max-w-sm xl:sticky xl:top-24 xl:max-w-none">
           <QrPreviewPanel
             emptyHint={t.preview.empty}
+            live={{ content: liveContent, colors: liveColors, hint: liveHint, sample: liveSample }}
             image={showResult ? getImageUrl(data?.imageUrl ?? undefined) : null}
             title={showResult ? (data?.title ?? "") : draftTitle}
             link={showResult ? resultContent : draftUrl}

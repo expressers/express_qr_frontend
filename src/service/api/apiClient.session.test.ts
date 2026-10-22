@@ -42,7 +42,7 @@ describe("apiClient 401 handling", () => {
     await expect(apiClient.get("/api/qrcodes")).rejects.toBeInstanceOf(ApiError);
     expect(localStorage.getItem("auth_token")).toBeNull();
     expect(localStorage.getItem("user_me")).toBeNull();
-    expect(loc.navigations).toEqual(["/auth/signin"]);
+    expect(loc.navigations).toEqual(["/auth/signin?reason=session-ended"]);
   });
 
   it("keeps the session on 401 with another code (e.g. INVALID_CREDENTIALS)", async () => {
@@ -81,7 +81,7 @@ describe("apiClient locally expired token", () => {
     expect(localStorage.getItem("auth_token")).toBeNull();
     expect(localStorage.getItem("auth_token_exp")).toBeNull();
     expect(localStorage.getItem("user_me")).toBeNull();
-    expect(loc.navigations).toEqual(["/auth/signin"]);
+    expect(loc.navigations).toEqual(["/auth/signin?reason=session-ended"]);
   });
 
   it("getAuthToken returns null and clears the session when the token has expired", () => {

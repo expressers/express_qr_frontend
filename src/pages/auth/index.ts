@@ -6,3 +6,4 @@ export { MyQrcodes } from "./myQrcodes";
 export { QrcodeGenerator } from "./qrcodeGenerator";
 export { Subscription } from "./subscription";
 export { QrcodeEdit } from "./qrcodeEdit";
+export { Admin } from "./admin";

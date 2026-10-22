@@ -57,10 +57,13 @@
         "createQrcodes": "Create QR Codes",
         "settings": "Settings",
         "subscription": "Subscription",
-        "reports": "Statistic"
+        "reports": "Statistic",
+        "admin": "Admin"
       },
       "menuShort": {
-        "myQrcodes": "QR codes"
+        "myQrcodes": "QR codes",
+        "admin": "Admin",
+        "settings": "Settings"
       }
     },
     "CreateQrcode": {
@@ -119,7 +122,28 @@
         "untitled": "Untitled",
         "destination": "Destination",
         "download": "Download",
-        "view": "View in list"
+        "view": "View in list",
+        "liveStatic": "Live preview. The server image is the final version.",
+        "liveDynamic": "Preview. The final short address is assigned when you save.",
+        "liveSample": "Sample. The QR changes as you type.",
+        "failed": "Could not draw the preview."
+      },
+      "colors": {
+        "title": "Colours",
+        "description": "Colour of the modules and of the background. Keep enough contrast so the QR can be read.",
+        "dark": "Foreground",
+        "light": "Background",
+        "pickerLabel": "Pick the {name} colour",
+        "hexLabel": "{name} hex value",
+        "contrast": "Contrast",
+        "ratioOk": "{ratio}:1. Readable (minimum 4.5:1).",
+        "ratioLow": "{ratio}:1. Too low: the minimum is 4.5:1.",
+        "hexInvalid": "Use the #RRGGBB format.",
+        "inverted": "Some readers cannot scan light codes on a dark background.",
+        "reset": "Reset to black and white",
+        "locked": "Available on the Pro and Premium plans",
+        "upgrade": "Request upgrade",
+        "blocked": "Fix the colour contrast to save."
       }
     },
     "CardQrcode": {
@@ -226,7 +250,9 @@
       },
       "toastSuccess": "Signed in.",
       "toastError": "Could not sign in.",
-      "toastGoogleError": "Could not sign in with Google."
+      "toastGoogleError": "Could not sign in with Google.",
+      "sessionEnded": "Your session has ended. Please sign in again.",
+      "passwordChanged": "Password changed. For security, sign in again with your new password."
     },
     "SignUp": {
       "title": "Create Account",
@@ -309,7 +335,8 @@
           "placeholder": "Your email",
           "required": "Email is required",
           "invalid": "Invalid email format",
-          "readOnlyHint": "Your email can't be changed here."
+          "readOnlyHint": "Your email only changes after you confirm the new address.",
+          "change": "Change email"
         },
         "phone": {
           "label": "Phone",
@@ -544,7 +571,28 @@
       "dangerDesc": "Deleting your account permanently removes your QR codes and statistics.",
       "confirmWord": "DELETE",
       "confirmLabel": "Type {word} to confirm",
-      "deleteAction": "Delete account"
+      "deleteAction": "Delete account",
+      "changeEmail": {
+        "title": "Change email",
+        "description": "We send a confirmation link to the new address. Your email only changes once you confirm it, and your session ends at that point.",
+        "newEmail": "New email",
+        "newEmailPlaceholder": "new@example.com",
+        "currentPassword": "Current password",
+        "currentPasswordPlaceholder": "Your current password",
+        "submit": "Send link",
+        "cancel": "Cancel",
+        "close": "Close",
+        "validation": {
+          "required": "The new email is required",
+          "invalid": "Enter a valid email",
+          "same": "The new email is the same as the current one",
+          "passwordRequired": "The current password is required"
+        },
+        "sentTitle": "Check the new email",
+        "sent": "We sent a link to {email}.",
+        "sentHint": "Open the message and confirm. Until then you keep signing in with your current email.",
+        "toastError": "Could not request the email change."
+      }
     },
     "System": {
       "notFound": {
@@ -570,6 +618,129 @@
       "subtitle": "Paste a link, generate the QR code and download it as PNG, SVG or PDF. No sign-up.",
       "accountNote": "Dynamic QR codes you can edit, with scan statistics, need an account.",
       "accountCta": "Create account"
+    },
+    "ConfirmEmail": {
+      "verifyingTitle": "Confirming your new email…",
+      "verifyingSubtitle": "One moment.",
+      "successTitle": "Email changed",
+      "successDescription": "Your email is now {email}.",
+      "signInAgain": "For security, your session ended. Sign in again with the new email.",
+      "signIn": "Sign in",
+      "errorTitle": "Could not confirm the email",
+      "errorDescription": "The link may have expired or already been used. Request a new change in settings.",
+      "tokenNotProvided": "The link has no token. Request a new change in settings.",
+      "goToSettings": "Go to settings"
+    },
+    "Admin": {
+      "title": "Administration",
+      "subtitle": "Users, plans and the audit log.",
+      "tabs": {
+        "users": "Users",
+        "audit": "Audit"
+      },
+      "roles": {
+        "USER": "User",
+        "STAFF": "Staff",
+        "ADMIN": "Administrator"
+      },
+      "statuses": {
+        "ACTIVE": "Active",
+        "INACTIVE": "Inactive",
+        "SUSPENDED": "Suspended",
+        "PENDING_VERIFICATION": "Unverified"
+      },
+      "plans": {
+        "FREE": "Free",
+        "PRO": "Pro",
+        "PREMIUM": "Premium",
+        "INTERNAL": "Team"
+      },
+      "common": {
+        "loadError": "Could not load the data.",
+        "retry": "Try again",
+        "prev": "Previous",
+        "next": "Next",
+        "page": "Page {page} of {pages}",
+        "range": "{from}-{to} of {total}",
+        "noDate": "No date",
+        "none": "None"
+      },
+      "users": {
+        "searchLabel": "Search users",
+        "searchPlaceholder": "Email or name",
+        "roleFilter": "Role",
+        "statusFilter": "Status",
+        "all": "All",
+        "columns": {
+          "user": "User",
+          "role": "Role",
+          "status": "Status",
+          "plan": "Plan",
+          "ends": "Ends",
+          "actions": "Actions"
+        },
+        "empty": "No user matches the filters.",
+        "actionsFor": "Actions for {email}",
+        "changePlan": "Change plan",
+        "changeStatus": "Change status",
+        "internalPlan": "The internal team's plan is not changed here."
+      },
+      "planDialog": {
+        "title": "Change plan",
+        "description": "{email}. The plan is activated manually and goes back to Free when the duration ends.",
+        "plan": "Plan",
+        "duration": "Duration",
+        "days": "{n} days",
+        "submit": "Apply plan",
+        "cancel": "Cancel",
+        "success": "Plan updated.",
+        "error": "Could not change the plan."
+      },
+      "statusDialog": {
+        "title": "Change the status to {status}?",
+        "ACTIVE": "{email} can sign in and use the account again.",
+        "INACTIVE": "{email} can no longer sign in and open sessions end.",
+        "SUSPENDED": "{email} is suspended: they cannot sign in and open sessions end.",
+        "confirm": "Confirm",
+        "cancel": "Cancel",
+        "success": "Status updated.",
+        "error": "Could not change the status."
+      },
+      "audit": {
+        "columns": {
+          "when": "When",
+          "actor": "Actor",
+          "action": "Action",
+          "target": "Target"
+        },
+        "empty": "No records yet.",
+        "system": "System"
+      }
+    },
+    "About": {
+      "title": "About {brand}",
+      "intro": "{brand} turns a link or a piece of text into a QR code you can download as PNG, SVG or PDF, with no watermark. A static QR can be made without an account.",
+      "kinds": {
+        "title": "Static or dynamic",
+        "static": "Static",
+        "staticBody": "The content is stored in the image itself. It never expires and does not depend on us, but it cannot be changed once printed.",
+        "dynamic": "Dynamic",
+        "dynamicBody": "The QR points to a short address of ours, which forwards to your destination. You can change the destination without reprinting and see how many times it was scanned. It needs an account."
+      },
+      "plans": {
+        "title": "Plans",
+        "body": "There are Free, Pro and Premium plans. The limits and features of each, such as custom colours and full analytics, are on the plans page. There are no online payments yet: upgrades are activated manually by our team.",
+        "link": "See plans"
+      },
+      "privacy": {
+        "title": "Privacy",
+        "body": "Each scan of a dynamic QR stores the date, the device and where the scan came from. The IP address is stored truncated: for IPv4 the last block becomes 0 (for example 203.0.113.0) and for IPv6 only the /48 prefix is kept. We do not keep the full IP.",
+        "retentionTitle": "Scan retention",
+        "retentionBody": "Scans older than the history of the QR owner's plan are deleted automatically, every day.",
+        "retentionDays": "{n} days",
+        "retentionUnknown": "Each plan's period is on the plans page."
+      },
+      "cta": "Create account"
     }
   },
   "errors": {

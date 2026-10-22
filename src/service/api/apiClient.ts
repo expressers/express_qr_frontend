@@ -11,9 +11,15 @@ type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
 type QueryParams = Record<string, string | number | boolean | undefined>;
 type JsonBody = Record<string, unknown> | FormData | URLSearchParams;
 
-const SIGNIN_PATH = "/auth/signin";
+/** `reason` mostra no login a mensagem "a sessão terminou" (revogação, expiração). */
+const SIGNIN_PATH = "/auth/signin?reason=session-ended";
 /** Páginas onde um 401 não deve provocar redirecionamento (evita ciclos). */
-const AUTH_PAGE_PREFIXES = ["/auth/", "/reset-password", "/verify-email"];
+const AUTH_PAGE_PREFIXES = [
+  "/auth/",
+  "/reset-password",
+  "/verify-email",
+  "/confirm-email",
+];
 /** Área que exige sessão: um token expirado localmente aqui manda para o login. */
 const PRIVATE_PATH_PREFIX = "/dashboard";
 

@@ -9,19 +9,31 @@ import {
   applyFieldErrors,
   clearQrCaches,
   createQrFormSchema,
+  DEFAULT_QR_COLORS,
   getErrorCode,
   getErrorMessage,
+  hasEnoughContrast,
   parseTags,
+  sameColors,
+  type QrColors,
 } from "@/utils";
 import { useLang } from "./use_Lang";
 
-/** `onSettled` corre depois de cada tentativa (ex.: atualizar o uso do plano). */
-function useCreateQrcode({ onSettled }: { onSettled?: () => void } = {}) {
+interface UseCreateQrcodeOptions {
+  /** Corre depois de cada tentativa (ex.: atualizar o uso do plano). */
+  onSettled?: () => void;
+  /** `features.customColors` do plano: sem ele as cores nunca vão no pedido. */
+  canUseColors?: boolean;
+}
+
+function useCreateQrcode({ onSettled, canUseColors = false }: UseCreateQrcodeOptions = {}) {
   const navigate = useNavigate();
   const { translations } = useLang();
   const t = translations.components.CreateQrcode;
   const [data, setData] = useState<QrCode | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [colors, setColors] = useState<QrColors>({ ...DEFAULT_QR_COLORS });
+  const colorsValid = hasEnoughContrast(colors);
 
   const schema = createQrFormSchema(
     {
@@ -49,6 +61,11 @@ function useCreateQrcode({ onSettled }: { onSettled?: () => void } = {}) {
   });
 
   async function onSubmit(value: z.infer<typeof schema>) {
+    // O contraste também é validado no servidor; aqui evita-se o pedido falhado.
+    if (canUseColors && !colorsValid) {
+      toast.error(t.colors.blocked);
+      return;
+    }
     const tags = parseTags(value.tags);
     const payload = {
       type: value.type,
@@ -58,6 +75,7 @@ function useCreateQrcode({ onSettled }: { onSettled?: () => void } = {}) {
         : { targetUrl: value.url.trim() }),
       ...(value.description?.trim() && { description: value.description.trim() }),
       ...(tags.length > 0 && { tags }),
+      ...(canUseColors && !sameColors(colors, DEFAULT_QR_COLORS) && { design: colors }),
     };
 
     try {
@@ -97,7 +115,7 @@ function useCreateQrcode({ onSettled }: { onSettled?: () => void } = {}) {
     }
   }
 
-  return { onSubmit, form, isLoading, data };
+  return { onSubmit, form, isLoading, data, colors, setColors, colorsValid };
 }
 
 export { useCreateQrcode };

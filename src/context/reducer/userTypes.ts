@@ -5,6 +5,7 @@ export type User = {
   user_photo: string | null;
   user_role: string | null;
   user_phone: string | null;
+  user_permissions: string[] | null;
 };
 
 export type LoginPayload = {

@@ -5,6 +5,7 @@ export { ForgotPassword } from "./forgotPassword";
 export { ResetPassword } from "./resetPassword";
 export { Verifyaccount } from "./verifyaccount";
 export { VerifyEmail } from "./verifyEmail";
+export { ConfirmEmail } from "./confirmEmail";
 export { NotFound } from "./notFound";
 export { Subscriber } from "./subscriber";
 export { About } from "./about";

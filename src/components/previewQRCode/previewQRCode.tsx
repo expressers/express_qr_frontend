@@ -1,4 +1,4 @@
-import type { ReactNode } from "react";
+import { useState, type ReactNode } from "react";
 import { CalendarDays, LinkIcon, QrCode } from "lucide-react";
 
 import {
@@ -10,6 +10,8 @@ import {
 } from "../ui";
 import { cn } from "@/lib/utils";
 import { useLang } from "@/hooks";
+import type { QrColors } from "@/utils/contrast";
+import { LiveQr } from "./liveQr";
 
 interface PreviewQRCodeProps {
   title: string;
@@ -62,6 +64,16 @@ function PreviewQRCode({
   );
 }
 
+/** QR desenhado no cliente enquanto não há imagem do servidor. */
+interface QrLivePreview {
+  content: string;
+  colors: QrColors;
+  /** Legenda por baixo do QR (o que esta pré-visualização é). */
+  hint: string;
+  /** Exemplo neutro (ainda não escreveu nada): fica esbatido. */
+  sample?: boolean;
+}
+
 interface QrPreviewPanelProps {
   /** Imagem do QR já gerada; sem ela mostra o estado vazio. */
   image?: string | null;
@@ -72,6 +84,8 @@ interface QrPreviewPanelProps {
   badges?: ReactNode;
   /** Botões por baixo do QR. */
   actions?: ReactNode;
+  /** Pré-visualização em direto; a imagem do servidor, quando existe, tem prioridade. */
+  live?: QrLivePreview;
   /** Texto do estado vazio. */
   emptyHint: string;
   /** `reveal` para o QR acabado de gerar; `swap` quando a imagem muda numa edição. */
@@ -91,12 +105,15 @@ function QrPreviewPanel({
   badges,
   actions,
   emptyHint,
+  live,
   motion = "reveal",
   className,
 }: QrPreviewPanelProps) {
   const { translations } = useLang();
   const t = translations.components.CreateQrcode.preview;
   const alt = translations.components.FormGeneratorQrc.imageAlt;
+  const [liveFailed, setLiveFailed] = useState(false);
+  const showLive = !image && !!live;
 
   return (
     <section
@@ -105,8 +122,10 @@ function QrPreviewPanel({
       <div
         className={cn(
           "relative mx-auto aspect-square w-full max-w-72 overflow-hidden rounded-xl border bg-white p-3",
-          !image && "border-dashed border-input bg-muted/40",
-        )}>
+          !image && !showLive && "border-dashed border-input bg-muted/40",
+          showLive && "p-0",
+        )}
+        style={showLive ? { backgroundColor: live.colors.light } : undefined}>
         {image ? (
           <img
             key={image}
@@ -117,6 +136,21 @@ function QrPreviewPanel({
               motion === "reveal" ? "qr-reveal" : "qr-swap",
             )}
           />
+        ) : live ? (
+          <>
+            <LiveQr
+              content={live.content}
+              colors={live.colors}
+              alt={alt}
+              className={cn("transition-opacity duration-(--dur-base)", live.sample && "opacity-30")}
+              onFailedChange={setLiveFailed}
+            />
+            {liveFailed && (
+              <p role="status" className="absolute inset-0 grid place-items-center px-6 text-center text-sm text-muted-foreground">
+                {t.failed}
+              </p>
+            )}
+          </>
         ) : (
           <div className="flex size-full flex-col items-center justify-center gap-3 px-6 text-center text-muted-foreground">
             <QrCode size={40} strokeWidth={1.25} aria-hidden />
@@ -124,6 +158,10 @@ function QrPreviewPanel({
           </div>
         )}
       </div>
+
+      {showLive && (
+        <p className="mt-3 text-center text-xs text-pretty text-muted-foreground">{live.hint}</p>
+      )}
 
       <div className="mt-4 min-w-0 space-y-2">
         <div className="flex flex-wrap items-center gap-2">
@@ -153,3 +191,4 @@ function QrPreviewPanel({
 }
 
 export { PreviewQRCode, QrPreviewPanel };
+export type { QrLivePreview };

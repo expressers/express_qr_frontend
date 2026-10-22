@@ -6,6 +6,7 @@ import {
   ResetPassword,
   Verifyaccount,
   VerifyEmail,
+  ConfirmEmail,
   Subscriber,
   About,
   Construction,
@@ -37,6 +38,7 @@ function PublicRouter() {
       </Route>
       <Route path="/auth/verify-account" element={<Verifyaccount />} />
       <Route path="/verify-email" element={<VerifyEmail />} />
+      <Route path="/confirm-email" element={<ConfirmEmail />} />
       <Route path="/r/:slug" element={<Redirect />} />
       <Route path="/construction" element={<Construction/>} />
     </React.Fragment>

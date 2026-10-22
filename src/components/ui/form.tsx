@@ -3,11 +3,10 @@
 import * as React from "react"
 import * as LabelPrimitive from "@radix-ui/react-label"
 import { Slot } from "@radix-ui/react-slot"
+import { AlertCircle } from "lucide-react"
 import {
   Controller,
   FormProvider,
-  useFormContext,
-  useFormState,
   type ControllerProps,
   type FieldPath,
   type FieldValues,
@@ -15,19 +14,13 @@ import {
 
 import { cn } from "@/lib/utils"
 import { Label } from "@/components/ui/label"
+import {
+  FormFieldContext,
+  FormItemContext,
+  useFormField,
+} from "@/components/ui/form-context"
 
 const Form = FormProvider
-
-type FormFieldContextValue<
-  TFieldValues extends FieldValues = FieldValues,
-  TName extends FieldPath<TFieldValues> = FieldPath<TFieldValues>,
-> = {
-  name: TName
-}
-
-const FormFieldContext = React.createContext<FormFieldContextValue>(
-  {} as FormFieldContextValue
-)
 
 const FormField = <
   TFieldValues extends FieldValues = FieldValues,
@@ -41,37 +34,6 @@ const FormField = <
     </FormFieldContext.Provider>
   )
 }
-
-const useFormField = () => {
-  const fieldContext = React.useContext(FormFieldContext)
-  const itemContext = React.useContext(FormItemContext)
-  const { getFieldState } = useFormContext()
-  const formState = useFormState({ name: fieldContext.name })
-  const fieldState = getFieldState(fieldContext.name, formState)
-
-  if (!fieldContext) {
-    throw new Error("useFormField should be used within <FormField>")
-  }
-
-  const { id } = itemContext
-
-  return {
-    id,
-    name: fieldContext.name,
-    formItemId: `${id}-form-item`,
-    formDescriptionId: `${id}-form-item-description`,
-    formMessageId: `${id}-form-item-message`,
-    ...fieldState,
-  }
-}
-
-type FormItemContextValue = {
-  id: string
-}
-
-const FormItemContext = React.createContext<FormItemContextValue>(
-  {} as FormItemContextValue
-)
 
 function FormItem({ className, ...props }: React.ComponentProps<"div">) {
   const id = React.useId()
@@ -135,9 +97,10 @@ function FormDescription({ className, ...props }: React.ComponentProps<"p">) {
   )
 }
 
-function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
+/** Erro do campo: ícone + texto (nunca só cor), anunciado por tecnologias de apoio. */
+function FormMessage({ className, children, ...props }: React.ComponentProps<"p">) {
   const { error, formMessageId } = useFormField()
-  const body = error ? String(error?.message ?? "") : props.children
+  const body = error ? String(error?.message ?? "") : children
 
   if (!body) {
     return null
@@ -147,16 +110,23 @@ function FormMessage({ className, ...props }: React.ComponentProps<"p">) {
     <p
       data-slot="form-message"
       id={formMessageId}
-      className={cn("text-destructive text-sm", className)}
+      role={error ? "alert" : undefined}
+      className={cn(
+        "text-sm",
+        error && "text-destructive flex items-start gap-1.5 font-medium",
+        className
+      )}
       {...props}
     >
-      {body}
+      {error && (
+        <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+      )}
+      <span>{body}</span>
     </p>
   )
 }
 
 export {
-  useFormField,
   Form,
   FormItem,
   FormLabel,

@@ -7,8 +7,12 @@ import {
   HeaderSidebar,
   LoadingPage,
 } from "@/components";
+import { useUserGetMe } from "@/hooks";
 
 function AppLayoutPrivate() {
+  // Mantém papel e permissões da conta actuais (menu Admin, guardas) em toda a área privada.
+  useUserGetMe();
+
   return (
     <React.Fragment>
       <div className="min-h-dvh relative">

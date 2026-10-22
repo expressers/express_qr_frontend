@@ -3,16 +3,18 @@ import {
   Settings,
   LayoutDashboard,
   ChartColumnIncreasing,
+  ShieldCheck,
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
-import { useLang } from "@/hooks";
+import { useCanManage, useLang } from "@/hooks";
 import { cn } from "@/lib/utils";
 
-/** Barra inferior do telemóvel: 4 destinos, alvos de 48 px. O resto está no menu lateral. */
+/** Barra inferior do telemóvel: 4 destinos (5 para a equipa, com Admin), alvos de 48 px. O resto está no menu lateral. */
 function MobileSidebar() {
   const location = useLocation();
   const { translations } = useLang();
   const t = translations.components.SidebarAppPrivate;
+  const isStaff = useCanManage();
 
   const items = [
     { title: t.menu.dashboard, url: "/dashboard", icon: LayoutDashboard },
@@ -23,17 +25,24 @@ function MobileSidebar() {
       icon: ChartColumnIncreasing,
     },
     {
-      title: t.menu.settings,
+      title: t.menuShort.settings,
       url: "/dashboard/settings",
       icon: Settings,
     },
+    ...(isStaff
+      ? [{ title: t.menuShort.admin, url: "/dashboard/admin", icon: ShieldCheck }]
+      : []),
   ];
 
   return (
     <nav
       aria-label={t.brand}
       className="fixed inset-x-0 bottom-0 z-(--z-header) border-t bg-background pb-[env(safe-area-inset-bottom)] md:hidden">
-      <ul className="mx-auto grid h-16 max-w-md grid-cols-4">
+      <ul
+        className={cn(
+          "mx-auto grid h-16 max-w-md",
+          items.length > 4 ? "grid-cols-5" : "grid-cols-4",
+        )}>
         {items.map((item) => {
           const isActive =
             item.url === "/dashboard"
