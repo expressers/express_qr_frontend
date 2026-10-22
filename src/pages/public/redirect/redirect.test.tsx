@@ -2,17 +2,20 @@
 import { afterEach, describe, expect, it, mock, spyOn } from "bun:test";
 import { render, screen } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { LangProvider } from "@/context";
 import { Redirect } from "./redirect";
 
 const realFetch = globalThis.fetch;
 
 function renderAt(slug: string) {
   return render(
-    <MemoryRouter initialEntries={[`/r/${slug}`]}>
-      <Routes>
-        <Route path="/r/:slug" element={<Redirect />} />
-      </Routes>
-    </MemoryRouter>,
+    <LangProvider>
+      <MemoryRouter initialEntries={[`/r/${slug}`]}>
+        <Routes>
+          <Route path="/r/:slug" element={<Redirect />} />
+        </Routes>
+      </MemoryRouter>
+    </LangProvider>,
   );
 }
 

@@ -1,19 +1,59 @@
-import {
-  Button,
-  Spinner,
-  Table,
-  TableBody,
-  TableCell,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components";
 import React from "react";
 import { Link } from "react-router-dom";
-import { Briefcase, Mail, Timer } from "lucide-react";
+import { Info, Mail } from "lucide-react";
+import { Button, Skeleton } from "@/components";
 import { useGetMeplan, useLang, useUserAccount } from "@/hooks";
 import { buildUpgradeMailto, formatLimit, formattedDate, getErrorMessage } from "@/utils";
+
+function UsageRow({
+  type,
+  used,
+  limit,
+  remaining,
+  labels,
+}: {
+  type: string;
+  used: number;
+  limit: number;
+  remaining: number;
+  labels: { inUse: string; remaining: string; unlimited: string; ofLimit: string };
+}) {
+  const unlimited = limit === -1;
+  const pct = unlimited || limit === 0 ? 0 : Math.min(100, Math.round((used / limit) * 100));
+  const full = !unlimited && limit > 0 && used >= limit;
+  return (
+    <li className="space-y-3 py-5 first:pt-0 last:pb-0">
+      <div className="flex items-baseline justify-between gap-4">
+        <h3 className="text-sm font-semibold">{type}</h3>
+        <p className="font-mono text-2xl font-semibold tabular-nums tracking-tight">
+          {used}
+          <span className="ml-1.5 text-sm font-normal text-muted-foreground">
+            {unlimited
+              ? labels.unlimited
+              : labels.ofLimit.replace("{limit}", formatLimit(limit, labels.unlimited))}
+          </span>
+        </p>
+      </div>
+      {!unlimited && (
+        <div
+          role="progressbar"
+          aria-label={type}
+          aria-valuemin={0}
+          aria-valuemax={limit}
+          aria-valuenow={used}
+          className="h-1.5 overflow-hidden rounded-full bg-muted">
+          <div
+            className={full ? "h-full bg-foreground" : "h-full bg-chart-2"}
+            style={{ width: `${pct}%` }}
+          />
+        </div>
+      )}
+      <p className="text-sm text-muted-foreground">
+        {labels.remaining}: <span className="font-mono tabular-nums">{formatLimit(remaining, labels.unlimited)}</span>
+      </p>
+    </li>
+  );
+}
 
 function Subscription() {
   const { data, isLoading, error } = useGetMeplan();
@@ -24,8 +64,9 @@ function Subscription() {
 
   if (isLoading) {
     return (
-      <div className="flex justify-center items-center h-full">
-        <Spinner />
+      <div className="space-y-6 pt-6 sm:pt-8" aria-busy="true">
+        <Skeleton className="h-32 w-full rounded-xl" />
+        <Skeleton className="h-64 w-full rounded-xl" />
       </div>
     );
   }
@@ -33,7 +74,9 @@ function Subscription() {
   if (!data) {
     return (
       <div className="pt-8">
-        <p className="text-sm">{getErrorMessage(error, translations.errors, t.loadError)}</p>
+        <p role="alert" className="text-sm">
+          {getErrorMessage(error, translations.errors, t.loadError)}
+        </p>
       </div>
     );
   }
@@ -53,9 +96,6 @@ function Subscription() {
     },
   ];
 
-  const percentage = (used: number, limit: number) =>
-    limit === -1 || limit === 0 ? "—" : `${Math.min(100, Math.round((used / limit) * 100))}%`;
-
   const hasLimits = usageRows.some((row) => row.limit !== -1);
   const endDate = data.subscription?.currentPeriodEnd;
   const upgradeHref = buildUpgradeMailto({
@@ -67,85 +107,65 @@ function Subscription() {
 
   return (
     <React.Fragment>
-      <div className="pt-8 pb-16 space-y-6 w-full">
-        <div className="dark:bg-zinc-800/30 bg-sidebar p-6 rounded-xl space-y-12">
-          <div className="flex items-center justify-between gap-4 flex-wrap">
-            <h4 className="sm:text-xl text-sm font-bold">{t.title}</h4>
+      <div className="w-full max-w-3xl space-y-8 pb-16 pt-6 sm:pt-8">
+        <h1 className="text-[1.75rem] font-semibold leading-9 tracking-[-0.02em]">{t.title}</h1>
 
-            <div className="flex gap-2 flex-wrap">
-              <Button variant="outline" className="p-6 rounded-3xl" asChild>
+        <section
+          aria-label={t.currentPlan}
+          className="space-y-6 rounded-xl border bg-card p-5 sm:p-6">
+          <div className="flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
+            <dl className="flex flex-wrap gap-x-12 gap-y-4">
+              <div className="space-y-1">
+                <dt className="text-sm text-muted-foreground">{t.currentPlan}</dt>
+                <dd className="text-2xl font-semibold tracking-tight">{data.plan.displayName}</dd>
+              </div>
+              <div className="space-y-1">
+                <dt className="text-sm text-muted-foreground">{t.endDate}</dt>
+                <dd className="text-2xl font-semibold tracking-tight tabular-nums">
+                  {endDate ? formattedDate(endDate) : t.noEndDate}
+                </dd>
+              </div>
+            </dl>
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button variant="secondary" size="lg" className="sm:h-10" asChild>
                 <Link to="/subscriber">{t.planButton}</Link>
               </Button>
-              <Button className="p-6 rounded-3xl" asChild>
+              <Button size="lg" className="sm:h-10" asChild>
                 <a href={upgradeHref}>
-                  <Mail className="size-4" aria-hidden />
+                  <Mail aria-hidden />
                   {t.upgrade}
                 </a>
               </Button>
             </div>
           </div>
+          <p className="flex items-start gap-2.5 border-t pt-4 text-sm text-muted-foreground">
+            <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+            {tPlans.manualNotice}
+          </p>
+        </section>
 
-          <div className="flex sm:flex-row flex-col sm:items-center sm:justify-between sm:space-y-0 space-y-6 w-full">
-            <div className="flex items-center gap-2 bg-zinc-400/10 px-4 py-4 rounded-lg">
-              <span className="bg-zinc-500/10 p-2 rounded-full">
-                <Briefcase className="lg:size-4 size-3" aria-hidden />
-              </span>
-              <span className="lg:text-sm text-xs font-semibold">{data.plan.displayName}</span>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <span className="bg-zinc-500/10 p-2 rounded-full">
-                <Timer className="lg:size-7 size-5" aria-hidden />
-              </span>
-              <div className="space-y-1">
-                <span className="text-xs block">{t.endDate}</span>
-                <span className="text-sm font-semibold block">
-                  {endDate ? formattedDate(endDate) : t.noEndDate}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          <p className="text-xs text-muted-foreground">{tPlans.manualNotice}</p>
-        </div>
-
-        <div className="dark:bg-zinc-800/30 bg-sidebar py-6 px-5 rounded-xl">
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead className="py-6">{t.table.type}</TableHead>
-                <TableHead className="text-center">{t.table.inUse}</TableHead>
-                <TableHead className="text-center">{t.table.limit}</TableHead>
-                <TableHead className="text-center">{t.table.remaining}</TableHead>
-                <TableHead className="text-end">{t.table.usage}</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {usageRows.map((row) => (
-                <TableRow key={row.type}>
-                  <TableCell className="font-medium py-6">{row.type}</TableCell>
-                  <TableCell className="text-center">{row.used}</TableCell>
-                  <TableCell className="text-center text-lg">
-                    {formatLimit(row.limit, t.unlimited)}
-                  </TableCell>
-                  <TableCell className="text-center text-lg">
-                    {formatLimit(row.remaining, t.unlimited)}
-                  </TableCell>
-                  <TableCell className="text-end">{percentage(row.used, row.limit)}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-            <TableFooter>
-              <TableRow>
-                <TableCell colSpan={5} className="text-center py-2">
-                  <span className="text-xs text-muted-foreground">
-                    {hasLimits ? t.footer.limited : t.footer.unlimited}
-                  </span>
-                </TableCell>
-              </TableRow>
-            </TableFooter>
-          </Table>
-        </div>
+        <section aria-labelledby="usage-title" className="rounded-xl border bg-card p-5 sm:p-6">
+          <h2 id="usage-title" className="mb-5 text-sm font-semibold">
+            {t.usageTitle}
+          </h2>
+          <ul className="divide-y">
+            {usageRows.map((row) => (
+              <UsageRow
+                key={row.type}
+                {...row}
+                labels={{
+                  inUse: t.table.inUse,
+                  remaining: t.table.remaining,
+                  unlimited: t.unlimited,
+                  ofLimit: t.ofLimit,
+                }}
+              />
+            ))}
+          </ul>
+          <p className="mt-5 text-sm text-muted-foreground">
+            {hasLimits ? t.footer.limited : t.footer.unlimited}
+          </p>
+        </section>
       </div>
     </React.Fragment>
   );

@@ -1,12 +1,8 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
+import { Link } from "react-router-dom";
+import { Info } from "lucide-react";
 import {
   Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-  ChartAreaInteractive,
   Select,
   SelectContent,
   SelectItem,
@@ -14,6 +10,7 @@ import {
   SelectValue,
   Skeleton,
 } from "@/components";
+import { ChartAreaInteractive, formatDay } from "@/components/chartArea";
 import {
   useGetMeplan,
   useLang,
@@ -21,67 +18,168 @@ import {
   useQrCodeStats,
   useQrcodeOptions,
 } from "@/hooks";
-import type { AnalyticsBreakdown, FieldCount } from "@/service/api";
+import type { AnalyticsBreakdown, DailyPoint, FieldCount } from "@/service/api";
+import { cn } from "@/lib/utils";
 import { getErrorMessage } from "@/utils";
 
 const ALL = "all";
 const RANGE_OPTIONS = [7, 30, 90, 365];
 
-function StatCard({ label, value }: { label: string; value: number | undefined }) {
+type Tile = { label: string; value: number | undefined };
+
+/** Números-chave: tipografia grande e tabular, separados por hairlines (sem cartões). */
+function StatTiles({ tiles, loading }: { tiles: Tile[]; loading: boolean }) {
   return (
-    <Card>
-      <CardHeader>
-        <CardDescription>{label}</CardDescription>
-        <CardTitle className="text-2xl">{value ?? "—"}</CardTitle>
-      </CardHeader>
-    </Card>
+    <dl className="grid grid-cols-2 gap-px overflow-hidden rounded-xl border bg-border lg:grid-flow-col lg:auto-cols-fr [&>div:last-child:nth-child(odd)]:col-span-2 lg:[&>div:last-child:nth-child(odd)]:col-span-1">
+      {tiles.map((tile) => (
+        <div key={tile.label} className="flex flex-col gap-1.5 bg-card p-4 sm:p-5">
+          <dt className="text-sm text-muted-foreground">{tile.label}</dt>
+          <dd className="font-mono text-3xl font-semibold tracking-tight tabular-nums">
+            {loading ? <Skeleton className="h-9 w-16" /> : (tile.value?.toLocaleString() ?? "-")}
+          </dd>
+        </div>
+      ))}
+    </dl>
   );
 }
 
 type BreakdownItem = FieldCount & { key?: string };
 
-function BreakdownList({ title, items, emptyLabel }: { title: string; items: BreakdownItem[]; emptyLabel: string }) {
+/** Lista ordenada com barra fina proporcional, sem pista de fundo. */
+function BreakdownList({ title, items }: { title: string; items: BreakdownItem[] }) {
+  const shown = items.slice(0, 8);
+  const max = Math.max(...shown.map((item) => item.count), 1);
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle className="text-sm">{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        {items.length === 0 ? (
-          <p className="text-xs text-muted-foreground">{emptyLabel}</p>
-        ) : (
-          <ul className="space-y-2">
-            {items.slice(0, 8).map((item, index) => (
-              <li key={item.key ?? `${item.value}-${index}`} className="flex justify-between text-xs gap-4">
-                <span className="truncate">{item.value}</span>
-                <span className="font-semibold">{item.count}</span>
-              </li>
+    <section aria-label={title} className="rounded-xl border bg-card p-4 sm:p-5">
+      <h2 className="mb-4 text-sm font-semibold">{title}</h2>
+      <ul className="space-y-3">
+        {shown.map((item, index) => (
+          <li key={item.key ?? `${item.value}-${index}`} className="space-y-1.5">
+            <div className="flex items-baseline justify-between gap-4 text-sm">
+              <span className="truncate" title={item.value}>
+                {item.value}
+              </span>
+              <span className="font-mono font-medium tabular-nums">{item.count.toLocaleString()}</span>
+            </div>
+            <div
+              aria-hidden
+              className="h-1 rounded-full bg-chart-2"
+              style={{ width: `${Math.max(4, (item.count / max) * 100)}%` }}
+            />
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+}
+
+/** Seleção de período: segmento, só com o que a janela do plano permite. */
+function RangeSegment({
+  options,
+  value,
+  onChange,
+  label,
+  format,
+}: {
+  options: number[];
+  value: number;
+  onChange: (value: number) => void;
+  label: string;
+  format: (n: number) => string;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label={label}
+      className="inline-flex h-10 rounded-lg border border-input bg-card p-0.5">
+      {options.map((option) => {
+        const active = option === value;
+        return (
+          <button
+            key={option}
+            type="button"
+            aria-pressed={active}
+            onClick={() => onChange(option)}
+            className={cn(
+              "min-w-14 rounded-md px-3 text-sm font-medium tabular-nums transition-[background-color,color,transform] duration-(--dur-fast) ease-(--ease-out) active:scale-[.97]",
+              active
+                ? "bg-primary text-primary-foreground"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground",
+            )}>
+            {format(option)}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
+
+/** Vista alternativa em tabela (acessibilidade: o gráfico não é a única forma de ler os dados). */
+function SeriesTable({
+  series,
+  locale,
+  dateLabel,
+  scansLabel,
+  summary,
+}: {
+  series: DailyPoint[];
+  locale: string;
+  dateLabel: string;
+  scansLabel: string;
+  summary: string;
+}) {
+  return (
+    <details className="group border-t px-4 py-3 sm:px-5">
+      <summary className="cursor-pointer select-none rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground">
+        {summary}
+      </summary>
+      <div className="mt-3 max-h-64 overflow-auto rounded-lg border">
+        <table className="w-full text-sm">
+          <thead className="sticky top-0 bg-muted text-left">
+            <tr>
+              <th scope="col" className="px-3 py-2 font-medium">{dateLabel}</th>
+              <th scope="col" className="px-3 py-2 text-right font-medium">{scansLabel}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {[...series].reverse().map((point) => (
+              <tr key={point.date} className="border-t">
+                <td className="px-3 py-1.5">{formatDay(point.date, locale)}</td>
+                <td className="px-3 py-1.5 text-right font-mono tabular-nums">{point.scans}</td>
+              </tr>
             ))}
-          </ul>
-        )}
-      </CardContent>
-    </Card>
+          </tbody>
+        </table>
+      </div>
+    </details>
   );
 }
 
 function Statistic() {
-  const { translations } = useLang();
+  const { translations, valueLang } = useLang();
   const t = translations.pages.Statistic;
-  const [days, setDays] = useState(30);
+  const locale = valueLang === "en" ? "en-GB" : "pt-PT";
+  const [requestedDays, setRequestedDays] = useState(30);
   const [qrId, setQrId] = useState<string>(ALL);
 
   const { data: myPlan } = useGetMeplan();
   // Todos os QR, 100 a 100 (limite da API), com "carregar mais".
   const qrOptions = useQrcodeOptions();
-  const myStats = useMyStats(days);
-  const qrStats = useQrCodeStats(qrId === ALL ? undefined : qrId, days);
+  const chartAnimated = useRef(false);
 
   // O backend limita `days` à janela do plano; a UI só oferece o que o plano permite.
   const windowDays = myPlan?.plan.analyticsWindowDays;
-  const rangeOptions = useMemo(
-    () => RANGE_OPTIONS.filter((option) => !windowDays || option <= windowDays),
-    [windowDays],
-  );
+  const rangeOptions = useMemo(() => {
+    if (!windowDays) return RANGE_OPTIONS;
+    const allowed = RANGE_OPTIONS.filter((option) => option <= windowDays);
+    return allowed.length > 0 ? allowed : [windowDays];
+  }, [windowDays]);
+  const days = rangeOptions.includes(requestedDays)
+    ? requestedDays
+    : rangeOptions[rangeOptions.length - 1];
+
+  const myStats = useMyStats(days);
+  const qrStats = useQrCodeStats(qrId === ALL ? undefined : qrId, days);
 
   const isAll = qrId === ALL;
   const active = isAll ? myStats : qrStats;
@@ -94,106 +192,148 @@ function Statistic() {
         scansLast24h: myStats.data?.overview.scansLast24h,
       }
     : qrStats.data?.stats;
+  const format = (n: number) => t.daysShort.replace("{n}", String(n));
   const lastDaysLabel = t.lastDays.replace("{n}", String(active.data?.window?.days ?? days));
+
+  const tiles: Tile[] = [
+    { label: t.totalScans, value: totals?.totalScans },
+    { label: t.scansInWindow, value: totals?.scansInWindow },
+    { label: t.scansLast24h, value: totals?.scansLast24h },
+    ...(isAll ? [{ label: t.totalQrCodes, value: myStats.data?.overview.totalQrCodes }] : []),
+  ];
+
+  const devices = breakdown?.byDevice ?? [];
+  const referrers = (breakdown?.byReferrer ?? []).map((item) => ({
+    ...item,
+    value: item.value || t.direct,
+  }));
+  const topQr = isAll
+    ? (myStats.data?.topQrCodes ?? []).map((qr) => ({
+        key: qr.id,
+        value: qr.title || qr.id,
+        count: qr.scans,
+      }))
+    : [];
+  const hasLists = devices.length > 0 || referrers.length > 0 || topQr.length > 0;
+  const noScans = series.every((point) => point.scans === 0);
 
   return (
     <React.Fragment>
-      <div className="pt-8 pb-16 space-y-6">
-        <div className="flex flex-wrap items-center justify-between gap-4">
-          <h3 className="font-bold text-xl">{t.title}</h3>
-          <div className="flex flex-wrap gap-2">
-            <Select value={qrId} onValueChange={setQrId}>
-              <SelectTrigger className="w-[220px]" aria-label={t.selectQr}>
-                <SelectValue placeholder={t.selectQr} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value={ALL}>{t.allQrCodes}</SelectItem>
-                {qrOptions.items.map((qr) => (
-                  <SelectItem key={qr.id} value={qr.id}>
-                    {qr.title || qr.slug || qr.id}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {qrOptions.hasMore && (
-              <Button
-                variant="outline"
-                onClick={qrOptions.loadMore}
-                disabled={qrOptions.isLoading}>
-                {t.loadMore
-                  .replace("{loaded}", String(qrOptions.items.length))
-                  .replace("{total}", String(qrOptions.total))}
-              </Button>
-            )}
-            <Select value={String(days)} onValueChange={(value) => setDays(Number(value))}>
-              <SelectTrigger className="w-[180px]" aria-label={t.range}>
-                <SelectValue placeholder={t.range} />
-              </SelectTrigger>
-              <SelectContent>
-                {rangeOptions.map((option) => (
-                  <SelectItem key={option} value={String(option)}>
-                    {t.lastDays.replace("{n}", String(option))}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+      <div className="space-y-6 pb-16 pt-6 sm:pt-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+          <div className="space-y-1">
+            <h1 className="text-[1.75rem] font-semibold leading-9 tracking-[-0.02em]">{t.title}</h1>
+            {windowDays ? (
+              <p className="text-sm text-muted-foreground">
+                {t.windowLimit.replace("{n}", String(windowDays))}
+              </p>
+            ) : null}
+          </div>
+          <div className="flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
+            <div className="flex items-center gap-2">
+              <Select value={qrId} onValueChange={setQrId}>
+                <SelectTrigger className="w-full sm:w-[240px]" aria-label={t.selectQr}>
+                  <SelectValue placeholder={t.selectQr} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={ALL}>{t.allQrCodes}</SelectItem>
+                  {qrOptions.items.map((qr) => (
+                    <SelectItem key={qr.id} value={qr.id}>
+                      {qr.title || qr.slug || qr.id}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {qrOptions.hasMore && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="shrink-0 tabular-nums"
+                  onClick={qrOptions.loadMore}
+                  disabled={qrOptions.isLoading}>
+                  {qrOptions.isLoading
+                    ? t.loadingMore
+                    : t.loadMore
+                        .replace("{loaded}", String(qrOptions.items.length))
+                        .replace("{total}", String(qrOptions.total))}
+                </Button>
+              )}
+            </div>
+            <div className="overflow-x-auto">
+              <RangeSegment
+                options={rangeOptions}
+                value={days}
+                onChange={setRequestedDays}
+                label={t.range}
+                format={format}
+              />
+            </div>
           </div>
         </div>
 
         {active.error ? (
-          <p className="text-sm">{getErrorMessage(active.error, translations.errors, t.loadError)}</p>
+          <p role="alert" className="rounded-xl border bg-card p-4 text-sm">
+            {getErrorMessage(active.error, translations.errors, t.loadError)}
+          </p>
         ) : (
           <>
-            <div className="grid lg:grid-cols-4 sm:grid-cols-2 grid-cols-1 gap-4">
-              <StatCard label={t.totalScans} value={totals?.totalScans} />
-              <StatCard label={t.scansInWindow} value={totals?.scansInWindow} />
-              <StatCard label={t.scansLast24h} value={totals?.scansLast24h} />
-              {isAll && (
-                <StatCard label={t.totalQrCodes} value={myStats.data?.overview.totalQrCodes} />
-              )}
-            </div>
+            <StatTiles tiles={tiles} loading={active.isLoading} />
 
-            <Card>
-              <CardHeader>
-                <CardTitle>{t.seriesTitle}</CardTitle>
-                <CardDescription>{lastDaysLabel}</CardDescription>
-              </CardHeader>
-              <CardContent className="px-2 sm:px-6">
+            <section className="overflow-hidden rounded-xl border bg-card" aria-labelledby="stat-series">
+              <div className="flex items-baseline justify-between gap-4 p-4 pb-2 sm:p-5 sm:pb-2">
+                <h2 id="stat-series" className="text-sm font-semibold">
+                  {t.seriesTitle}
+                </h2>
+                <p className="text-sm text-muted-foreground">{lastDaysLabel}</p>
+              </div>
+              <div className="px-1 pb-3 sm:px-3">
                 {active.isLoading ? (
-                  <Skeleton className="h-72 w-full" />
-                ) : series.every((point) => point.scans === 0) ? (
-                  <p className="text-sm text-muted-foreground py-12 text-center">{t.noData}</p>
+                  <Skeleton className="mx-3 h-64 sm:h-80" />
+                ) : noScans ? (
+                  <p className="mx-auto max-w-sm py-16 text-center text-sm text-muted-foreground">
+                    {t.noData}
+                  </p>
                 ) : (
-                  <ChartAreaInteractive series={series} />
-                )}
-              </CardContent>
-            </Card>
-
-            {breakdown ? (
-              <div className="grid md:grid-cols-3 grid-cols-1 gap-4">
-                <BreakdownList title={t.byDevice} items={breakdown.byDevice} emptyLabel={t.noData} />
-                <BreakdownList
-                  title={t.byReferrer}
-                  items={breakdown.byReferrer.map((item) => ({
-                    ...item,
-                    value: item.value || t.direct,
-                  }))}
-                  emptyLabel={t.noData}
-                />
-                {isAll && myStats.data?.topQrCodes && (
-                  <BreakdownList
-                    title={t.topQrCodes}
-                    items={myStats.data.topQrCodes.map((qr) => ({
-                      key: qr.id,
-                      value: qr.title || qr.id,
-                      count: qr.scans,
-                    }))}
-                    emptyLabel={t.noData}
-                  />
+                  <ChartAreaInteractive series={series} animatedRef={chartAnimated} />
                 )}
               </div>
-            ) : (
-              !active.isLoading && <p className="text-xs text-muted-foreground">{t.basicNotice}</p>
+              {!active.isLoading && !noScans && (
+                <SeriesTable
+                  series={series}
+                  locale={locale}
+                  dateLabel={t.tableDate}
+                  scansLabel={t.scans}
+                  summary={t.tableView}
+                />
+              )}
+            </section>
+
+            {hasLists && (
+              <div
+                className={cn(
+                  "grid grid-cols-1 gap-4",
+                  [devices.length, referrers.length, topQr.length].filter(Boolean).length > 2
+                    ? "md:grid-cols-3"
+                    : "md:grid-cols-2",
+                )}>
+                {devices.length > 0 && <BreakdownList title={t.byDevice} items={devices} />}
+                {referrers.length > 0 && <BreakdownList title={t.byReferrer} items={referrers} />}
+                {topQr.length > 0 && <BreakdownList title={t.topQrCodes} items={topQr} />}
+              </div>
+            )}
+
+            {!breakdown && !active.isLoading && (
+              <div className="flex items-start gap-3 rounded-xl border border-dashed border-input p-4 text-sm text-muted-foreground">
+                <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+                <p className="max-w-prose">
+                  {t.basicNotice}{" "}
+                  <Link
+                    to="/subscriber"
+                    className="font-medium text-foreground underline underline-offset-4">
+                    {translations.pages.Subscription.planButton}
+                  </Link>
+                </p>
+              </div>
             )}
           </>
         )}

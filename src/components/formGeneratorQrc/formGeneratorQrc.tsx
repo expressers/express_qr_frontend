@@ -1,94 +1,117 @@
+import { useState } from "react";
+import { AlertCircle, QrCode } from "lucide-react";
 import { useGenerateQr, useLang } from "@/hooks";
-import React, { useEffect } from "react";
-import {
-  Button,
-  Input,
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-  Spinner,
-} from "../ui";
-import { QrCodeGenerated } from "../qrCodeGenerated";
-import { useModalDialog } from "@/hooks";
+import { Button, Input, Spinner } from "../ui";
+import { QrCodeResult } from "../qrCodeGenerated";
+
+// Types shown in the segment; only "link" is available today (the rest are announced, disabled).
+const SOON_TYPES = ["typeText", "typeWifi"] as const;
 
 function FormGeneratorQrc() {
-  const { isLoading, register, errors, handleSubmit, onSubmit, data } =
-    useGenerateQr();
-  const { isVisibleDialogSaveImg, setIsVisibleDialogSaveImg } =
-    useModalDialog();
-
+  const { isLoading, register, errors, handleSubmit, onSubmit, data } = useGenerateQr();
   const { translations } = useLang();
   const t = translations.components.FormGeneratorQrc;
-  useEffect(() => {
-    if (data) {
-      setIsVisibleDialogSaveImg(true);
-    }
-  }, [data, setIsVisibleDialogSaveImg]);
+  // Autofocus only where there is no on-screen keyboard to cover the page.
+  const [autoFocus] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(pointer: fine)").matches,
+  );
 
- 
+  const urlField = register("url");
 
   return (
-    <React.Fragment>
-      {data && (
-        <QrCodeGenerated
-          content={data.content}
-          isOpen={isVisibleDialogSaveImg}
-          setIsOpen={setIsVisibleDialogSaveImg}
-          qrcode={data.dataUrl}
-        />
-      )}
-
-      <div className="lg:w-[34%] rounded-lg overflow-hidden sm:px-6 px-4 py-4 relative after:content-[''] after:absolute after:inset-0 dark:bg-transparent bg-white after:backdrop-blur-2xl after:dark:bg-zinc-800  after:-z-10">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-          <div>
-            <div className="flex items-center justify-center gap-4 lg:flex-row md:flex-row sm:flex-row flex-col">
-              <Input
-                autoFocus={true}
-                placeholder={t.placeholder}
-                aria-label={t.placeholder}
-                maxLength={2000}
-                {...register("url")}
-                className="py-6 text-xs  "
-              />
-            </div>
-            {errors?.url && (
-              <div className="py-1">
-                <span className="text-xs text-destructive font-semibold">
-                  {errors.url.message}
+    <section
+      aria-label={t.title}
+      className="grid w-full gap-6 rounded-2xl border border-border bg-card p-4 text-card-foreground shadow-card sm:p-6 lg:grid-cols-[minmax(0,1fr)_15rem]">
+      <form onSubmit={handleSubmit(onSubmit)} noValidate className="flex flex-col gap-5">
+        <div className="space-y-2">
+          <span id="qr-type-label" className="block text-sm font-medium">
+            {t.typesLabel}
+          </span>
+          <div
+            role="group"
+            aria-labelledby="qr-type-label"
+            className="inline-flex flex-wrap gap-1 rounded-lg bg-muted p-1">
+            <button
+              type="button"
+              aria-pressed="true"
+              className="h-8 rounded-md bg-card px-3 text-sm font-medium shadow-card">
+              {t.typeLink}
+            </button>
+            {SOON_TYPES.map((key) => (
+              <button
+                key={key}
+                type="button"
+                disabled
+                title={t.soon}
+                className="flex h-8 items-center gap-1.5 rounded-md px-3 text-sm text-subtle-foreground disabled:cursor-not-allowed">
+                {t[key]}
+                <span className="rounded-full border border-border px-1.5 text-[0.6875rem] leading-4">
+                  {t.soon}
                 </span>
-              </div>
-            )}
+              </button>
+            ))}
           </div>
+        </div>
 
-          <div className="flex items-center gap-4">
-            <Select defaultValue="link">
-              <SelectTrigger className="sm:w-full w-[180px]  py-6" aria-label={t.typesLabel}>
-                <SelectValue placeholder={t.typeLink} />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectGroup>
-                  <SelectLabel>{t.typesLabel}</SelectLabel>
-                  <SelectItem value="link">{t.typeLink}</SelectItem>
-                </SelectGroup>
-              </SelectContent>
-            </Select>
+        <div className="space-y-2">
+          <label htmlFor="qr-url" className="text-sm font-medium">
+            {t.urlLabel}
+          </label>
+          <Input
+            id="qr-url"
+            type="text"
+            inputMode="url"
+            autoComplete="off"
+            autoCapitalize="off"
+            spellCheck={false}
+            autoFocus={autoFocus}
+            placeholder={t.placeholder}
+            maxLength={2000}
+            aria-invalid={Boolean(errors?.url)}
+            aria-describedby={errors?.url ? "qr-url-error" : undefined}
+            {...urlField}
+            className="h-12 text-base md:h-12 md:text-base"
+          />
+          {errors?.url && (
+            <p
+              id="qr-url-error"
+              role="alert"
+              className="flex items-start gap-1.5 text-sm font-medium text-destructive">
+              <AlertCircle className="mt-0.5 size-4 shrink-0" aria-hidden="true" />
+              <span>{errors.url.message}</span>
+            </p>
+          )}
+        </div>
 
-            <Button
-              type="submit"
-              className="rounded py-6 sm:w-auto"
-              disabled={isLoading}
-              variant="default">
-              {isLoading && <Spinner />}
-              {t.button}
-            </Button>
+        <Button
+          type="submit"
+          size="lg"
+          className="h-12 w-full text-base sm:w-44"
+          disabled={isLoading}
+          aria-busy={isLoading}>
+          {isLoading && <Spinner />}
+          {t.button}
+        </Button>
+      </form>
+
+      {/* Result slot: empty hint on desktop, mounted only after generating on small screens */}
+      <div
+        aria-live="polite"
+        className={
+          data
+            ? "lg:border-l lg:border-border lg:pl-6"
+            : "hidden lg:block lg:border-l lg:border-border lg:pl-6"
+        }>
+        {data ? (
+          <QrCodeResult key={data.dataUrl + data.content} qrcode={data.dataUrl} content={data.content} />
+        ) : (
+          <div className="flex h-full min-h-48 flex-col items-center justify-center gap-3 rounded-lg border border-dashed border-input text-center">
+            <QrCode className="size-8 text-subtle-foreground" aria-hidden="true" strokeWidth={1.25} />
+            <p className="max-w-[11rem] text-sm text-subtle-foreground">{t.empty}</p>
           </div>
-        </form>
+        )}
       </div>
-    </React.Fragment>
+    </section>
   );
 }
 

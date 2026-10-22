@@ -13,6 +13,7 @@ import {
 } from "@/pages";
 import { Route } from "react-router-dom";
 import { AppLayoutPublic } from "@/Layout";
+import { LazyBoundary } from "@/components";
 
 const Home = lazy(() => import("@/pages/public/home/home").then(m => ({ default: m.Home })));
 
@@ -24,7 +25,7 @@ function PublicRouter() {
   return (
     <React.Fragment>
       <Route element={<AppLayoutPublic />}>
-        <Route path="/" element={<Suspense fallback={<Loading />}><Home /></Suspense>} />
+        <Route path="/" element={<LazyBoundary><Suspense fallback={<Loading />}><Home /></Suspense></LazyBoundary>} />
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
         <Route path="/auth/forgotpassword" element={<ForgotPassword />} />

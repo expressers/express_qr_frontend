@@ -24,28 +24,20 @@ type QrCodeGeneratedProps = {
   qrcode: string;
   isOpen: boolean;
   setIsOpen: (open: boolean) => void;
-} & (
-  | { /** Anónimo: o servidor regenera o ficheiro a partir do conteúdo. */ content: string; id?: never }
-  | {
-      /** Autenticado: download do QR guardado. */ id: string;
-      /** Usado no nome do ficheiro se o servidor não enviar `Content-Disposition`. */
-      slug?: string | null;
-      content?: never;
-    }
-);
+  /** Download do QR guardado. */
+  id: string;
+  /** Usado no nome do ficheiro se o servidor não enviar `Content-Disposition`. */
+  slug?: string | null;
+};
 
-function QrCodeGenerated({ qrcode, isOpen, setIsOpen, ...source }: QrCodeGeneratedProps) {
+function QrCodeGenerated({ qrcode, isOpen, setIsOpen, id, slug }: QrCodeGeneratedProps) {
   const { downloadImg, isLoading } = useGetQrDownload();
   const [format, setFormat] = useState<QrFormat>("png");
   const { translations } = useLang();
   const t = translations.components.FormGeneratorQrc;
 
   const handleDownload = async () => {
-    if (source.id) {
-      await downloadImg({ id: source.id, slug: source.slug }, format);
-    } else if (source.content) {
-      await downloadImg({ content: source.content }, format);
-    }
+    await downloadImg({ id, slug }, format);
   };
 
   return (

@@ -16,7 +16,6 @@ export { useCreateQrcode } from "./use_createQrcode";
 export { useGetQrcodes } from "./use_getQrcodes";
 export { useUserGetMe } from "./use_userGetMe";
 export { useDeleteAccount } from "./use_deleteAccount";
-export { useModalDialog } from "./use_modalDialog"
 export { usePlanManagement } from "./use_plansManagement";
 export { useGetQrDownload } from "./use_getQrDownload"
 export { useGetMeplan } from "./use_getMeplan";

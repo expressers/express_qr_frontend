@@ -1,1 +1,1 @@
-export * from "./previewQRCode"
+export * from "./previewQRCode";

@@ -1,1 +1,2 @@
-export * from "./qrCodeGenerated"
+export * from "./qrCodeGenerated";
+export * from "./qrCodeResult";
