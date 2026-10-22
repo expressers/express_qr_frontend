@@ -19,7 +19,7 @@ function NavHeader() {
 
   // Paleta P&B: o link activo é o texto principal sublinhado; os restantes ficam atenuados.
   const isLinkActive = ({ isActive }: { isActive: boolean }) =>
-    `text-lg md:text-sm font-montserrat font-semibold transition-colors ${
+    `text-lg md:text-sm font-medium transition-colors duration-(--dur-fast) ${
       isActive
         ? "text-foreground underline underline-offset-8 decoration-2"
         : "text-muted-foreground hover:text-foreground"

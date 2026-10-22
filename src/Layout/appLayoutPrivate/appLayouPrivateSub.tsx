@@ -1,4 +1,4 @@
-import { Header3 } from '@/components'
+import { SiteHeader } from '@/components'
 import React from 'react'
 import { Outlet } from 'react-router-dom'
 
@@ -6,8 +6,8 @@ function AppLayouPrivateSub() {
  
   return (
     <React.Fragment>
-      <section className="h-screen w-full relative">
-        <Header3 />
+      <section className="min-h-dvh w-full relative">
+        <SiteHeader variant="app" />
         <main>
           <Outlet />
         </main>

@@ -23,8 +23,8 @@ import { useLang } from "@/hooks";
 function SidebarAppPrivate() {
   const location = useLocation();
   const isActivePage = (isActive: boolean) =>
-    `flex items-center transition-all duration-300 hover:bg-green-500/10 gap-3 text-sm  px-4 py-6 rounded-md ${
-      isActive && "bg-green-500/10"
+    `flex items-center transition-all duration-300 gap-3 text-sm px-4 py-6 rounded-md ${
+      isActive ? "bg-foreground text-background font-medium" : "hover:bg-accent"
     }`;
   const { translations } = useLang();
   const t = translations.components.SidebarAppPrivate;
