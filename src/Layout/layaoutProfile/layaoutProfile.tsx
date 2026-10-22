@@ -9,11 +9,6 @@ function Profilelayaout() {
 
   const t = translations.layout.ProfileLayout;
 
-  /*const isActivePage = ({ isActive }: NavLinkRenderProps) =>
-    `flex items-center gap-3 text-sm  px-4 py-3 rounded-md ${
-      isActive && "bg-green-500/10"
-    }`;*/
-
   const itemMenuLink = [
     {
       title: t.menu.profile,

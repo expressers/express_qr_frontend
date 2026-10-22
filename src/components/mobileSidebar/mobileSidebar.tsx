@@ -11,8 +11,8 @@ import { useLang } from "@/hooks";
 function MobileSidebar() {
   const location = useLocation();
   const isActivePage = (isActive: boolean) =>
-    `flex items-center gap-3 text-sm transition-all duration-300 hover:bg-green-500/10 px-4 py-4 rounded-md ${
-      isActive && "bg-green-500/10"
+    `flex items-center gap-3 text-sm transition-all duration-300 px-4 py-4 rounded-md ${
+      isActive ? "bg-foreground text-background font-medium" : "hover:bg-accent"
     }`;
   const { translations } = useLang();
   const t = translations.components.SidebarAppPrivate;

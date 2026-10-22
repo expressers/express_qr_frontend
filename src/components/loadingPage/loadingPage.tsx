@@ -1,51 +1,66 @@
+import { useEffect } from "react";
 import { useLoadingPage } from "@/hooks";
-import { useEffect, useState } from "react";
+import { BRAND_NAME } from "../brandMark/brand";
 
+const SEEN_KEY = "eqr:intro";
+
+// BRAND_NAME is "ExpressQR": the outline-fill effect sweeps "Express" in the
+// foreground colour, then "QR" in the muted foreground. Split on the capital pair
+// so the effect survives a future rename that keeps the same shape.
+const split = BRAND_NAME.search(/[A-Z]{2}$/);
+const FIRST = split > 0 ? BRAND_NAME.slice(0, split) : BRAND_NAME;
+const SECOND = split > 0 ? BRAND_NAME.slice(split) : "";
+
+function hasSeenIntro() {
+  try {
+    return sessionStorage.getItem(SEEN_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Brand entry animation. Once per session, ~1.8s, rendered as a fixed overlay on
+ * top of an already-mounted page (never blocks content or the LCP). The CSS
+ * animation owns the timing; the overlay unmounts on its own animationend, which
+ * is what fixes the old "unmounted before the fade ran" bug.
+ */
 function LoadingPage() {
   const { visibleLoadingPage, setVisibleLoadingPage, isVisible } = useLoadingPage();
-  const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
-    if (isVisible) {
-      setVisibleLoadingPage(true);
-
-      const timeoutFade = setTimeout(() => setFadeOut(true), 5000);
-      const timeoutHide = setTimeout(() => setVisibleLoadingPage(false), 5000);
-
-      return () => {
-        clearTimeout(timeoutFade);
-        clearTimeout(timeoutHide);
-      };
+    if (!isVisible || hasSeenIntro()) return;
+    try {
+      sessionStorage.setItem(SEEN_KEY, "1");
+    } catch {
+      /* storage blocked: the intro may replay, harmless */
     }
-  }, [isVisible,setVisibleLoadingPage]);
+    setVisibleLoadingPage(true);
+  }, [isVisible, setVisibleLoadingPage]);
+
+  if (!visibleLoadingPage) return null;
 
   return (
-    visibleLoadingPage && (
-      <div
-        className={`absolute h-full w-full z-[100] top-0 left-0 right-0 dark:bg-black bg-white flex items-center justify-center transition-opacity duration-700 ${
-          fadeOut ? "opacity-0" : "opacity-100"
-        }`}>
-        <span
-          data-text="Express"
-          className="relative sm:text-6xl text-4xl font-bold tracking-[.4rem]
-            [-webkit-text-fill-color:transparent] [-webkit-text-stroke-width:1px]
-            dark:text-white text-black before:content-[attr(data-text)] before:absolute before:top-0 before:left-0
-            before:overflow-hidden before:[width:0] before:dark:text-white before:text-black
-            before:[-webkit-text-stroke-width:0px] dark:before:[-webkit-text-fill-color:white]
-            before:[-webkit-text-fill-color:black] before-animate-fillText">
-          Express
-          <span
-            data-text="QR"
-            className="relative text-muted-foreground
-              before:content-[attr(data-text)] before:absolute
-              before:overflow-hidden before:[width:0] before:text-muted-foreground
-              before:[-webkit-text-stroke-width:0px]
-              before-text-fill-green before-animate-fillText-qr">
-            QR
-          </span>
+    <div
+      role="status"
+      aria-label={`A carregar ${BRAND_NAME}`}
+      onAnimationEnd={(e) => {
+        if (e.target === e.currentTarget) setVisibleLoadingPage(false);
+      }}
+      className="intro-layer pointer-events-none fixed inset-0 z-(--z-intro) flex items-center justify-center bg-background">
+      <span
+        aria-hidden="true"
+        className="select-none text-4xl font-semibold tracking-[0.01em] sm:text-6xl">
+        <span data-text={FIRST} className="intro-word intro-express">
+          {FIRST}
         </span>
-      </div>
-    )
+        {SECOND && (
+          <span data-text={SECOND} className="intro-word intro-qr">
+            {SECOND}
+          </span>
+        )}
+      </span>
+    </div>
   );
 }
 

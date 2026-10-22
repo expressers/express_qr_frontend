@@ -84,7 +84,7 @@ function Settings() {
             {t.title}
           </h4>
           <div>
-            <Avatar className="w-20 h-20 border-2 border-green-500">
+            <Avatar className="w-20 h-20 border-2 border-border">
               <AvatarImage src={state.user_photo ?? ""} alt={state.user_name ?? ""} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>

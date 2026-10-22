@@ -1,4 +1,4 @@
-export { Header, Header2, Header3 } from "./header";
+export { SiteHeader } from "./header";
 export { HeaderSidebar } from "./headerSidebar";
 export { SidebarAppPrivate } from "./sidebarAppPrivate";
 export { MobileSidebar } from "./mobileSidebar";

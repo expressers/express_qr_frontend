@@ -18,7 +18,7 @@ function UserMenu() {
   return (
     <React.Fragment>
       <Link to="/dashboard">
-        <Avatar className="md:w-12 md:h-12 border-2 border-green-500">
+        <Avatar className="md:w-12 md:h-12 border-2 border-border">
           <AvatarImage
             src={state.user_photo ? state.user_photo : ""}
             alt={state.user_name ? state.user_name : "ExpressQR"}
