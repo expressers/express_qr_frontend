@@ -21,7 +21,7 @@ function UserMenu() {
         <Avatar className="md:w-12 md:h-12 border-2 border-green-500">
           <AvatarImage
             src={state.user_photo ? state.user_photo : ""}
-            alt={state.user_name ? state.user_name : "bisc8qr"}
+            alt={state.user_name ? state.user_name : "ExpressQR"}
           />
           <AvatarFallback>{initials}</AvatarFallback>
         </Avatar>

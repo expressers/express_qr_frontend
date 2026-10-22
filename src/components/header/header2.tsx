@@ -1,6 +1,7 @@
 import React from "react";
 
 import { Link, useLocation } from "react-router-dom";
+import { BRAND_NAME } from "../brandMark/brand";
 
 function Header2() {
   const location = useLocation();
@@ -17,7 +18,7 @@ function Header2() {
             pathNameSigin ? "justify-start" : "justify-end"
           } items-center`}>
           <Link to="/" className="lg:visible md:visible invisible">
-            <span className="md:text-2xl text-lg font-semibold ">BISC8R</span>
+            <span className="md:text-2xl text-lg font-semibold ">{BRAND_NAME}</span>
           </Link>
         </div>
       </header>

@@ -1,10 +1,28 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>bisc8qr</title>
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="ExpressQR: gere e gira QR codes." />
+    <meta name="theme-color" content="#f6f6f6" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#0b0b0b" media="(prefers-color-scheme: dark)" />
+    <meta name="color-scheme" content="light dark" />
+    <title>ExpressQR</title>
+    <!-- CSP: vercel.json allows this inline script by its sha256 hash. Any edit
+         inside the script below (even whitespace) must update that hash; see README. -->
+    <script>
+      // Anti-flash: apply the stored theme before first paint (key matches ThemeProvider).
+      (function () {
+        try {
+          var t = localStorage.getItem("vite-ui-theme") || "system";
+          if (t === "system") {
+            t = window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
+          }
+          document.documentElement.classList.add(t);
+        } catch (e) {}
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

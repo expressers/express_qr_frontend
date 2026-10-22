@@ -3,14 +3,24 @@
     "FormGeneratorQrc": {
       "title": "QR Code Generator",
       "description": "Create your QR Code quickly and easily.",
-      "placeholder": "Add your link",
+      "placeholder": "Paste your link here",
       "button": "Generate",
       "formatsLabel": "Formats",
       "typesLabel": "Types",
       "typeLink": "Link",
-      "readyTitle": "Your QR Code is ready",
-      "readyDescription": "Scan it and check your magical QR code",
-      "formatPlaceholder": "Format"
+      "readyTitle": "Your QR code is ready",
+      "readyDescription": "Scan it with your phone to check that it works.",
+      "formatPlaceholder": "Format",
+      "imageAlt": "Generated QR code",
+      "download": "Download",
+      "downloadSuccess": "Download complete.",
+      "downloadError": "Could not download the QR code.",
+      "success": "QR code created.",
+      "error": "Could not create the QR code.",
+      "validation": {
+        "required": "Enter the QR code content.",
+        "tooLong": "Content cannot be longer than 2000 characters."
+      }
     },
     "UserMenu": {
       "myAccount": "My Account",
@@ -19,16 +29,17 @@
     "header": {
       "account": "Account",
       "free": "Free",
-      "pro": "Professional",
+      "pro": "Pro",
       "profile": "Profile",
       "myProfile": "My profile",
       "buttons": {
         "createAccount": "Sign up",
         "signIn": "Sign in"
-      }
+      },
+      "openMenu": "Open menu"
     },
     "SidebarAppPrivate": {
-      "brand": "BISC8R",
+      "brand": "ExpressQR",
       "menu": {
         "dashboard": "Dashboard",
         "myQrcodes": "My QR Codes",
@@ -68,11 +79,35 @@
         "minTitle": "Title must be at least 3 characters long",
         "requiredUrl": "URL is required",
         "invalidUrl": "Enter a valid URL",
-        "toastSucces": "QR code created successfully!",
-        "toastError": "Error creating QR code!",
-        "execeedeLim": "You have exceeded the limit.",
-        "btnAction": "Subscribe"
+        "toastSucces": "QR code created.",
+        "toastError": "Could not create the QR code.",
+        "execeedeLim": "You have reached your plan limit.",
+        "btnAction": "Request upgrade",
+        "maxTitle": "Title can be at most 120 characters",
+        "maxDescription": "Description can be at most 500 characters",
+        "requiredContent": "Content is required"
+      },
+      "usage": {
+        "label": "Plan usage",
+        "of": "{used} of {limit}",
+        "unlimited": "Unlimited",
+        "limitReached": "Limit reached",
+        "upgrade": "Request upgrade"
       }
+    },
+    "CardQrcode": {
+      "inactive": "Inactive",
+      "preview": "Preview",
+      "scans": "Scans",
+      "download": "Download",
+      "edit": "Edit",
+      "delete": "Delete",
+      "deleteTitle": "Delete this QR code?",
+      "deleteDescription": "\"{title}\" will be permanently deleted. If it is dynamic, it will stop redirecting.",
+      "cancel": "Cancel",
+      "confirmDelete": "Delete",
+      "deleteSuccess": "QR code deleted.",
+      "deleteError": "Could not delete the QR code."
     }
   },
   "layout": {
@@ -87,7 +122,8 @@
       "deleteConfirm": "Are you sure you want to delete your account?",
       "messages": {
         "logoutSuccess": "Logged out successfully.",
-        "deleteSuccess": "Account deleted successfully."
+        "deleteSuccess": "Account deleted successfully.",
+        "deleteError": "Could not delete the account."
       },
       "alertDialog": {
         "dialogTitle": "Are you sure?",
@@ -99,11 +135,13 @@
   },
   "pages": {
     "dashboard": {
-      "totalQrcodes": "Total QR Codes",
-      "myQrcodes": "My QR Codes",
+      "totalQrcodes": "Total QR codes",
+      "myQrcodes": "My QR codes",
       "viewAll": "View all",
       "noTitle": "Untitled",
-      "noLink": "No link"
+      "noLink": "No link",
+      "staticUsage": "Static QR codes",
+      "dynamicUsage": "Dynamic QR codes"
     },
     "SignIn": {
       "welcome": "Welcome Back",
@@ -127,11 +165,14 @@
         "number": "Password must contain at least one number",
         "letter": "Password must contain at least one letter",
         "special": "Password must contain at least one special character"
-      }
+      },
+      "toastSuccess": "Signed in.",
+      "toastError": "Could not sign in.",
+      "toastGoogleError": "Could not sign in with Google."
     },
     "SignUp": {
       "title": "Create Account",
-      "subtitle": "Sign up to start creating stunning qr codes.",
+      "subtitle": "Sign up to start creating QR codes.",
       "firstName": "First Name",
       "firstNamePlaceholder": "Enter your first name",
       "lastName": "Last Name",
@@ -161,60 +202,30 @@
         "passwordSpecial": "Password must include at least one special character",
         "confpasswordRequired": "Confirm your password",
         "passwordMatch": "Passwords must match."
-      }
+      },
+      "toastSuccess": "Account created. Confirm your email to continue.",
+      "toastError": "Could not create the account."
     },
     "Subscriber": {
-      "title": "Plans and Pricing",
-      "description": "Whether you want to share quick links or promote your business with style,<br/> generate your personalized QR Codes with Bisc8Qr.",
-      "tabs": {
-        "weekly": "Weekly",
-        "monthly": "Monthly",
-        "annual": "Annual"
-      },
-      "popular": "Most Popular",
-      "currentPlan": "Current Plan",
-      "continue": "Continue",
-      "plans": {
-        "free": {
-          "title": "Free",
-          "description": "Perfect for those who create QR Codes occasionally  or are discovering Bisc8Qr for the first time.",
-          "price": "0 kz",
-          "subText": "Enjoy Bisc8Qr for free",
-          "note": "For individual, non-commercial use only",
-          "features": [
-            "Generate and download up to 30 <br/>QR Codes",
-            "10 monthly creations available",
-            "Each QR Code expires after 3 days"
-          ]
-        },
-        "ultimate": {
-          "title": "Ultimate",
-          "description": "The ideal option for those who create and share  unlimited<br/> QR Codes all day, every day.",
-          "price": "1000 kz",
-          "subText": "Per week, billed weekly.",
-          "note": "For individual solo use",
-          "features": [
-            "No limits on QR Code generation",
-            "Unlimited creations per month",
-            "QR Codes with no expiration date",
-            "Custom design for each QR Code",
-            "Recover archived QR Codes"
-          ]
-        },
-        "teams": {
-          "title": "Teams",
-          "description": "Ideal for small teams that need a powerful and <br/>robust file sharing solution.",
-          "price": "4000 kz",
-          "subText": "Per user / month, billed annually.",
-          "note": "Up to 25 members",
-          "features": [
-            "Everything in Ultimate, plus:",
-            "Team creation",
-            "Up to 25 team members",
-            "Centralized billing"
-          ]
-        }
-      }
+      "title": "Plans",
+      "description": "Pick the plan that fits your use. Every plan includes PNG, SVG and PDF downloads, with no watermark.",
+      "priceOnRequest": "Price on request",
+      "manualNotice": "Online payments are not available yet. Request an upgrade and our team will activate the plan manually.",
+      "cta": "Request upgrade",
+      "startFree": "Create a free account",
+      "staticLimit": "{n} static QR codes",
+      "dynamicLimit": "{n} dynamic QR codes (editable destination)",
+      "unlimitedStatic": "Unlimited static QR codes",
+      "unlimitedDynamic": "Unlimited dynamic QR codes",
+      "analyticsBasic": "Basic analytics: total scans and daily series",
+      "analyticsFull": "Full analytics: daily series, devices and sources",
+      "windowDays": "Scan history: {n} days",
+      "customColors": "Custom colours",
+      "loadError": "Could not load the plans.",
+      "mailSubject": "ExpressQR upgrade request",
+      "mailBody": "Hello, I would like to activate the plan below on my account.",
+      "free": "Free",
+      "goToDashboard": "Go to dashboard"
     },
     "MyProfile": {
       "title": "My Profile",
@@ -235,24 +246,20 @@
         "email": {
           "label": "Email",
           "placeholder": "Your email",
-          "required": "Email is required"
+          "required": "Email is required",
+          "invalid": "Invalid email format",
+          "readOnlyHint": "Your email can't be changed here."
         },
         "phone": {
           "label": "Phone",
           "placeholder": "Your phone"
         },
-        "country": {
-          "label": "Country",
-          "placeholder": "Your country"
-        },
-        "address": {
-          "label": "City",
-          "placeholder": "Your city"
-        },
         "button": {
           "update": "Update"
         }
-      }
+      },
+      "toastSuccess": "Profile updated.",
+      "toastError": "Could not update the profile."
     },
     "UpdatePassword": {
       "title": "Security",
@@ -277,7 +284,9 @@
         "letter": "Password must contain at least one letter",
         "special": "Password must contain at least one special character",
         "match": "Passwords must be different"
-      }
+      },
+      "toastSuccess": "Password changed.",
+      "toastError": "Could not change the password."
     },
     "ForgotPassword": {
       "title": "Forgot your password?",
@@ -289,7 +298,9 @@
       "validation": {
         "requiredEmail": "Email is required",
         "invalidEmail": "Please enter a valid email address"
-      }
+      },
+      "toastSuccess": "If the email is registered, you will receive a link to reset your password.",
+      "toastError": "Could not send the request."
     },
     "ResetPassword": {
       "title": "Reset password",
@@ -308,14 +319,24 @@
         "letter": "Password must contain at least one letter",
         "special": "Password must contain at least one special character",
         "match": "Passwords must match"
-      }
+      },
+      "missingTokenTitle": "Invalid link",
+      "missingToken": "This reset link is incomplete or has expired. Request a new one.",
+      "requestNewLink": "Request a new link",
+      "toastSuccess": "Password reset. You can now sign in.",
+      "toastError": "Could not reset the password."
     },
     "Verifyaccount": {
       "title": "Verify your email",
       "subtitle": "We’ve sent a verification link to your email address. Click the link in the email to activate your account.",
       "description": "Didn’t receive the email? Check your spam folder or contact support.",
       "codePlaceholder": "Enter the verification code",
-      "button": "Back to Login"
+      "button": "Back to sign in",
+      "emailLabel": "Email",
+      "emailPlaceholder": "Your email",
+      "resendButton": "Resend verification email",
+      "resendSuccess": "If the account exists and is not yet confirmed, we have sent a new email.",
+      "resendError": "Could not resend the email."
     },
     "MyQrcodes": {
       "title": "My QR Codes",
@@ -323,28 +344,33 @@
       "all": "All",
       "active": "Active",
       "inactive": "Inactive",
-      "noQr": "No QR codes"
+      "noQr": "You don't have any QR codes yet.",
+      "total": "Total: {total}",
+      "loadError": "Could not load the QR codes.",
+      "noTitle": "Untitled",
+      "noLink": "No link",
+      "noQrFiltered": "No QR codes match this filter.",
+      "clearFilter": "Show all"
     },
     "VerifyEmail": {
-      "verifyingTitle": "Verifying account...",
-      "verifyingSubtitle": "Please wait while we validate your email.",
+      "verifyingTitle": "Verifying your account…",
+      "verifyingSubtitle": "Please wait while we confirm your email.",
       "successTitle": "Account Verified!",
       "successDescription": "Your account has been successfully verified. You can now log in to the platform.",
-      "redirectMessage": "You will be redirected automatically in 5 seconds...",
+      "redirectMessage": "You will be redirected to sign in within 5 seconds.",
       "errorTitle": "Verification Error",
-      "errorDescription": "An error occurred while verifying your account. Please try again or contact support.",
+      "errorDescription": "We could not confirm your account. The link may have expired.",
       "buttonLogin": "Sign In Now",
       "invalidToken": "Invalid or expired token",
       "tokenNotProvided": "Verification token not provided",
       "verifyError": "Error verifying account",
-      "verifyFailure": "Verification failed"
+      "verifyFailure": "Verification failed",
+      "resendLink": "Request a new verification email"
     },
     "QrcodeEdit": {
-      "editQrCode": "Edit Qr Code",
+      "editQrCode": "Edit QR code",
       "static": "Static",
       "dynamic": "Dynamic",
-      "active": "Active",
-      "inactive": "Inactive",
       "title": "Title",
       "titlePlaceholder": "Add a title",
       "link": "Destination URL",
@@ -353,14 +379,38 @@
       "tagsPlaceholder": "Add tags",
       "description": "Description",
       "descriptionPlaceholder": "Add description",
-      "save": "Save"
+      "save": "Save",
+      "type": "Type",
+      "typeHint": "The type cannot be changed after creation.",
+      "linkHint": "Changing the destination does not change the image: printed codes keep working.",
+      "content": "Content",
+      "activeLabel": "Active",
+      "activeHint": "An inactive QR code stops redirecting and shows \"not found\".",
+      "tagsHint": "Separate tags with commas.",
+      "cancel": "Cancel",
+      "delete": "Delete",
+      "back": "Back to my QR codes",
+      "notFound": "QR code not found.",
+      "toastSuccess": "QR code updated.",
+      "toastError": "Could not update the QR code.",
+      "validation": {
+        "requiredLink": "Destination URL is required",
+        "invalidLink": "Enter a valid URL (https://…)",
+        "requiredContent": "Content is required",
+        "maxTitle": "Title can be at most 120 characters",
+        "maxDescription": "Description can be at most 500 characters",
+        "requiredTitle": "Title is required",
+        "minTitle": "Title must be at least 3 characters"
+      }
     },
     "Subscription": {
       "title": "Subscription",
-      "planButton": "Plan",
-      "price": "Price",
-      "startDate": "Start date",
-      "endDate": "End date",
+      "planButton": "View plans",
+      "endDate": "Valid until",
+      "noEndDate": "No end date",
+      "status": "Status",
+      "upgrade": "Request upgrade",
+      "loadError": "Could not load your plan.",
       "table": {
         "type": "Type",
         "inUse": "In use",
@@ -368,21 +418,64 @@
         "remaining": "Remaining",
         "usage": "Usage (%)"
       },
-      "limit": "Limit",
       "type": {
         "static": "Static",
-        "Dynamic": "Dynamic",
-        "total": "Total"
+        "Dynamic": "Dynamic"
       },
-      "plan": {
-        "BUSINESS": "Business",
-        "FREE": "Free",
-        "PROFESSIONAL":"Professional"
-      },
+      "unlimited": "Unlimited",
       "footer": {
-        "limited": "* Your plan has defined limits for QR Code creation.",
-        "unlimited": "* “Unlimited” means your plan has no restrictions for this type of QR Code."
+        "limited": "* Limits count the total number of saved QR codes, not a monthly quota.",
+        "unlimited": "* \"Unlimited\" means your plan has no limit for this QR code type."
       }
+    },
+    "Statistic": {
+      "title": "Statistics",
+      "allQrCodes": "All QR codes",
+      "selectQr": "Choose QR code",
+      "range": "Period",
+      "lastDays": "Last {n} days",
+      "totalScans": "Total scans",
+      "scansInWindow": "Scans in period",
+      "scansLast24h": "Last 24 hours",
+      "totalQrCodes": "QR codes",
+      "seriesTitle": "Scans per day",
+      "scans": "Scans",
+      "byDevice": "By device",
+      "byReferrer": "By source",
+      "topQrCodes": "Most scanned QR codes",
+      "noData": "No scans in this period yet.",
+      "basicNotice": "Your plan includes basic analytics. Pro and Premium also show devices and scan sources.",
+      "loadError": "Could not load the statistics.",
+      "direct": "Direct",
+      "loadMore": "Load more QR codes ({loaded}/{total})"
     }
+  },
+  "errors": {
+    "UNAUTHORIZED": "Your session has expired. Please sign in again.",
+    "MISSING_TOKEN": "Your session has expired. Please sign in again.",
+    "INVALID_CREDENTIALS": "Incorrect email or password.",
+    "EMAIL_NOT_VERIFIED": "Please confirm your email before signing in.",
+    "EMAIL_IN_USE": "This email is already registered.",
+    "EMAIL_ALREADY_VERIFIED": "This email is already confirmed. You can sign in.",
+    "INVALID_OR_EXPIRED_TOKEN": "This link is invalid or has expired. Request a new one.",
+    "INVALID_TOKEN": "This link is invalid or has expired. Request a new one.",
+    "TOKEN_EXPIRED": "This link is invalid or has expired. Request a new one.",
+    "PLAN_LIMIT_EXCEEDED": "You have reached your plan's limit for this QR code type.",
+    "FEATURE_NOT_AVAILABLE": "This feature is not included in your plan.",
+    "RATE_LIMITED": "Too many requests. Please wait a moment and try again.",
+    "RATE_LIMIT_EXCEEDED": "Too many requests. Please wait a moment and try again.",
+    "VALIDATION_ERROR": "Some fields are invalid. Please review the form.",
+    "CONTENT_TOO_LONG": "Content cannot be longer than 2000 characters.",
+    "QR_CODE_NOT_FOUND": "QR code not found.",
+    "NOT_FOUND": "Not found.",
+    "FORBIDDEN": "You don't have permission for this action.",
+    "ACCESS_DENIED": "You don't have permission for this action.",
+    "ACCOUNT_SUSPENDED": "Your account is suspended. Please contact support.",
+    "ACCOUNT_INACTIVE": "Your account is not active. Please contact support.",
+    "INVALID_GOOGLE_TOKEN": "Could not validate your Google session.",
+    "NETWORK_ERROR": "Can't reach the server. Check your internet connection.",
+    "INTERNAL_ERROR": "Something went wrong on the server. Please try again.",
+    "FIELD_INVALID": "Invalid value.",
+    "INVALID_CURRENT_PASSWORD": "Your current password is incorrect."
   }
 }

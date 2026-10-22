@@ -1,10 +1,7 @@
 import React from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 function NavHeader() {
-  const location = useLocation();
-    const isPageHome = location.pathname === "/";
-    
   const itemMenu = [
     {
       title: "Home",
@@ -20,10 +17,13 @@ function NavHeader() {
     },
   ];
 
+  // Paleta P&B: o link activo é o texto principal sublinhado; os restantes ficam atenuados.
   const isLinkActive = ({ isActive }: { isActive: boolean }) =>
-    `text-lg md:text-sm  font-montserrat font-semibold ${
-      isActive && "text-green-500"
-    } ${isPageHome && !isActive && "md:text-white"}`;
+    `text-lg md:text-sm font-montserrat font-semibold transition-colors ${
+      isActive
+        ? "text-foreground underline underline-offset-8 decoration-2"
+        : "text-muted-foreground hover:text-foreground"
+    }`;
     
   return (
     <React.Fragment>

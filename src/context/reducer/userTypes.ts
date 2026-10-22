@@ -5,11 +5,18 @@ export type User = {
   user_photo: string | null;
   user_role: string | null;
   user_phone: string | null;
-  user_city: string | null;
-  user_country: string | null;
+};
+
+export type LoginPayload = {
+  id?: string | null;
+  name?: string | null;
+  email?: string | null;
+  photo?: string | null;
+  role?: string | null;
+  phone?: string | null;
 };
 
 export type UserAction =
-  | { type: "LOGIN"; payload: any }
+  | { type: "LOGIN"; payload: LoginPayload }
   | { type: "LOGOUT" }
   | { type: "UPDATE"; payload: Partial<User> };

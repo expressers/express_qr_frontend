@@ -8,7 +8,6 @@ import {
   Input,
   Button,
   Spinner,
-  Toaster,
 } from "@/components";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -22,7 +21,6 @@ function ForgotPassword() {
 
   return (
     <React.Fragment>
-      <Toaster richColors />
       <div
         className={`h-screen w-full  flex items-center justify-end  sm:p-4 bgImg`}>
         <div

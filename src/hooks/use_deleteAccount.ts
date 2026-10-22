@@ -1,23 +1,24 @@
-import { userService } from "@/service/api";
 import { toast } from "sonner";
+import { useNavigate } from "react-router-dom";
+import { userService } from "@/service/api";
+import { getErrorMessage } from "@/utils";
+import { useLang } from "./use_Lang";
+import { useUserAccount } from "./userAccount";
 
 function useDeleteAccount() {
+  const { translations } = useLang();
+  const t = translations.layout.ProfileLayout.messages;
+  const { dispatch } = useUserAccount();
+  const navigate = useNavigate();
+
   async function DeleteAccount() {
     try {
-      const response = await userService.DeleteAccount();
-
-      if (response.status !== 204) {
-        throw new Error(`Erro ${response.status}`);
-      }
-
-      toast.success("Conta eliminada com sucesso!", {
-        className: "bg-green-500/10 text-white font-semibold",
-      });
+      await userService.deleteAccount();
+      dispatch({ type: "LOGOUT" });
+      toast.success(t.deleteSuccess);
+      navigate("/", { replace: true });
     } catch (error) {
-      toast.error("Erro ao eliminar conta", {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-      console.error("Error deleting account:", error);
+      toast.error(getErrorMessage(error, translations.errors, t.deleteError));
     }
   }
 

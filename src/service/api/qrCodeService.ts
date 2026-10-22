@@ -1,130 +1,119 @@
-import apiClient from "./apiClient";
+import apiClient, { type BlobDownload } from "./apiClient";
+
+export type QrType = "STATIC" | "DYNAMIC";
+export type QrFormat = "png" | "svg" | "pdf";
+
+export interface ApiEnvelope<T> {
+  success: true;
+  data: T;
+}
 
 export interface QrCode {
   id: string;
-  slug: string;
-  type: "STATIC" | "DYNAMIC";
-  status: "ACTIVE" | "INACTIVE";
-  targetUrl?: string;
-  staticContent?: string;
-  title: string;
-  description?: string | null;
-  tags?: string[];
-  imageUrl?: string;
-  ownerId: string;
+  type: QrType;
+  title: string | null;
+  description: string | null;
+  tags: string[] | null;
+  slug: string | null;
+  targetUrl: string | null;
+  staticContent: string | null;
+  isActive: boolean;
+  imageUrl: string | null;
+  scanCount: number;
   createdAt: string;
   updatedAt: string;
-  currentLimit?: number;
-  currentPlan?: string;
-  currentUsage?: number;
-  message?: string;
 }
 
-export interface ListQrCodesResponse {
-  success: boolean;
-  
-  data: {
-   qrcodes:QrCode[]
-  };
+export interface QrCodeList {
+  qrcodes: QrCode[];
+  total: number;
+  take: number;
+  skip: number;
 }
 
-export interface CreateQrCodeResponse {
-  success: boolean;
-  status: number;
-  data: QrCode;
+export interface CreateQrCodeInput {
+  type: QrType;
+  targetUrl?: string;
+  staticContent?: string;
+  title?: string;
+  description?: string;
+  tags?: string[];
 }
 
-export interface PlanLimitErrorResponse {
-  message: string;
-  currentPlan: string;
-  currentLimit: number;
-  currentUsage: number;
-  upgradeOptions: {
-    name: string;
-    displayName: string;
-    maxQrCodes: number;
-    price: number;
-  }[];
+export interface UpdateQrCodeInput {
+  title?: string;
+  description?: string;
+  tags?: string[];
+  targetUrl?: string;
+  staticContent?: string;
+  isActive?: boolean;
 }
 
-export interface UpdateQrCodeResponse {
-  success: boolean;
-  status:number,
-  data: QrCode;
-}
-
-export interface GererateQRcodeStaticProps {
-  success: boolean;
-  status: number;
-  data: {
-    success: boolean;
-    imageUrl: string;
-    id: string;
-    message?: string;
-    
-  };
+export interface PublicStaticQr {
+  svg: string;
+  dataUrl: string;
+  format: "svg";
 }
 
 export const qrCodeService = {
-  async list(params?: { skip?: number; take?: number }) {
-    const response = await apiClient.get<ListQrCodesResponse>(
+  /** `isActive` filtra no servidor (omitido = todos). */
+  async list(params: { skip?: number; take?: number; isActive?: boolean } = {}) {
+    const response = await apiClient.get<ApiEnvelope<QrCodeList>>(
       "/api/qrcodes",
-      params ?? {},
+      params,
     );
-   
-    return response
+    return response.data.data;
   },
 
-  async create(data: {
-    type: "STATIC" | "DYNAMIC";
-    targetUrl?: string;
-    staticContent?: string;
-    title: string;
-    description?: string;
-    tags?: string[];
-  }) {
-    return await apiClient.post<CreateQrCodeResponse>("/api/qrcodes", data);
-  },
-
-  async update(id: string, data: Partial<Omit<QrCode, "id" | "ownerId">>) {
-    const response = await apiClient.patch<UpdateQrCodeResponse>(
-      `/api/qrcodes/${id}`,
-      data,
+  async getById(id: string) {
+    const response = await apiClient.get<ApiEnvelope<{ qrcode: QrCode }>>(
+      `/api/qrcodes/${encodeURIComponent(id)}`,
     );
-
-    
-
-    return response
+    return response.data.data.qrcode;
   },
 
-  async getImageUrl(id: string) {
-    const response = await apiClient.get(`/api/qrcodes/${id}/image`);
-
-    return response.data;
+  async create(data: CreateQrCodeInput) {
+    const response = await apiClient.post<ApiEnvelope<QrCode>>(
+      "/api/qrcodes",
+      { ...data },
+    );
+    return response.data.data;
   },
 
-  async gererateQRcodeStatic(data: {
-    content: string;
-    format?: "svg" | "png" | "pdf";
-  }) {
-    const response = await apiClient.post<GererateQRcodeStaticProps>(
+  async update(id: string, data: UpdateQrCodeInput) {
+    const response = await apiClient.patch<ApiEnvelope<QrCode>>(
+      `/api/qrcodes/${encodeURIComponent(id)}`,
+      { ...data },
+    );
+    return response.data.data;
+  },
+
+  async remove(id: string) {
+    const response = await apiClient.delete<ApiEnvelope<{ id: string }>>(
+      `/api/qrcodes/${encodeURIComponent(id)}`,
+    );
+    return response.data.data;
+  },
+
+  /** Geração anónima sem persistência: devolve o SVG inline e um data URL. */
+  async generatePublicStatic(content: string) {
+    const response = await apiClient.post<ApiEnvelope<PublicStaticQr>>(
       "/api/qrcodes/public/static",
-      data,
+      { content },
     );
-
-  
-    return response;
+    return response.data.data;
   },
 
-  async getQrDownload(data: { id: string; format: string }) {
-   
-    const response = await apiClient.getBlob(
-      `/api/qrcodes/public/${data.id}/download`,
-      {
-        format: data.format,
-      },
+  /** Download anónimo: o servidor gera o ficheiro a partir do conteúdo. */
+  async downloadPublic(data: { content: string; format: QrFormat }): Promise<BlobDownload> {
+    return apiClient.postBlob("/api/qrcodes/public/download", data);
+  },
+
+  /** Download autenticado de um QR do próprio utilizador. */
+  async download(id: string, format: QrFormat): Promise<BlobDownload> {
+    return apiClient.getBlob(
+      `/api/qrcodes/${encodeURIComponent(id)}/download`,
+      { format },
     );
-    
-    return response;
   },
 };

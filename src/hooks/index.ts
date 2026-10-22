@@ -20,3 +20,8 @@ export { useModalDialog } from "./use_modalDialog"
 export { usePlanManagement } from "./use_plansManagement";
 export { useGetQrDownload } from "./use_getQrDownload"
 export { useGetMeplan } from "./use_getMeplan";
+export { useGetQrcode } from "./use_getQrcode";
+export { useDeleteQrcode } from "./use_deleteQrcode";
+export { useMyStats, useQrCodeStats } from "./use_analytics";
+export { useResendVerification } from "./use_resendVerification";
+export { useQrcodeOptions } from "./use_qrcodeOptions";
