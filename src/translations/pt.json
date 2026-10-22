@@ -20,7 +20,13 @@
       "validation": {
         "required": "Indique o conteúdo do QR code.",
         "tooLong": "O conteúdo não pode ter mais de 2000 caracteres."
-      }
+      },
+      "urlLabel": "Link de destino",
+      "typeText": "Texto",
+      "typeWifi": "Wi-Fi",
+      "soon": "Em breve",
+      "empty": "O seu QR code aparece aqui.",
+      "saveToAccount": "Guardar na conta"
     },
     "UserMenu": {
       "myAccount": "Minha Conta",
@@ -36,28 +42,39 @@
         "createAccount": "Criar conta",
         "signIn": "Entrar"
       },
-      "openMenu": "Abrir menu"
+      "openMenu": "Abrir menu",
+      "nav": {
+        "home": "Início",
+        "about": "Sobre",
+        "pricing": "Planos"
+      }
     },
     "SidebarAppPrivate": {
       "brand": "ExpressQR",
       "menu": {
         "dashboard": "Painel",
-        "myQrcodes": "Meus QR Codes",
+        "myQrcodes": "Os meus QR codes",
         "createQrcodes": "Criar QR Codes",
         "settings": "Configurações",
         "subscription": "Subscrição",
         "reports": "Estatística"
+      },
+      "menuShort": {
+        "myQrcodes": "QR codes"
       }
     },
     "CreateQrcode": {
-      "title": "Criar códigos Qr",
+      "title": "Criar QR code",
       "description": "Preenche os campos abaixo para criar o teu código QR personalizado.",
       "select": {
         "label": "Tipos",
         "placeholder": "Seleciona o tipo",
         "urlLabel": "Tipos da URL",
         "static": "Estático",
-        "dynamic": "Dinâmico"
+        "dynamic": "Dinâmico",
+        "fieldLabel": "Tipo de QR code",
+        "staticHint": "O destino fica gravado na imagem e não pode ser mudado.",
+        "dynamicHint": "Aponta para um endereço curto. Pode mudar o destino e acompanhar as leituras."
       },
       "form": {
         "typeLabel": "Tipo da URL",
@@ -93,6 +110,16 @@
         "unlimited": "Ilimitado",
         "limitReached": "Limite atingido",
         "upgrade": "Pedir upgrade"
+      },
+      "cta": "Novo QR code",
+      "subtitle": "Escolha o tipo, indique o destino e gere o QR code.",
+      "preview": {
+        "title": "Pré-visualização",
+        "empty": "O QR code aparece aqui depois de o gerar.",
+        "untitled": "Sem título",
+        "destination": "Destino",
+        "download": "Transferir",
+        "view": "Ver na lista"
       }
     },
     "CardQrcode": {
@@ -107,7 +134,31 @@
       "cancel": "Cancelar",
       "confirmDelete": "Apagar",
       "deleteSuccess": "QR code apagado.",
-      "deleteError": "Não foi possível apagar o QR code."
+      "deleteError": "Não foi possível apagar o QR code.",
+      "active": "Activo",
+      "typeStatic": "Estático",
+      "typeDynamic": "Dinâmico",
+      "actions": "Ações de {title}"
+    },
+    "Search": {
+      "label": "Pesquisar",
+      "field": "Pesquisar QR codes e páginas",
+      "placeholder": "Escreva para pesquisar…",
+      "empty": "Nenhum resultado para \"{query}\".",
+      "page": "Página",
+      "qrcode": "QR code",
+      "hint": "Escreva o nome de um QR code ou de uma página.",
+      "loading": "A carregar…",
+      "title": "Pesquisa"
+    },
+    "AuthShell": {
+      "tagline": "Crie, partilhe e acompanhe os seus QR codes.",
+      "showPassword": "Mostrar senha",
+      "hidePassword": "Esconder senha"
+    },
+    "LazyBoundary": {
+      "error": "Não foi possível carregar esta página.",
+      "retry": "Tentar de novo"
     }
   },
   "layout": {
@@ -119,7 +170,6 @@
         "logout": "Sair"
       },
       "logoutConfirm": "Tem certeza de que deseja sair?",
-      "deleteConfirm": "Tem certeza de que deseja apagar a sua conta?",
       "messages": {
         "logoutSuccess": "Sessão encerrada com sucesso.",
         "deleteSuccess": "Conta apagada com sucesso.",
@@ -141,15 +191,23 @@
       "noTitle": "Sem título",
       "noLink": "Sem link",
       "staticUsage": "QR estáticos",
-      "dynamicUsage": "QR dinâmicos"
+      "dynamicUsage": "QR dinâmicos",
+      "title": "Painel",
+      "subtitle": "O estado da sua conta e os QR codes mais recentes.",
+      "recent": "Mais recentes",
+      "emptyTitle": "Ainda não tem QR codes",
+      "emptyBody": "Crie o primeiro e acompanhe aqui as leituras.",
+      "emptyCta": "Criar o primeiro QR code",
+      "loadError": "Não foi possível carregar os QR codes.",
+      "retry": "Tentar de novo"
     },
     "SignIn": {
       "welcome": "Bem-vindo de volta",
       "subtitle": "Entre para começar a criar QR Codes incríveis.",
       "email": "Email",
-      "emailPlaceholder": "Digite o seu email",
+      "emailPlaceholder": "nome@exemplo.com",
       "password": "Senha",
-      "passwordPlaceholder": "Digite a sua senha",
+      "passwordPlaceholder": "A sua senha",
       "rememberMe": "Lembrar-me",
       "forgotPassword": "Esqueceu a senha?",
       "login": "Entrar",
@@ -159,7 +217,7 @@
       "signupHere": "Registe-se aqui",
       "validation": {
         "emailRequired": "O email é obrigatório",
-        "emailInvalid": "Digite um email válido",
+        "emailInvalid": "Indique um email válido",
         "passwordRequired": "Password é obrigatória",
         "min": "Deve conter no mínimo 8 caracteres",
         "number": "A senha deve conter pelo menos um número",
@@ -174,27 +232,27 @@
       "title": "Criar Conta",
       "subtitle": "Registe-se para começar a criar QR codes.",
       "firstName": "Primeiro Nome",
-      "firstNamePlaceholder": "Digite o seu primeiro nome",
+      "firstNamePlaceholder": "O seu primeiro nome",
       "lastName": "Último Nome",
-      "lastNamePlaceholder": "Digite o seu último nome",
+      "lastNamePlaceholder": "O seu último nome",
       "email": "Email",
-      "emailPlaceholder": "Digite o seu email",
+      "emailPlaceholder": "nome@exemplo.com",
       "password": "Senha",
-      "passwordPlaceholder": "Digite a sua senha",
+      "passwordPlaceholder": "Crie uma senha",
       "confirmPassword": "Confirmar Senha",
-      "confirmPasswordPlaceholder": "Digite novamente a sua senha",
+      "confirmPasswordPlaceholder": "Repita a senha",
       "button": "Criar Conta",
       "orContinue": "Ou continue com",
       "continueGoogle": "Continuar com o Google",
       "haveAccount": "Já tem uma conta?",
       "signinHere": "Entrar aqui",
       "validation": {
-        "firstNameRequired": "Digite seu nome",
+        "firstNameRequired": "Indique o seu primeiro nome",
         "firstNameMin": "O primeiro nome deve conter no mínimo 3 caracteres",
-        "lastNameRequired": "Digite seu nome",
+        "lastNameRequired": "Indique o seu último nome",
         "lastNameMin": "O último nome deve conter no mínimo 3 caracteres",
         "emailRequired": "O email é obrigatório",
-        "emailInvalid": "Digite um email válido",
+        "emailInvalid": "Indique um email válido",
         "passwordRequired": "A senha é obrigatória",
         "passwordMin": "A senha deve conter no mínimo 8 caracteres",
         "passwordNumber": "A senha deve conter pelo menos um número",
@@ -225,11 +283,14 @@
       "mailSubject": "Pedido de upgrade ExpressQR",
       "mailBody": "Olá, gostaria de activar o plano indicado na minha conta.",
       "free": "Grátis",
-      "goToDashboard": "Ir para o painel"
+      "goToDashboard": "Ir para o painel",
+      "recommended": "Recomendado",
+      "notIncluded": "Não incluído",
+      "manualTitle": "Activação manual"
     },
     "MyProfile": {
       "title": "Meu perfil",
-      "avatarAlt": "Foto do usuário",
+      "avatarAlt": "Foto do utilizador",
       "form": {
         "firstName": {
           "label": "Primeiro nome",
@@ -285,30 +346,30 @@
         "special": "A senha deve conter pelo menos um caractere especial",
         "match": "As senhas devem ser diferentes"
       },
-      "toastSuccess": "Palavra-passe alterada.",
-      "toastError": "Não foi possível alterar a palavra-passe."
+      "toastSuccess": "Senha alterada.",
+      "toastError": "Não foi possível alterar a senha."
     },
     "ForgotPassword": {
       "title": "Esqueceu a senha?",
-      "subtitle": " Por favor, introduza o endereço de e-mail associado à sua conta e enviaremos <br /> um link para redefinir a sua palavra-passe.",
+      "subtitle": "Introduza o email da sua conta e enviamos-lhe um link para repor a senha.",
       "email": "Email",
-      "emailPlaceholder": "Digite o seu email",
+      "emailPlaceholder": "nome@exemplo.com",
       "button": "Repor a senha",
       "backToLogin": "Voltar ao login",
       "validation": {
         "requiredEmail": "O email é obrigatório",
         "invalidEmail": "Por favor, insira um endereço de email válido"
       },
-      "toastSuccess": "Se o email estiver registado, vai receber um link para redefinir a palavra-passe.",
+      "toastSuccess": "Se o email estiver registado, vai receber um link para redefinir a senha.",
       "toastError": "Não foi possível enviar o pedido."
     },
     "ResetPassword": {
       "title": "Redefinir senha",
-      "subtitle": " Define uma nova senha para a tua conta. Certifica-te de <br /> escolher uma senha forte que só tu conheças.",
+      "subtitle": "Escolha uma nova senha forte para a sua conta.",
       "newPassword": "Nova senha",
-      "newPasswordPlaceholder": "Digite a nova senha",
+      "newPasswordPlaceholder": "Nova senha",
       "confirmNewPassword": "Confirmar nova senha",
-      "confirmNewPasswordPlaceholder": "Digite novamente a nova senha",
+      "confirmNewPasswordPlaceholder": "Repita a nova senha",
       "button": "Redefinir senha",
       "back": "Voltar",
       "validation": {
@@ -323,8 +384,8 @@
       "missingTokenTitle": "Link inválido",
       "missingToken": "Este link de reposição está incompleto ou expirou. Peça um novo.",
       "requestNewLink": "Pedir novo link",
-      "toastSuccess": "Palavra-passe redefinida. Já pode iniciar sessão.",
-      "toastError": "Não foi possível redefinir a palavra-passe."
+      "toastSuccess": "Senha redefinida. Já pode iniciar sessão.",
+      "toastError": "Não foi possível redefinir a senha."
     },
     "Verifyaccount": {
       "title": "Verifique o seu email",
@@ -339,7 +400,7 @@
       "resendError": "Não foi possível reenviar o email."
     },
     "MyQrcodes": {
-      "title": "Meus QR Codes",
+      "title": "Os meus QR codes",
       "filter": "Filtrar por status",
       "all": "Todos",
       "active": "Activo",
@@ -350,7 +411,20 @@
       "noTitle": "Sem título",
       "noLink": "Sem link",
       "noQrFiltered": "Nenhum QR code corresponde a este filtro.",
-      "clearFilter": "Ver todos"
+      "clearFilter": "Ver todos",
+      "subtitle": "Pesquise, filtre, transfira ou edite os seus QR codes.",
+      "search": "Pesquisar QR codes",
+      "colQr": "QR code",
+      "colCreated": "Criado",
+      "colStatus": "Estado",
+      "colScans": "Leituras",
+      "colActions": "Ações",
+      "previous": "Anterior",
+      "next": "Seguinte",
+      "pageOf": "Página {page} de {total}",
+      "showing": "{from}-{to} de {total}",
+      "retry": "Tentar de novo",
+      "emptyBody": "Crie o primeiro para o ver aqui."
     },
     "VerifyEmail": {
       "verifyingTitle": "A verificar a conta…",
@@ -401,7 +475,13 @@
         "maxDescription": "A descrição pode ter no máximo 500 caracteres",
         "requiredTitle": "O título é obrigatório",
         "minTitle": "O título deve conter no mínimo 3 caracteres"
-      }
+      },
+      "dangerTitle": "Apagar QR code",
+      "dangerBody": "Esta ação é permanente. Se o QR for dinâmico, deixa de redireccionar.",
+      "backShort": "Os meus QR codes",
+      "errorTitle": "Não foi possível abrir o QR code",
+      "retry": "Tentar de novo",
+      "staticNote": "O conteúdo está gravado na imagem. Para o mudar, crie um novo QR code."
     },
     "Subscription": {
       "title": "Subscrição",
@@ -426,7 +506,10 @@
       "footer": {
         "limited": "* Os limites contam o total de QR codes guardados, não uma quota mensal.",
         "unlimited": "* \"Ilimitado\" significa que o seu plano não tem limite para este tipo de QR code."
-      }
+      },
+      "currentPlan": "Plano atual",
+      "usageTitle": "Utilização",
+      "ofLimit": "de {limit}"
     },
     "Statistic": {
       "title": "Estatísticas",
@@ -447,13 +530,52 @@
       "basicNotice": "O seu plano inclui estatísticas básicas. Os planos Pro e Premium mostram também dispositivos e origem das leituras.",
       "loadError": "Não foi possível carregar as estatísticas.",
       "direct": "Directo",
-      "loadMore": "Carregar mais QR codes ({loaded}/{total})"
+      "loadMore": "Carregar mais QR codes ({loaded}/{total})",
+      "daysShort": "{n} dias",
+      "windowLimit": "O seu plano guarda até {n} dias de histórico.",
+      "tableView": "Ver como tabela",
+      "tableDate": "Dia",
+      "chartLabel": "Gráfico de leituras por dia",
+      "loadingMore": "A carregar..."
+    },
+    "Settings": {
+      "profileDesc": "Os seus dados de conta.",
+      "securityDesc": "Altere a senha da conta.",
+      "dangerDesc": "Apagar a conta remove permanentemente os seus QR codes e estatísticas.",
+      "confirmWord": "ELIMINAR",
+      "confirmLabel": "Escreva {word} para confirmar",
+      "deleteAction": "Apagar conta"
+    },
+    "System": {
+      "notFound": {
+        "title": "Página não encontrada",
+        "text": "A ligação que seguiu não existe ou foi movida.",
+        "action": "Voltar ao início"
+      },
+      "construction": {
+        "title": "Em construção",
+        "text": "Esta página ainda não está disponível.",
+        "action": "Voltar ao início"
+      },
+      "redirect": {
+        "loadingTitle": "A redirecionar",
+        "loadingText": "A abrir o destino do QR code.",
+        "errorTitle": "QR Code não encontrado",
+        "errorText": "Este QR code pode ter sido removido ou desativado.",
+        "action": "Ir para o início"
+      }
+    },
+    "Home": {
+      "title": "QR codes que não expiram.",
+      "subtitle": "Cole um link, gere o QR code e transfira-o em PNG, SVG ou PDF. Sem registo.",
+      "accountNote": "QR codes dinâmicos, editáveis e com estatísticas de leituras precisam de conta.",
+      "accountCta": "Criar conta"
     }
   },
   "errors": {
     "UNAUTHORIZED": "A sua sessão expirou. Inicie sessão novamente.",
     "MISSING_TOKEN": "A sua sessão expirou. Inicie sessão novamente.",
-    "INVALID_CREDENTIALS": "Email ou palavra-passe incorrectos.",
+    "INVALID_CREDENTIALS": "Email ou senha incorrectas.",
     "EMAIL_NOT_VERIFIED": "Confirme o seu email antes de iniciar sessão.",
     "EMAIL_IN_USE": "Este email já está registado.",
     "EMAIL_ALREADY_VERIFIED": "Este email já foi confirmado. Já pode iniciar sessão.",

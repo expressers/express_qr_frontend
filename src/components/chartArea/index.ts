@@ -1,1 +1,2 @@
-export * from "./chartAreaInteractive"
+export * from "./chartAreaInteractive";
+export { formatDay } from "./formatDay";

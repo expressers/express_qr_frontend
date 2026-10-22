@@ -1,21 +1,24 @@
-import React  from "react";
-
 import { Plus } from "lucide-react";
 import { Link } from "react-router-dom";
 
-function CreateQrcode() {
-  
+import { useLang } from "@/hooks";
+import { cn } from "@/lib/utils";
+
+/** Atalho tracejado "Novo QR code", usado no fim das listas e nos estados vazios. */
+function CreateQrcode({ className }: { className?: string }) {
+  const { translations } = useLang();
+  const t = translations.components.CreateQrcode;
 
   return (
-    <React.Fragment>
-      <Link
-        className="bg-card px-6 py-4 flex justify-center items-center border rounded-xl"
-        to="/dashboard/qrcode-generator">
-        <span>
-          <Plus size={30} />
-        </span>
-      </Link>
-    </React.Fragment>
+    <Link
+      to="/dashboard/qrcode-generator"
+      className={cn(
+        "group flex min-h-14 items-center justify-center gap-2 rounded-xl border border-dashed border-input px-4 text-sm font-medium text-muted-foreground transition-[color,background-color,border-color,transform] duration-(--dur-fast) ease-(--ease-out) hover:border-foreground hover:bg-card hover:text-foreground active:scale-[.98]",
+        className,
+      )}>
+      <Plus size={18} aria-hidden />
+      {t.cta}
+    </Link>
   );
 }
 

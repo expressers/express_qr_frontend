@@ -22,22 +22,25 @@ function UpdatePassword() {
 
   return (
     <React.Fragment>
-      <div className="space-y-5">
-        <h4 className="text-xl">Segurança</h4>
+      <div className="space-y-6">
+        <header className="space-y-1">
+          <h2 className="text-xl font-semibold tracking-[-0.01em]">{t.title}</h2>
+          <p className="text-sm text-muted-foreground">{translations.pages.Settings.securityDesc}</p>
+        </header>
         <Form {...form}>
-          <form onSubmit={form.handleSubmit(onSubmit)}>
-            <div className="grid md:grid-cols-2 grid-cols-1 gap-6 ">
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <div className="grid grid-cols-1 items-start gap-x-6 gap-y-5 md:grid-cols-2">
               <FormField
                 control={form.control}
                 name="oldPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">{t.fields.oldPassword.label}</FormLabel>
+                    <FormLabel>{t.fields.oldPassword.label}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder={t.fields.oldPassword.placeholder}
                         type="password"
-                        className="py-6  text-xs"
+                        autoComplete="current-password"
                         {...field}
                       />
                     </FormControl>
@@ -50,12 +53,11 @@ function UpdatePassword() {
                 name="newpassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel className="text-xs">{t.fields.newPassword.label}</FormLabel>
+                    <FormLabel>{t.fields.newPassword.label}</FormLabel>
                     <FormControl>
                       <Input
                         placeholder={t.fields.newPassword.placeholder}
                         type="password"
-                        className="py-6  text-xs"
                         {...field}
                       />
                     </FormControl>
@@ -63,12 +65,12 @@ function UpdatePassword() {
                   </FormItem>
                 )}
               />
-              <div className="md:block hidden"></div>
-              <div className="flex justify-end">
-                <Button className="p-6" disabled={isLoading} type="submit">
-                  { isLoading && <Spinner />}
-                  {t.button.submit}</Button>
-              </div>
+            </div>
+            <div className="flex justify-end">
+              <Button size="lg" className="w-full sm:h-10 sm:w-auto" disabled={isLoading} type="submit">
+                {isLoading && <Spinner />}
+                {t.button.submit}
+              </Button>
             </div>
           </form>
         </Form>

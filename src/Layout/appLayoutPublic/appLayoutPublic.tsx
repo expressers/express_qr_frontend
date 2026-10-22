@@ -7,6 +7,7 @@ const AUTH_PATHS = new Set([
   "/auth/signin",
   "/auth/forgotpassword",
   "/auth/resetPassword",
+  "/reset-password",
   "/auth/verifyaccount",
 ]);
 

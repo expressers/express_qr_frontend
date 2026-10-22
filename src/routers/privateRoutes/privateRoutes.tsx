@@ -8,10 +8,25 @@ import {
   QrcodeGenerator,
   Subscription,
   QrcodeEdit,
-  Statistic,
 } from "@/pages";
 import { AppLayoutPrivate, Profilelayaout } from "@/Layout";
+import { Skeleton, LazyBoundary } from "@/components";
 import { ProtectedRoutes } from "@/guards";
+
+// Estatísticas em chunk próprio: o recharts sai do bundle principal.
+const Statistic = React.lazy(() =>
+  import("@/pages/auth/statistic").then((m) => ({ default: m.Statistic })),
+);
+
+function StatisticFallback() {
+  return (
+    <div className="space-y-6 pt-8" aria-busy="true">
+      <Skeleton className="h-9 w-48" />
+      <Skeleton className="h-24 w-full" />
+      <Skeleton className="h-80 w-full" />
+    </div>
+  );
+}
 
 function PrivateRoute() {
   return (
@@ -33,7 +48,13 @@ function PrivateRoute() {
           />
           <Route path="/dashboard/qrcode-edit/:id" element={<QrcodeEdit />} />
           <Route path="/dashboard/subscription" element={<Subscription />} />
-          <Route path="/dashboard/statistic" element={<Statistic />} />
+          <Route path="/dashboard/statistic" element={
+              <LazyBoundary>
+                <React.Suspense fallback={<StatisticFallback />}>
+                  <Statistic />
+                </React.Suspense>
+              </LazyBoundary>
+            } />
         </Route>
       </Route>
     </React.Fragment>

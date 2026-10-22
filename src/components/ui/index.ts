@@ -22,4 +22,4 @@ export * from "./skeleton";
 export * from "./pagination";
 export * from "./table";
 export * from "./drawer";
-export * from "./chart";
+export * from "./tooltip";

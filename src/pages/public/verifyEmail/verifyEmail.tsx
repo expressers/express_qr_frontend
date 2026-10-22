@@ -1,7 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { MailCheck } from "lucide-react";
+import { AlertCircle, MailCheck } from "lucide-react";
 import { Button, Spinner } from "@/components";
+import { AuthShell } from "@/components/authShell";
 import { authService } from "@/service/api";
 import { useLang } from "@/hooks";
 import { getErrorCode, getErrorMessage } from "@/utils";
@@ -44,45 +45,79 @@ function VerifyEmail() {
   }, [status, navigate]);
 
   return (
-    <React.Fragment>
-      <div className="min-h-screen w-full flex items-center justify-center p-2 bg-gray-800/10">
-        <div className="dark:bg-black bg-white flex flex-col gap-6 justify-center items-center p-6 rounded-md max-w-md w-full text-center">
-          <MailCheck size={30} aria-hidden />
+    <AuthShell layout="centered">
+      <div
+        role="status"
+        aria-live="polite"
+        className="flex flex-col items-center gap-5 text-center">
+        {status === "loading" && (
+          <>
+            <StatusIcon>
+              <Spinner className="size-5" />
+            </StatusIcon>
+            <div className="space-y-1.5">
+              <h1 className="text-balance text-2xl font-semibold tracking-tight">
+                {t.verifyingTitle}
+              </h1>
+              <p className="text-pretty text-sm text-muted-foreground">{t.verifyingSubtitle}</p>
+            </div>
+          </>
+        )}
 
-          {status === "loading" && (
-            <>
-              <h4 className="sm:text-2xl text-xl font-bold">{t.verifyingTitle}</h4>
-              <p className="text-sm">{t.verifyingSubtitle}</p>
-              <Spinner />
-            </>
-          )}
+        {status === "success" && (
+          <>
+            <StatusIcon>
+              <MailCheck className="size-5" aria-hidden="true" />
+            </StatusIcon>
+            <div className="space-y-1.5">
+              <h1 className="text-balance text-2xl font-semibold tracking-tight">
+                {t.successTitle}
+              </h1>
+              <p className="text-pretty text-sm text-muted-foreground">{t.successDescription}</p>
+              <p className="text-sm text-subtle-foreground">{t.redirectMessage}</p>
+            </div>
+            <Button size="lg" className="w-full" onClick={() => navigate("/auth/signin")}>
+              {t.buttonLogin}
+            </Button>
+          </>
+        )}
 
-          {status === "success" && (
-            <>
-              <h4 className="sm:text-2xl text-xl font-bold">{t.successTitle}</h4>
-              <p className="text-sm">{t.successDescription}</p>
-              <p className="text-xs text-muted-foreground">{t.redirectMessage}</p>
-              <Button className="p-6" onClick={() => navigate("/auth/signin")}>
-                {t.buttonLogin}
-              </Button>
-            </>
-          )}
-
-          {status === "error" && (
-            <>
-              <h4 className="sm:text-2xl text-xl font-bold">{t.errorTitle}</h4>
-              <p className="text-sm">{message || t.errorDescription}</p>
-              <Button className="p-6" asChild>
-                <Link to="/auth/verify-account">{t.resendLink}</Link>
-              </Button>
-              <Link to="/auth/signin" className="text-xs underline">
-                {t.buttonLogin}
-              </Link>
-            </>
-          )}
-        </div>
+        {status === "error" && (
+          <>
+            <StatusIcon tone="error">
+              <AlertCircle className="size-5" aria-hidden="true" />
+            </StatusIcon>
+            <div className="space-y-1.5">
+              <h1 className="text-balance text-2xl font-semibold tracking-tight">
+                {t.errorTitle}
+              </h1>
+              <p className="text-pretty text-sm font-medium text-destructive">
+                {message || t.errorDescription}
+              </p>
+            </div>
+            <Button size="lg" className="w-full" asChild>
+              <Link to="/auth/verify-account">{t.resendLink}</Link>
+            </Button>
+            <Link to="/auth/signin" className="rounded-md py-1 text-sm font-medium underline underline-offset-4">
+              {t.buttonLogin}
+            </Link>
+          </>
+        )}
       </div>
-    </React.Fragment>
+    </AuthShell>
+  );
+}
+
+function StatusIcon({ children, tone }: { children: React.ReactNode; tone?: "error" }) {
+  return (
+    <span
+      className={
+        tone === "error"
+          ? "flex size-12 items-center justify-center rounded-full border-[1.5px] border-destructive text-destructive"
+          : "flex size-12 items-center justify-center rounded-full border border-border bg-muted"
+      }>
+      {children}
+    </span>
   );
 }
 

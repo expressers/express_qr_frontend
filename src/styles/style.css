@@ -199,13 +199,6 @@
   scrollbar-color: var(--input) transparent;
 }
 
-.bgImg{
-   background: url("https://picsum.photos/2000");
-   background-size: cover;
-   background-position: center;
-   object-fit: cover;
-}
-
 .custom-scroll::-webkit-scrollbar-button {
   display: none;
 }
@@ -375,4 +368,67 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* ============= Private app: QR list, preview, mobile nav (screens 3-5) ============= */
+:root {
+  --mobile-nav-h: 4rem;
+}
+
+@layer components {
+  /* Image swap (edit): cross-fade with a 2px blur to hide the seam */
+  .qr-swap {
+    animation: qr-swap var(--dur-base) var(--ease-out) both;
+  }
+  @keyframes qr-swap {
+    from { opacity: 0; filter: blur(2px); }
+    to { opacity: 1; filter: blur(0); }
+  }
+  /* Rows enter in a short cascade (max 5 stepped by --stagger) */
+  .row-enter {
+    animation: row-enter var(--dur-base) var(--ease-out) both;
+    animation-delay: calc(min(var(--i, 0), 5) * var(--stagger));
+  }
+  @keyframes row-enter {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+}
+
+/* ============= QR reveal (home generator) ============= */
+@layer utilities {
+  /* Wipe up from the bottom edge plus a settle from .98; 320ms, ease-out, once */
+  .qr-reveal {
+    animation: qr-reveal var(--dur-slow) var(--ease-out) both;
+  }
+  @keyframes qr-reveal {
+    from {
+      clip-path: inset(100% 0 0 0);
+      transform: scale(0.98);
+      opacity: 0.4;
+    }
+    to {
+      clip-path: inset(0 0 0 0);
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .row-enter {
+      animation: none;
+    }
+    .qr-reveal {
+      animation: qr-fade 160ms ease both;
+    }
+    @keyframes qr-fade {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+  }
+}
+
+/* Redirect page: indeterminate bar */
+@keyframes redirect-bar {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(300%); }
 }
