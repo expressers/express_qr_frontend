@@ -24,3 +24,7 @@ export { useDeleteQrcode } from "./use_deleteQrcode";
 export { useMyStats, useQrCodeStats } from "./use_analytics";
 export { useResendVerification } from "./use_resendVerification";
 export { useQrcodeOptions } from "./use_qrcodeOptions";
+export { useChangeEmail } from "./use_changeEmail";
+export { useCanManage } from "./use_canManage";
+export { useAdminQuery, useDebouncedValue } from "./use_adminQuery";
+export { useFormatDate } from "./use_formatDate";

@@ -9,6 +9,8 @@ const CACHE_TTL = 2 * 60 * 60 * 1000;
 export function useUserGetMe() {
   const [data, setData] = useState<UserMe | undefined>();
   const [isLoading, setIsLoading] = useState(false);
+  /** `true` quando a primeira tentativa (cache ou rede) terminou, com ou sem sucesso. */
+  const [isSettled, setIsSettled] = useState(false);
   const { dispatch } = useUserAccount();
 
   const syncUser = useCallback(
@@ -21,6 +23,7 @@ export function useUserGetMe() {
           user_name: `${userData.firstName ?? ""} ${userData.lastName ?? ""}`.trim() || null,
           user_phone: userData.phone ?? null,
           user_role: userData.role ?? null,
+          user_permissions: userData.permissions ?? null,
         },
       });
     },
@@ -34,6 +37,7 @@ export function useUserGetMe() {
         if (cached) {
           setData(cached);
           syncUser(cached);
+          setIsSettled(true);
           return;
         }
       }
@@ -48,6 +52,7 @@ export function useUserGetMe() {
         // 401 já é tratado no apiClient; outros erros deixam os dados em cache.
       } finally {
         setIsLoading(false);
+        setIsSettled(true);
       }
     },
     [syncUser],
@@ -57,5 +62,5 @@ export function useUserGetMe() {
     fetchUserMe();
   }, [fetchUserMe]);
 
-  return { data, isLoading, refreshGetMe: () => fetchUserMe(true) };
+  return { data, isLoading, isSettled, refreshGetMe: () => fetchUserMe(true) };
 }

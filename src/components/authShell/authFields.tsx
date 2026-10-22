@@ -3,7 +3,7 @@ import { AlertCircle, Eye, EyeOff } from "lucide-react";
 import { useLang } from "@/hooks";
 import { cn } from "@/lib/utils";
 import { Input } from "../ui/input";
-import { useFormField } from "../ui/form";
+import { useFormField } from "../ui/form-context";
 
 /** Password field with an accessible show/hide toggle. Receives FormControl props directly. */
 function PasswordInput({ className, ...props }: ComponentProps<typeof Input>) {

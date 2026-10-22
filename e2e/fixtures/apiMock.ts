@@ -111,3 +111,28 @@ export const defaultAuthedRoutes = {
   "GET /api/plans": () => ok({ plans: [plan()] }),
   "GET /api/analytics/my-stats": () => ok({ overview: {}, series: [] }),
 };
+
+/** GET /api/account/me; `role` STAFF/ADMIN carries the management permission. */
+export const meRoute = (role: "USER" | "STAFF" | "ADMIN" = "USER") => () =>
+  ok({
+    id: "user-1",
+    email: "ana@test.local",
+    firstName: "Ana",
+    lastName: "Silva",
+    role,
+    permissions: role === "USER" ? ["qr:create"] : ["qr:create", "user:read:any", "audit:read"],
+  });
+
+/** Plan with the colours feature switched on or off. */
+export const planWith = (customColors: boolean, name = customColors ? "PRO" : "FREE") => ({
+  ...plan(name, name === "PRO" ? "Pro" : "Free"),
+  features: { customColors, analytics: customColors ? "full" : "basic" },
+});
+
+export const myPlanRoute = (customColors: boolean) => () =>
+  ok({
+    plan: planWith(customColors),
+    usage: { static: 0, dynamic: 0 },
+    remaining: { static: 10, dynamic: 3 },
+    subscription: null,
+  });

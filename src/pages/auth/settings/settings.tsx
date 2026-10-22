@@ -23,6 +23,7 @@ import {
   AlertDialogTrigger,
 } from "@/components";
 import React, { useState } from "react";
+import { ChangeEmailDialog } from "@/components/changeEmail";
 
 import {
   useDeleteAccount,
@@ -145,17 +146,20 @@ function Settings() {
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>{t.form.email.label}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t.form.email.placeholder}
-                          type="email"
-                          className="bg-muted text-muted-foreground"
-                          readOnly
-                          aria-readonly="true"
-                          aria-describedby="email-readonly-hint"
-                          {...field}
-                        />
-                      </FormControl>
+                      <div className="flex flex-col gap-2 sm:flex-row">
+                        <FormControl>
+                          <Input
+                            placeholder={t.form.email.placeholder}
+                            type="email"
+                            className="bg-muted text-muted-foreground"
+                            readOnly
+                            aria-readonly="true"
+                            aria-describedby="email-readonly-hint"
+                            {...field}
+                          />
+                        </FormControl>
+                        <ChangeEmailDialog currentEmail={state.user_email} />
+                      </div>
                       <FormDescription id="email-readonly-hint">
                         {t.form.email.readOnlyHint}
                       </FormDescription>

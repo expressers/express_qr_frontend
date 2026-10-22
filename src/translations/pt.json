@@ -57,10 +57,13 @@
         "createQrcodes": "Criar QR Codes",
         "settings": "Configurações",
         "subscription": "Subscrição",
-        "reports": "Estatística"
+        "reports": "Estatística",
+        "admin": "Admin"
       },
       "menuShort": {
-        "myQrcodes": "QR codes"
+        "myQrcodes": "QR codes",
+        "admin": "Admin",
+        "settings": "Definições"
       }
     },
     "CreateQrcode": {
@@ -119,7 +122,28 @@
         "untitled": "Sem título",
         "destination": "Destino",
         "download": "Transferir",
-        "view": "Ver na lista"
+        "view": "Ver na lista",
+        "liveStatic": "Pré-visualização em direto. A imagem do servidor é a versão final.",
+        "liveDynamic": "Pré-visualização. O endereço curto final é atribuído ao guardar.",
+        "liveSample": "Exemplo. O QR muda à medida que escreve.",
+        "failed": "Não foi possível desenhar a pré-visualização."
+      },
+      "colors": {
+        "title": "Cores",
+        "description": "Cor dos módulos e do fundo. Mantenha contraste suficiente para o QR ser lido.",
+        "dark": "Frente",
+        "light": "Fundo",
+        "pickerLabel": "Escolher a cor de {name}",
+        "hexLabel": "Valor hexadecimal de {name}",
+        "contrast": "Contraste",
+        "ratioOk": "{ratio}:1. Legível (mínimo 4,5:1).",
+        "ratioLow": "{ratio}:1. Baixo demais: o mínimo é 4,5:1.",
+        "hexInvalid": "Use o formato #RRGGBB.",
+        "inverted": "Alguns leitores não lêem códigos claros sobre fundo escuro.",
+        "reset": "Repor preto e branco",
+        "locked": "Disponível nos planos Pro e Premium",
+        "upgrade": "Pedir upgrade",
+        "blocked": "Corrija o contraste das cores para guardar."
       }
     },
     "CardQrcode": {
@@ -226,7 +250,9 @@
       },
       "toastSuccess": "Sessão iniciada.",
       "toastError": "Não foi possível iniciar sessão.",
-      "toastGoogleError": "Não foi possível iniciar sessão com a Google."
+      "toastGoogleError": "Não foi possível iniciar sessão com a Google.",
+      "sessionEnded": "A sua sessão terminou, entre novamente.",
+      "passwordChanged": "Senha alterada. Por segurança, entre novamente com a nova senha."
     },
     "SignUp": {
       "title": "Criar Conta",
@@ -309,7 +335,8 @@
           "placeholder": "Seu email",
           "required": "O email é obrigatório",
           "invalid": "Formato de email inválido",
-          "readOnlyHint": "O email não pode ser alterado aqui."
+          "readOnlyHint": "O email só muda depois de confirmar o novo endereço.",
+          "change": "Alterar email"
         },
         "phone": {
           "label": "Telefone",
@@ -544,7 +571,28 @@
       "dangerDesc": "Apagar a conta remove permanentemente os seus QR codes e estatísticas.",
       "confirmWord": "ELIMINAR",
       "confirmLabel": "Escreva {word} para confirmar",
-      "deleteAction": "Apagar conta"
+      "deleteAction": "Apagar conta",
+      "changeEmail": {
+        "title": "Alterar email",
+        "description": "Enviamos um link de confirmação para o novo endereço. O email só muda depois de o confirmar e, nesse momento, a sessão termina.",
+        "newEmail": "Novo email",
+        "newEmailPlaceholder": "novo@exemplo.com",
+        "currentPassword": "Senha actual",
+        "currentPasswordPlaceholder": "A sua senha actual",
+        "submit": "Enviar link",
+        "cancel": "Cancelar",
+        "close": "Fechar",
+        "validation": {
+          "required": "O novo email é obrigatório",
+          "invalid": "Indique um email válido",
+          "same": "O novo email é igual ao actual",
+          "passwordRequired": "A senha actual é obrigatória"
+        },
+        "sentTitle": "Verifique o novo email",
+        "sent": "Enviámos um link para {email}.",
+        "sentHint": "Abra a mensagem e confirme. Até lá, continua a entrar com o email actual.",
+        "toastError": "Não foi possível pedir a alteração do email."
+      }
     },
     "System": {
       "notFound": {
@@ -570,6 +618,129 @@
       "subtitle": "Cole um link, gere o QR code e transfira-o em PNG, SVG ou PDF. Sem registo.",
       "accountNote": "QR codes dinâmicos, editáveis e com estatísticas de leituras precisam de conta.",
       "accountCta": "Criar conta"
+    },
+    "ConfirmEmail": {
+      "verifyingTitle": "A confirmar o novo email…",
+      "verifyingSubtitle": "Aguarde um momento.",
+      "successTitle": "Email alterado",
+      "successDescription": "O seu email é agora {email}.",
+      "signInAgain": "Por segurança, a sessão terminou. Entre novamente com o novo email.",
+      "signIn": "Entrar",
+      "errorTitle": "Não foi possível confirmar o email",
+      "errorDescription": "O link pode ter expirado ou já ter sido usado. Peça uma nova alteração nas configurações.",
+      "tokenNotProvided": "O link não tem token. Peça uma nova alteração nas configurações.",
+      "goToSettings": "Ir para as configurações"
+    },
+    "Admin": {
+      "title": "Administração",
+      "subtitle": "Utilizadores, planos e registo de auditoria.",
+      "tabs": {
+        "users": "Utilizadores",
+        "audit": "Auditoria"
+      },
+      "roles": {
+        "USER": "Utilizador",
+        "STAFF": "Equipa",
+        "ADMIN": "Administrador"
+      },
+      "statuses": {
+        "ACTIVE": "Activo",
+        "INACTIVE": "Inactivo",
+        "SUSPENDED": "Suspenso",
+        "PENDING_VERIFICATION": "Por verificar"
+      },
+      "plans": {
+        "FREE": "Free",
+        "PRO": "Pro",
+        "PREMIUM": "Premium",
+        "INTERNAL": "Equipa"
+      },
+      "common": {
+        "loadError": "Não foi possível carregar os dados.",
+        "retry": "Tentar de novo",
+        "prev": "Anterior",
+        "next": "Seguinte",
+        "page": "Página {page} de {pages}",
+        "range": "{from}-{to} de {total}",
+        "noDate": "Sem data",
+        "none": "Nenhum"
+      },
+      "users": {
+        "searchLabel": "Pesquisar utilizadores",
+        "searchPlaceholder": "Email ou nome",
+        "roleFilter": "Papel",
+        "statusFilter": "Estado",
+        "all": "Todos",
+        "columns": {
+          "user": "Utilizador",
+          "role": "Papel",
+          "status": "Estado",
+          "plan": "Plano",
+          "ends": "Termina",
+          "actions": "Acções"
+        },
+        "empty": "Nenhum utilizador corresponde aos filtros.",
+        "actionsFor": "Acções para {email}",
+        "changePlan": "Alterar plano",
+        "changeStatus": "Alterar estado",
+        "internalPlan": "O plano da equipa interna não se altera aqui."
+      },
+      "planDialog": {
+        "title": "Alterar plano",
+        "description": "{email}. O plano é activado manualmente e volta a Free quando a duração terminar.",
+        "plan": "Plano",
+        "duration": "Duração",
+        "days": "{n} dias",
+        "submit": "Aplicar plano",
+        "cancel": "Cancelar",
+        "success": "Plano actualizado.",
+        "error": "Não foi possível alterar o plano."
+      },
+      "statusDialog": {
+        "title": "Mudar o estado para {status}?",
+        "ACTIVE": "{email} volta a poder entrar e usar a conta.",
+        "INACTIVE": "{email} deixa de poder entrar e as sessões abertas terminam.",
+        "SUSPENDED": "{email} fica suspenso: não consegue entrar e as sessões abertas terminam.",
+        "confirm": "Confirmar",
+        "cancel": "Cancelar",
+        "success": "Estado actualizado.",
+        "error": "Não foi possível alterar o estado."
+      },
+      "audit": {
+        "columns": {
+          "when": "Quando",
+          "actor": "Autor",
+          "action": "Acção",
+          "target": "Alvo"
+        },
+        "empty": "Ainda não há registos.",
+        "system": "Sistema"
+      }
+    },
+    "About": {
+      "title": "Sobre o {brand}",
+      "intro": "O {brand} gera QR codes a partir de um link ou de um texto e deixa transferi-los em PNG, SVG e PDF, sem marca de água. Um QR estático pode ser gerado sem criar conta.",
+      "kinds": {
+        "title": "Estático ou dinâmico",
+        "static": "Estático",
+        "staticBody": "O conteúdo fica gravado na própria imagem. Nunca expira nem depende de nós, mas não se pode alterar depois de impresso.",
+        "dynamic": "Dinâmico",
+        "dynamicBody": "O QR aponta para um endereço curto nosso, que reencaminha para o seu destino. Pode mudar o destino sem reimprimir e ver quantas leituras teve. Precisa de conta."
+      },
+      "plans": {
+        "title": "Planos",
+        "body": "Existem os planos Free, Pro e Premium. Os limites e as funcionalidades de cada um, como as cores personalizadas e as estatísticas completas, estão na página de planos. Ainda não há pagamentos online: o upgrade é activado manualmente pela nossa equipa.",
+        "link": "Ver planos"
+      },
+      "privacy": {
+        "title": "Privacidade",
+        "body": "Cada leitura de um QR dinâmico guarda a data, o dispositivo e a origem da leitura. O endereço IP é guardado truncado: nos IPv4 o último bloco passa a 0 (por exemplo 203.0.113.0) e nos IPv6 só fica o prefixo /48. Não guardamos o IP completo.",
+        "retentionTitle": "Retenção das leituras",
+        "retentionBody": "As leituras mais antigas do que o histórico do plano do dono do QR são apagadas automaticamente, todos os dias.",
+        "retentionDays": "{n} dias",
+        "retentionUnknown": "Os prazos de cada plano estão na página de planos."
+      },
+      "cta": "Criar conta"
     }
   },
   "errors": {

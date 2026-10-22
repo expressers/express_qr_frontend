@@ -18,10 +18,11 @@ import {
 } from "@/components";
 import { DeleteQrcodeDialog, QrEmptyState, QrStatusBadge, QrTypeBadge } from "@/components/cardQrcode";
 import { QrPreviewPanel } from "@/components/previewQRCode";
-import { useEditQrcode, useGetQrcode, useLang } from "@/hooks";
+import { QrColorsSection } from "@/components/qrColors";
+import { useEditQrcode, useGetMeplan, useGetQrcode, useLang } from "@/hooks";
 import type { QrCode } from "@/service/api";
 import { getImageUrl } from "@/config";
-import { getErrorMessage } from "@/utils";
+import { getErrorMessage, previewContent } from "@/utils";
 import { cn } from "@/lib/utils";
 
 /** Interruptor acessível (role="switch") para `isActive`. */
@@ -66,12 +67,27 @@ function QrcodeEditForm({ qrcode }: { qrcode: QrCode }) {
   const navigate = useNavigate();
   const { translations } = useLang();
   const t = translations.pages.QrcodeEdit;
-  const { form, onSubmit, isLoading, isDynamic } = useEditQrcode(qrcode);
+  const { data: myPlan, isLoading: isLoadingPlan } = useGetMeplan();
+  const canUseColors = myPlan?.plan.features.customColors === true;
+  const { form, onSubmit, isLoading, isDynamic, colors, setColors, colorsValid, colorsChanged } =
+    useEditQrcode(qrcode, { canUseColors });
   const switchId = useId();
 
   const title = form.watch("title");
   const content = form.watch("content");
   const isActive = form.watch("isActive");
+
+  // A imagem do servidor é a verdade. Só se desenha no cliente o que ainda não foi guardado:
+  // cores alteradas, ou o texto de um QR estático (o dinâmico codifica o endereço curto).
+  const liveNeeded = canUseColors && colorsChanged;
+  const staticChanged = !isDynamic && content !== (qrcode.staticContent ?? "");
+  const showLive = liveNeeded || staticChanged || !qrcode.imageUrl;
+  const live = previewContent({
+    type: qrcode.type,
+    draft: content ?? "",
+    slug: qrcode.slug,
+  });
+  const liveColors = canUseColors ? colors : (qrcode.design ?? { dark: "#000000", light: "#FFFFFF" });
 
   return (
     <div className="grid items-start gap-8 xl:grid-cols-[minmax(0,1fr)_23rem] xl:gap-12">
@@ -185,13 +201,19 @@ function QrcodeEditForm({ qrcode }: { qrcode: QrCode }) {
             />
           </div>
 
+          <QrColorsSection
+            colors={colors}
+            onChange={setColors}
+            access={isLoadingPlan ? "loading" : canUseColors ? "enabled" : "locked"}
+          />
+
           {/* Guardar fixo acima da barra inferior no telemóvel */}
           <div className="sticky bottom-[calc(var(--mobile-nav-h)+env(safe-area-inset-bottom))] z-(--z-header) -mx-4 flex items-center gap-3 border-t bg-background px-4 py-3 md:static md:mx-0 md:border-0 md:bg-transparent md:p-0">
             <Button
               type="submit"
               size="lg"
               className="flex-1 md:flex-none"
-              disabled={isLoading}>
+              disabled={isLoading || (canUseColors && !colorsValid)}>
               {isLoading && <Spinner />}
               {t.save}
             </Button>
@@ -227,7 +249,13 @@ function QrcodeEditForm({ qrcode }: { qrcode: QrCode }) {
         <QrPreviewPanel
           motion="swap"
           emptyHint=""
-          image={qrcode.imageUrl ? getImageUrl(qrcode.imageUrl) : null}
+          image={!showLive && qrcode.imageUrl ? getImageUrl(qrcode.imageUrl) : null}
+          live={{
+            content: live.content,
+            colors: liveColors,
+            sample: live.sample,
+            hint: translations.components.CreateQrcode.preview.liveStatic,
+          }}
           title={title}
           link={content}
           badges={

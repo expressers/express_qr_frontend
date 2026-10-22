@@ -8,6 +8,7 @@ const EMPTY_USER: User = {
   user_photo: null,
   user_role: null,
   user_phone: null,
+  user_permissions: null,
 };
 
 export function userReducer(state: User, action: UserAction): User {

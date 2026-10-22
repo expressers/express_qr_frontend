@@ -8,10 +8,11 @@ import {
   QrcodeGenerator,
   Subscription,
   QrcodeEdit,
+  Admin,
 } from "@/pages";
 import { AppLayoutPrivate, Profilelayaout } from "@/Layout";
 import { Skeleton, LazyBoundary } from "@/components";
-import { ProtectedRoutes } from "@/guards";
+import { ProtectedRoutes, StaffRoute } from "@/guards";
 
 // Estatísticas em chunk próprio: o recharts sai do bundle principal.
 const Statistic = React.lazy(() =>
@@ -48,6 +49,9 @@ function PrivateRoute() {
           />
           <Route path="/dashboard/qrcode-edit/:id" element={<QrcodeEdit />} />
           <Route path="/dashboard/subscription" element={<Subscription />} />
+          <Route element={<StaffRoute />}>
+            <Route path="/dashboard/admin" element={<Admin />} />
+          </Route>
           <Route path="/dashboard/statistic" element={
               <LazyBoundary>
                 <React.Suspense fallback={<StatisticFallback />}>

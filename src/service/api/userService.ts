@@ -18,6 +18,8 @@ export interface UserMe {
   phone?: string;
   role?: string;
   emailVerified?: boolean;
+  /** Permissões do papel (ex.: `user:read:any` para STAFF/ADMIN). */
+  permissions?: string[];
 }
 
 /** Mantido por compatibilidade com quem importa `GetUserMe["data"]`. */
@@ -51,10 +53,29 @@ export const userService = {
     return response.data.data;
   },
 
+  /** Devolve um token novo: o servidor revoga todas as outras sessões. */
   async changePassword(data: { currentPassword: string; newPassword: string }) {
-    const response = await apiClient.post<ApiEnvelope<{ message: string }>>(
+    const response = await apiClient.post<ApiEnvelope<{ message: string; token?: string }>>(
       "/api/account/change-password",
       data,
+    );
+    return response.data.data;
+  },
+
+  /** Envia um link de confirmação para o novo email; o email só muda ao confirmar. */
+  async changeEmail(data: { newEmail: string; currentPassword: string }) {
+    const response = await apiClient.post<ApiEnvelope<{ message?: string }>>(
+      "/api/account/change-email",
+      data,
+    );
+    return response.data.data;
+  },
+
+  /** Público: aplica o novo email com o token do link. Revoga as sessões. */
+  async confirmEmail(token: string) {
+    const response = await apiClient.post<ApiEnvelope<{ email: string }>>(
+      "/api/account/confirm-email",
+      { token },
     );
     return response.data.data;
   },

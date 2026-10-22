@@ -8,9 +8,13 @@ import { qrCodeService, type QrCode, type UpdateQrCodeInput } from "@/service/ap
 import {
   applyFieldErrors,
   clearQrCaches,
+  DEFAULT_QR_COLORS,
   editQrFormSchema,
   getErrorMessage,
+  hasEnoughContrast,
   parseTags,
+  sameColors,
+  type QrColors,
 } from "@/utils";
 import { useLang } from "./use_Lang";
 
@@ -18,12 +22,16 @@ import { useLang } from "./use_Lang";
  * Edição de um QR guardado. O tipo não muda: DYNAMIC envia `targetUrl`,
  * STATIC envia `staticContent`. `isActive` desativa o redirecionamento.
  */
-function useEditQrcode(qrcode: QrCode) {
+function useEditQrcode(qrcode: QrCode, { canUseColors = false }: { canUseColors?: boolean } = {}) {
   const { translations } = useLang();
   const t = translations.pages.QrcodeEdit;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
   const isDynamic = qrcode.type === "DYNAMIC";
+  const savedColors: QrColors = qrcode.design ?? { ...DEFAULT_QR_COLORS };
+  const [colors, setColors] = useState<QrColors>(savedColors);
+  const colorsValid = hasEnoughContrast(colors);
+  const colorsChanged = !sameColors(colors, savedColors);
 
   const schema = editQrFormSchema(qrcode.type, {
     requiredTitle: t.validation.requiredTitle,
@@ -50,6 +58,10 @@ function useEditQrcode(qrcode: QrCode) {
   });
 
   async function onSubmit(value: FormValues) {
+    if (canUseColors && colorsChanged && !colorsValid) {
+      toast.error(translations.components.CreateQrcode.colors.blocked);
+      return;
+    }
     const payload: UpdateQrCodeInput = {
       title: value.title,
       description: value.description?.trim() ?? "",
@@ -58,6 +70,7 @@ function useEditQrcode(qrcode: QrCode) {
       ...(isDynamic
         ? { targetUrl: value.content }
         : { staticContent: value.content }),
+      ...(canUseColors && colorsChanged && { design: colors }),
     };
 
     try {
@@ -85,7 +98,7 @@ function useEditQrcode(qrcode: QrCode) {
     }
   }
 
-  return { form, onSubmit, isLoading, isDynamic };
+  return { form, onSubmit, isLoading, isDynamic, colors, setColors, colorsValid, colorsChanged };
 }
 
 export { useEditQrcode };
