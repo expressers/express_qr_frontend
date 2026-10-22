@@ -1,13 +1,18 @@
 {
-  "name": "bisc8qr",
+  "name": "express_qr_frontend",
   "private": true,
   "version": "0.0.0",
   "type": "module",
+  "packageManager": "bun@1.4.2",
+  "engines": {
+    "bun": ">=1.4.0"
+  },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
-    "lint": "eslint .",
-    "preview": "vite preview"
+    "dev": "bun --bun vite",
+    "build": "bun --bun tsc -b && bun --bun vite build",
+    "lint": "bun --bun eslint .",
+    "typecheck": "bun --bun tsc -b",
+    "preview": "bun --bun vite preview"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",

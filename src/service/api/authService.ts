@@ -57,6 +57,23 @@ export const authService = {
     return response;
   },
 
+  /** Troca o access token da Google por uma sessão da API (validado no servidor). */
+  async loginWithGoogle(googleAccessToken: string) {
+    const response = await apiClient.post<ResponseProps>("/api/sessions/google", {
+      accessToken: googleAccessToken,
+    });
+
+    if (response.status === 200) {
+      const accessToken = response.data.data.accessToken;
+
+      if (accessToken) {
+        this.storeToken(accessToken);
+      }
+    }
+
+    return response;
+  },
+
   storeToken(token: string) {
     try {
       const payload = JSON.parse(atob(token.split(".")[1]));

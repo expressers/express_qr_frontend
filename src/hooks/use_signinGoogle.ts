@@ -1,30 +1,32 @@
 import { useGoogleLogin, type TokenResponse } from "@react-oauth/google";
-import { useUserAccount } from "./userAccount";
 import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
+import { authService } from "@/service/api";
+import { useLoadingPage } from "./use_loadingPage";
 
 function useSigninGoogle() {
     const navigate = useNavigate()
-    const { dispatch } = useUserAccount()
+    const { setIsVisible } = useLoadingPage();
+
     async function handleGoogleLogin(access_token: string) {
-      const res = await fetch("https://www.googleapis.com/oauth2/v3/userinfo", {
-        headers: { Authorization: `Bearer ${access_token}` },
-      });
+      try {
+        const response = await authService.loginWithGoogle(access_token);
 
-      const userData = await res.json();
+        if (!response.data.success) {
+          throw new Error(`Erro ${response.status}`);
+        }
 
-      console.log(userData);
-
-    /*dispatch({
-        type: "LOGIN",
-        payload: {
-          id: userData.sub,
-          name: userData.name,
-          email: userData.email,
-          photo: userData.picture,
-        },
-      });
-
-      navigate("/dashboard", { replace: true });*/
+        navigate("/dashboard", { replace: true });
+        toast.success("Sessão iniciada com sucesso!", {
+          className: "bg-green-500 text-white font-semibold",
+        });
+        setIsVisible(true);
+      } catch (error) {
+        toast.error("Erro ao iniciar a sessão com Google", {
+          className: "bg-red-500/10 text-white font-semibold",
+        });
+        console.error("error:", error);
+      }
     }
 
     function SiginGoogleSuccess(response: TokenResponse) {
