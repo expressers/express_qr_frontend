@@ -10,7 +10,6 @@ import {
   Input,
   Button,
   Spinner,
-  Toaster,
   Checkbox
 } from "@/components";
 import { FcGoogle } from "react-icons/fc";
@@ -36,7 +35,6 @@ function SignIn() {
 
   return (
     <React.Fragment>
-      <Toaster richColors />
       <div
         className={`h-screen w-full  flex items-center justify-end  sm:p-4 bgImg`}
         

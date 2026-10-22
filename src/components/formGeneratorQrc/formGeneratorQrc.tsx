@@ -35,10 +35,10 @@ function FormGeneratorQrc() {
     <React.Fragment>
       {data && (
         <QrCodeGenerated
-          id={data.id}
+          content={data.content}
           isOpen={isVisibleDialogSaveImg}
           setIsOpen={setIsVisibleDialogSaveImg}
-          qrcode={data.imageUrl}
+          qrcode={data.dataUrl}
         />
       )}
 
@@ -49,6 +49,8 @@ function FormGeneratorQrc() {
               <Input
                 autoFocus={true}
                 placeholder={t.placeholder}
+                aria-label={t.placeholder}
+                maxLength={2000}
                 {...register("url")}
                 className="py-6 text-xs  "
               />
@@ -64,18 +66,19 @@ function FormGeneratorQrc() {
 
           <div className="flex items-center gap-4">
             <Select defaultValue="link">
-              <SelectTrigger className="sm:w-full w-[180px]  py-6">
-                <SelectValue placeholder="Link" />
+              <SelectTrigger className="sm:w-full w-[180px]  py-6" aria-label={t.typesLabel}>
+                <SelectValue placeholder={t.typeLink} />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>{t.typesLabel}</SelectLabel>
-                  <SelectItem value="link">Link</SelectItem>
+                  <SelectItem value="link">{t.typeLink}</SelectItem>
                 </SelectGroup>
               </SelectContent>
             </Select>
 
             <Button
+              type="submit"
               className="rounded py-6 sm:w-auto"
               disabled={isLoading}
               variant="default">

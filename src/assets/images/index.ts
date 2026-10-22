@@ -1,5 +1,5 @@
 import background_1 from "./backgrounds/background_1.jpg"
-import qr_code from "./qrcode/bisc8Qr.png"
+import qr_code from "./qrcode/expressqr.png"
 
 const images = {
   backgrounds: {

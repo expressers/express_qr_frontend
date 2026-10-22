@@ -11,7 +11,6 @@ import {
   Input,
   Button,
   Spinner,
-  Toaster,
 } from "@/components";
 
 import { useLang, useSignUp } from "@/hooks";
@@ -25,7 +24,6 @@ function SignUp() {
 
   return (
     <React.Fragment>
-      <Toaster richColors />
       <div className="h-screen w-full  flex items-center justify-start  sm:p-4 bgImg ">
         <div className="dark:bg-black bg-white h-full lg:w-1/3 md:w-2/3 w-full transition-all duration-300  md:rounded-md lg:px-8 md:px-6 px-4 sm:overflow-y-hidden sm:hover:overflow-y-scroll overflow-y-scroll custom-scroll  flex items-center justify-center">
           <Form {...form}>

@@ -1,60 +1,94 @@
 import apiClient from "./apiClient";
+import type { ApiEnvelope, QrType } from "./qrCodeService";
+import type { PlanName } from "./plansManagementService";
 
-interface responseDataAnalytics {
+/** Ponto diário da série (UTC, YYYY-MM-DD). */
+export interface DailyPoint {
+  date: string;
+  scans: number;
+}
+
+export interface FieldCount {
+  value: string;
+  count: number;
+}
+
+export interface AnalyticsWindow {
+  days: number;
+  from: string;
+  to: string;
+}
+
+/** Só presente nos planos com analytics completa (Pro/Premium). */
+export interface AnalyticsBreakdown {
+  byCountry: FieldCount[];
+  byCity: FieldCount[];
+  byDevice: FieldCount[];
+  byReferrer: FieldCount[];
+}
+
+export interface MyStats {
   overview: {
-    totalQrCodes: string;
+    totalQrCodes: number;
     totalScans: number;
+    scansInWindow: number;
+    scansLast24h: number;
     staticQrCodes: number;
     dynamicQrCodes: number;
     recentQrCodes: number;
   };
   plan: {
-    name: string;
+    name: PlanName;
     displayName: string;
-    maxQrCodes: number;
+    maxQrCodes?: { STATIC: number; DYNAMIC: number };
+    unlimited: boolean;
+    isInternal: boolean;
   };
-  detailedStats: {
-    message: string;
-    features: string[];
+  window: AnalyticsWindow;
+  series: DailyPoint[];
+  breakdown?: AnalyticsBreakdown;
+  topQrCodes?: {
+    id: string;
+    title: string;
+    type: QrType | null;
+    slug: string | null;
+    scans: number;
+  }[];
+}
+
+export interface QrCodeStats {
+  qrCode: {
+    id: string;
+    slug: string | null;
+    title: string | null;
+    type: QrType;
+    targetUrl: string | null;
+    createdAt: string;
   };
-}
-
-interface responseStats {
-  totalScans: number;
-  message: string;
-  featuares: string[];
-}
-
-interface responseDataQr {
-  data: {
-    qrCode: {
-      id: string;
-      slug: string;
-      title: string;
-      type: string;
-      createdAt: string;
-    };
+  window: AnalyticsWindow;
+  stats: {
+    totalScans: number;
+    scansInWindow: number;
+    scansLast24h: number;
   };
+  series: DailyPoint[];
+  breakdown?: AnalyticsBreakdown;
 }
 
-interface QrCodeAnalytics {
-  data: responseDataQr;
-  stats: responseStats;
-}
-
-interface responseAnalyticsProps {
-  success: boolean;
-  data: responseDataAnalytics;
-}
-
-export const AnalyticsService = {
-  async getAnalytics() {
-    return await apiClient.get<responseAnalyticsProps>(
+export const analyticsService = {
+  async getMyStats(days?: number) {
+    const response = await apiClient.get<ApiEnvelope<MyStats>>(
       "/api/analytics/my-stats",
+      { days },
     );
+    return response.data.data;
   },
 
-  async getQrCodeAnalytics(id: string) {
-    return await apiClient.get<QrCodeAnalytics>(`/api/analytics/qr-code/${id}`);
+  async getQrCodeStats(id: string, days?: number) {
+    const response = await apiClient.get<ApiEnvelope<QrCodeStats>>(
+      `/api/analytics/qr-code/${encodeURIComponent(id)}`,
+      { days },
+    );
+    return response.data.data;
   },
 };

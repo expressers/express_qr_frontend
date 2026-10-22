@@ -8,26 +8,36 @@ import {
   Input,
   Button,
   Spinner,
-  Toaster,
 } from "@/components";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useLang, useResetPassword } from "@/hooks";
 
 function ResetPassword() {
-  const { form, onSubmit, isLoading } = useResetPassword();
+  const { form, onSubmit, isLoading, hasToken } = useResetPassword();
   const { translations } = useLang();
   const t = translations.pages.ResetPassword;
   
 
   return (
     <React.Fragment>
-      <Toaster richColors />
       <div
         className={`h-screen w-full  flex items-center justify-end  sm:p-4 bgImg`}>
         <div
           className=" dark:bg-black bg-white h-full lg:w-1/3 
         md:w-2/3 w-full rounded-md  sm:px-8 px-4 ">
+          {!hasToken ? (
+            <div className="h-full flex flex-col justify-center items-center gap-4 text-center">
+              <span className="lg:text-2xl text-lg font-bold">{t.missingTokenTitle}</span>
+              <p className="text-sm">{t.missingToken}</p>
+              <Button asChild className="p-6">
+                <Link to="/auth/forgotpassword">{t.requestNewLink}</Link>
+              </Button>
+              <Link to="/auth/signin" className="text-xs font-bold">
+                {t.back}
+              </Link>
+            </div>
+          ) : (
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit(onSubmit)}
@@ -80,6 +90,7 @@ function ResetPassword() {
 
               <Button
                 type="submit"
+                disabled={isLoading}
                 className="lg:p-6 md:p-6 p-2 cursor-pointer">
                 {" "}
                 {isLoading && <Spinner />}
@@ -98,6 +109,7 @@ function ResetPassword() {
               </span>
             </form>
           </Form>
+          )}
         </div>
       </div>
     </React.Fragment>

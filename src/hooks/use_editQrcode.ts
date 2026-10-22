@@ -1,82 +1,91 @@
-import { z } from "zod";
+import type { z } from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
-import { qrCodeService } from "@/service/api";
 import { toast } from "sonner";
-import { CACHE } from "@/utils";
 import { useNavigate } from "react-router-dom";
+import { qrCodeService, type QrCode, type UpdateQrCodeInput } from "@/service/api";
+import {
+  applyFieldErrors,
+  clearQrCaches,
+  editQrFormSchema,
+  getErrorMessage,
+  parseTags,
+} from "@/utils";
+import { useLang } from "./use_Lang";
 
-interface useEditQrcodeProps {
-  link: string;
-  id: string;
-  title?: string | null;
-  tags?: string | null;
-  description?: string | null;
-}
-
-function useEditQrcode({
-  link,
-  title,
-  id,
-  tags,
-  description,
-}: useEditQrcodeProps) {
+/**
+ * Edição de um QR guardado. O tipo não muda: DYNAMIC envia `targetUrl`,
+ * STATIC envia `staticContent`. `isActive` desativa o redirecionamento.
+ */
+function useEditQrcode(qrcode: QrCode) {
+  const { translations } = useLang();
+  const t = translations.pages.QrcodeEdit;
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const navigate = useNavigate();
-  const schema = z.object({
-    link: z.string().nonempty("O Link é obrigatorio"),
-    title: z.string().nonempty("O Link é obrigatorio"),
-    id: z.string(),
-    tags: z.string().optional(),
-    description: z.string().optional(),
+  const isDynamic = qrcode.type === "DYNAMIC";
+
+  const schema = editQrFormSchema(qrcode.type, {
+    requiredTitle: t.validation.requiredTitle,
+    minTitle: t.validation.minTitle,
+    maxTitle: t.validation.maxTitle,
+    maxDescription: t.validation.maxDescription,
+    requiredContent: t.validation.requiredContent,
+    contentTooLong: translations.errors.CONTENT_TOO_LONG,
+    requiredUrl: t.validation.requiredLink,
+    invalidUrl: t.validation.invalidLink,
   });
 
-  const form = useForm<z.infer<typeof schema>>({
+  type FormValues = z.infer<typeof schema>;
+
+  const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
-      link: link || "",
-      title: title || "",
-      id: id,
-      tags: tags || "",
-      description: description || "",
+      content: (isDynamic ? qrcode.targetUrl : qrcode.staticContent) ?? "",
+      title: qrcode.title ?? "",
+      tags: Array.isArray(qrcode.tags) ? qrcode.tags.join(", ") : "",
+      description: qrcode.description ?? "",
+      isActive: qrcode.isActive ?? true,
     },
   });
 
-  async function onSubmit(value: z.infer<typeof schema>) {
-    const payload = {
-      link: value.link,
+  async function onSubmit(value: FormValues) {
+    const payload: UpdateQrCodeInput = {
       title: value.title,
+      description: value.description?.trim() ?? "",
+      tags: parseTags(value.tags),
+      isActive: value.isActive,
+      ...(isDynamic
+        ? { targetUrl: value.content }
+        : { staticContent: value.content }),
     };
+
     try {
       setIsLoading(true);
-
-      const response = await qrCodeService.update(value.id, payload);
-      console.log(response);
-
-      if (!response.data.success) {
-        throw new Error(`Erro ${response.status}`);
-      }
-      CACHE.clearByPrefix("qrcodes-");
-      toast.success("Atualizado com sucesso!", {
-        className: "bg-green-500 text-white font-semibold",
-      });
-       navigate("/dashboard/my-qrcodes");
+      await qrCodeService.update(qrcode.id, payload);
+      clearQrCaches();
+      toast.success(t.toastSuccess);
+      navigate("/dashboard/my-qrcodes");
     } catch (error) {
-      toast.error("Erro ao atualizar", {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-
-      console.error("error:", error);
+      applyFieldErrors(
+        error,
+        form.setError,
+        {
+          staticContent: "content",
+          targetUrl: "content",
+          title: "title",
+          description: "description",
+          tags: "tags",
+        },
+        translations.errors.FIELD_INVALID,
+      );
+      toast.error(getErrorMessage(error, translations.errors, t.toastError));
     } finally {
       setIsLoading(false);
     }
   }
-  return {
-    form,
-    onSubmit,
-    isLoading,
-  };
+
+  return { form, onSubmit, isLoading, isDynamic };
 }
 
 export { useEditQrcode };

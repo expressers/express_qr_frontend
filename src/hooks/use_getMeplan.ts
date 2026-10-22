@@ -1,37 +1,29 @@
-import { plansManagementService, type PlanData} from "@/service/api"
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useState } from "react";
+import { plansManagementService, type MyPlan } from "@/service/api";
 
+/** Plano atual, uso por tipo e subscrição (GET /api/plans/my-plan). */
 function useGetMeplan() {
-    const [data, setData] = useState<PlanData>()
-    const [isLoding, setIsLoding] = useState(false)
-    const getMePlan = useCallback(async() => {
-       
-        try {
-            setIsLoding(true)
-            const response = await plansManagementService.getPlanMe() 
-            const { data } = response.data;
-           
-            if (response.data.success) {
-                setData(data)
-            }
-        }
-        catch (error) {
-            console.log(error)
-        }
-        finally {
-            setIsLoding(false);
-        }
-    }, [])
+  const [data, setData] = useState<MyPlan>();
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<unknown>(null);
 
-    useEffect(() => {
-      getMePlan();
-    }, [getMePlan]);
-    
+  const getMyPlan = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      setError(null);
+      setData(await plansManagementService.getMyPlan());
+    } catch (err) {
+      setError(err);
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
 
-    return {
-        data,
-        isLoding
-    };
+  useEffect(() => {
+    getMyPlan();
+  }, [getMyPlan]);
+
+  return { data, isLoading, error, refetch: getMyPlan };
 }
 
-export {useGetMeplan}
+export { useGetMeplan };

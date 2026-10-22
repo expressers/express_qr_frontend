@@ -8,20 +8,19 @@ import {
   SheetHeader,
   SheetTrigger,
 } from "../ui";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { useLang } from "@/hooks";
 import { ToggleTheme } from "../toggleTheme";
 import { ToggleLang } from "../toggleLang";
 import { UserMenu } from "../userMenu";
 import { NavHeader } from "../navHeader";
+import { BRAND_NAME } from "../brandMark/brand";
 
 function Header() {
   const { translations } = useLang();
   const t = translations.components.header;
   const navigate = useNavigate();
-  const location = useLocation();
-  const isPageHome = location.pathname === "/";
   const token = useMemo(
     () =>
       typeof window !== "undefined" ? localStorage.getItem("auth_token") : null,
@@ -47,8 +46,8 @@ function Header() {
           className={`relative top-0 w-full p-4 md:px-8 md:py-5 after:content-[''] after:absolute after:inset-0 after:-z-10 ${headerBgClass}`}>
           <div className="flex justify-between items-center w-full">
             <Link to="/">
-              <span className={`md:text-2xl text-lg font-semibold  ${isPageHome && "text-white"}`}>
-                BISC8R
+              <span className="md:text-2xl text-lg font-semibold text-foreground">
+                {BRAND_NAME}
               </span>
             </Link>
             <div className="hidden md:block">

@@ -11,101 +11,79 @@ import {
   PaginationItem,
   PaginationNext,
   PaginationPrevious,
+  Button,
   Skeleton,
 } from "@/components";
 import { ListFilter } from "lucide-react";
-import {images} from "@/assets"
+import { images } from "@/assets";
 import { useGetQrcodes, useLang } from "@/hooks";
-import { Toaster } from "sonner";
 import { getImageUrl } from "@/config";
 
-type QrcodeStatus = "ACTIVE" | "INACTIVE" | "All";
-
-interface ApiQrcode {
-  id: string;
-  title?: string;
-  targetUrl?: string;
-  createdAt: string;
-  status?: "ACTIVE" | "INACTIVE";
-  type: "STATIC" | "DYNAMIC";
-  imageUrl?: string;
-}
-
-interface MappedQrcode {
-  id: string;
-  title: string;
-  link: string;
-  date: string;
-  scans: number;
-  image: string;
-  status: QrcodeStatus;
-}
+type StatusFilter = "ACTIVE" | "INACTIVE" | "ALL";
 
 function MyQrcodes() {
   const { translations } = useLang();
-  const { data, isLoading, page, setPage, hasMore } = useGetQrcodes();
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>("ALL");
+  // O filtro é aplicado no servidor: a paginação e o total respeitam-no.
+  const isActiveFilter = statusFilter === "ALL" ? undefined : statusFilter === "ACTIVE";
+  const { data, total, isLoading, error, page, setPage, totalPages, hasMore, refetchQrcodes } =
+    useGetQrcodes(6, isActiveFilter);
   const t = translations.pages.MyQrcodes;
 
-  const [statusFilter, setStatusFilter] = useState<QrcodeStatus>("All");
+  const changeFilter = (filter: StatusFilter) => {
+    setStatusFilter(filter);
+    setPage(1);
+  };
 
-  const mapQrcodeData = (item: ApiQrcode): MappedQrcode => ({
-    id: item.id,
-    title: item.title || "Sem título",
-    link: item.targetUrl?.replace(/^https?:\/\//, "") || "Sem link",
-    date: item.createdAt,
-    scans: 0,
-    image: getImageUrl(item.imageUrl) || images.qrCode.qr_code1,
-    status: item.status || "INACTIVE",
-  });
+  const items = useMemo(() => {
+    return (data ?? []).map((item) => ({
+      id: item.id,
+      title: item.title || t.noTitle,
+      link:
+        (item.targetUrl ?? item.staticContent)?.replace(/^https?:\/\//, "") ||
+        t.noLink,
+      date: item.createdAt,
+      scans: item.scanCount ?? 0,
+      isActive: item.isActive,
+      image: getImageUrl(item.imageUrl ?? undefined) || images.qrCode.qr_code1,
+    }));
+  }, [data, t]);
 
-  const filteredItems = useMemo(() => {
-    if (!data || !Array.isArray(data)) return [];
+  const filterLabel =
+    statusFilter === "ACTIVE" ? t.active : statusFilter === "INACTIVE" ? t.inactive : t.all;
 
-    const mapped = data.map(mapQrcodeData);
-
-    if (statusFilter === "All") {
-      return mapped;
+  const handleDeleted = () => {
+    // Se a página ficou vazia, recua uma página; senão recarrega a atual.
+    if ((data?.length ?? 0) <= 1 && page > 1) {
+      setPage((p) => p - 1);
+    } else {
+      refetchQrcodes();
     }
-
-    return mapped.filter((item) => item.status === statusFilter);
-  }, [data, statusFilter]);
-
-  const filterLabel = useMemo(() => {
-    switch (statusFilter) {
-      case "ACTIVE":
-        return t.active;
-      case "INACTIVE":
-        return t.inactive;
-      default:
-        return t.all;
-    }
-  }, [statusFilter, t]);
-
-  const handleFilter = (status: QrcodeStatus) => {
-    setStatusFilter(status);
   };
 
   return (
-    <div className=" space-y-8 h-full">
-      <Toaster richColors />
+    <div className="space-y-8 h-full">
 
       <div className="flex justify-between items-center">
-        <h3 className="sm:text-lg text-sm font-bold">{t.title}</h3>
+        <div>
+          <h3 className="sm:text-lg text-sm font-bold">{t.title}</h3>
+          <span className="text-xs text-muted-foreground">
+            {t.total.replace("{total}", String(total))}
+          </span>
+        </div>
         <DropdownMenu>
-          <DropdownMenuTrigger>
+          <DropdownMenuTrigger aria-label={t.filter}>
             <div className="flex items-center gap-2">
-              <ListFilter size={18} />
+              <ListFilter size={18} aria-hidden />
               <span className="text-xs font-semibold">{filterLabel}</span>
             </div>
           </DropdownMenuTrigger>
           <DropdownMenuContent>
-            <DropdownMenuItem onClick={() => handleFilter("All")}>
-              {t.all}
-            </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleFilter("ACTIVE")}>
+            <DropdownMenuItem onClick={() => changeFilter("ALL")}>{t.all}</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => changeFilter("ACTIVE")}>
               {t.active}
             </DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleFilter("INACTIVE")}>
+            <DropdownMenuItem onClick={() => changeFilter("INACTIVE")}>
               {t.inactive}
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -114,46 +92,60 @@ function MyQrcodes() {
 
       {isLoading ? (
         <div className="grid grid-cols-3 sm:gap-8 gap-4 custom-cols-2 custom-cols-1">
-          {Array.from({ length: data?.length ?? 6 }).map((_, index) => (
-            <Skeleton
-              key={index}
-              className="h-36 bg-card text-card-foreground rounded-xl border sm:px-6 px-3 py-4 flex flex-row"
-            />
+          {Array.from({ length: 6 }).map((_, index) => (
+            <Skeleton key={index} className="h-36 rounded-xl border" />
           ))}
         </div>
-      ) : filteredItems.length === 0 ? (
-        <div className="flex flex-col items-center justify-center h-48 text-gray-500">
-          <p className="text-sm font-medium">{t.noQr}</p>
+      ) : error ? (
+        <div className="flex flex-col items-center justify-center h-48">
+          <p className="text-sm font-medium">{t.loadError}</p>
+        </div>
+      ) : items.length === 0 && statusFilter !== "ALL" ? (
+        <div className="flex flex-col items-center justify-center h-48 gap-4">
+          <p className="text-sm font-medium text-muted-foreground">{t.noQrFiltered}</p>
+          <Button variant="outline" size="sm" onClick={() => changeFilter("ALL")}>
+            {t.clearFilter}
+          </Button>
+        </div>
+      ) : items.length === 0 ? (
+        <div className="flex flex-col items-center justify-center h-48 gap-4">
+          <p className="text-sm font-medium text-muted-foreground">{t.noQr}</p>
+          <CreateQrcode />
         </div>
       ) : (
         <div className="grid grid-cols-3 sm:gap-8 gap-4 custom-cols-2 custom-cols-1">
-          {filteredItems.map((item) => (
-            <CardQrcode {...item} key={item.id} />
+          {items.map((item) => (
+            <CardQrcode {...item} key={item.id} onDeleted={handleDeleted} />
           ))}
           <CreateQrcode />
         </div>
       )}
-      <Pagination className="mt-6">
-        <PaginationContent>
-          <PaginationItem>
-            <PaginationPrevious
-              onClick={() => setPage((p) => Math.max(p - 1, 1))}
-              className={page === 1 ? "opacity-50 pointer-events-none" : ""}
-            />
-          </PaginationItem>
 
-          <PaginationItem>
-            <span className="px-3 text-sm font-semibold">{page}</span>
-          </PaginationItem>
+      {totalPages > 1 && (
+        <Pagination className="mt-6">
+          <PaginationContent>
+            <PaginationItem>
+              <PaginationPrevious
+                onClick={() => setPage((p) => Math.max(p - 1, 1))}
+                className={page === 1 ? "opacity-50 pointer-events-none" : ""}
+              />
+            </PaginationItem>
 
-          <PaginationItem>
-            <PaginationNext
-              onClick={() => hasMore && setPage((p) => p + 1)}
-              className={!hasMore ? "opacity-50 pointer-events-none" : ""}
-            />
-          </PaginationItem>
-        </PaginationContent>
-      </Pagination>
+            <PaginationItem>
+              <span className="px-3 text-sm font-semibold">
+                {page} / {totalPages}
+              </span>
+            </PaginationItem>
+
+            <PaginationItem>
+              <PaginationNext
+                onClick={() => hasMore && setPage((p) => p + 1)}
+                className={!hasMore ? "opacity-50 pointer-events-none" : ""}
+              />
+            </PaginationItem>
+          </PaginationContent>
+        </Pagination>
+      )}
     </div>
   );
 }

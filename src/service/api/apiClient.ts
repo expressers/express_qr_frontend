@@ -1,37 +1,59 @@
 import { config } from "../../config";
+import { clearSession } from "@/utils/session";
+import {
+  ApiError,
+  type ApiErrorDetails,
+  type ApiErrorResponse,
+} from "./apiError";
+import { parseContentDispositionFilename } from "./contentDisposition";
 
-type ApiErrorDetails = Record<string, unknown>;
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+type QueryParams = Record<string, string | number | boolean | undefined>;
+type JsonBody = Record<string, unknown> | FormData | URLSearchParams;
 
-type ApiRequestOptions = Omit<RequestInit, "body" | "headers"> & {
-  headers?: Record<string, string>;
-  body?: BodyInit | Record<string, unknown> | FormData | URLSearchParams | null;
-};
+const SIGNIN_PATH = "/auth/signin";
+/** Páginas onde um 401 não deve provocar redirecionamento (evita ciclos). */
+const AUTH_PAGE_PREFIXES = ["/auth/", "/reset-password", "/verify-email"];
+/** Área que exige sessão: um token expirado localmente aqui manda para o login. */
+const PRIVATE_PATH_PREFIX = "/dashboard";
 
-interface ApiErrorResponse {
-  message?: string;
-  status?: number;
-  code?: string;
-  details?: ApiErrorDetails;
+/** Ficheiro descarregado + nome sugerido pelo servidor (Content-Disposition). */
+export interface BlobDownload {
+  blob: Blob;
+  filename: string | null;
 }
 
-class ApiError extends Error {
-  status?: number;
-  code?: string;
-  details?: ApiErrorDetails;
+/** `true` se o token guardado tem `exp` no passado. */
+function isStoredTokenExpired(): boolean {
+  const expiry = localStorage.getItem("auth_token_exp");
+  if (!expiry) return false;
+  const expMs = Number(expiry);
+  return Number.isNaN(expMs) || Date.now() > expMs;
+}
 
-  constructor(
-    message: string,
-    status?: number,
-    code?: string,
-    details?: ApiErrorDetails,
-  ) {
-    super(message);
-    this.name = "ApiError";
-    this.status = status;
-    this.code = code;
-    this.details = details;
-  }
+function isPrivatePath(): boolean {
+  return (
+    typeof window !== "undefined" &&
+    window.location.pathname.startsWith(PRIVATE_PATH_PREFIX)
+  );
+}
+
+async function toBlobDownload(response: Response): Promise<BlobDownload> {
+  return {
+    blob: await response.blob(),
+    filename: parseContentDispositionFilename(
+      response.headers.get("content-disposition"),
+    ),
+  };
+}
+
+function buildQuery(endpoint: string, params: QueryParams = {}): string {
+  const searchParams = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined) searchParams.set(key, String(value));
+  });
+  const query = searchParams.toString();
+  return query ? `${endpoint}?${query}` : endpoint;
 }
 
 class ApiClient {
@@ -43,31 +65,26 @@ class ApiClient {
     this.timeout = 120_000;
 
     if (!this.baseURL) {
-      console.error("API URL não está definida no config");
       throw new Error("API URL não configurada");
     }
   }
 
+  /** Token guardado, ou `null`. Um token expirado localmente limpa a sessão inteira. */
   getAuthToken(): string | null {
     const token = localStorage.getItem("auth_token");
-    const expiry = localStorage.getItem("auth_token_exp");
+    if (!token) return null;
 
-    if (expiry && Date.now() > parseInt(expiry, 10)) {
-      this.clearAuthToken();
+    if (isStoredTokenExpired()) {
+      clearSession();
       return null;
     }
 
     return token;
   }
 
-  clearAuthToken(): void {
-    localStorage.removeItem("auth_token");
-    localStorage.removeItem("auth_token_exp");
-  }
-
   private createHeaders(
     customHeaders: Record<string, string> = {},
-  ): Record<string, string> {
+  ): { headers: Record<string, string>; hasToken: boolean } {
     const headers: Record<string, string> = {
       "Content-Type": "application/json",
       Accept: "application/json",
@@ -79,236 +96,197 @@ class ApiClient {
       headers.Authorization = `Bearer ${token}`;
     }
 
-    return headers;
+    return { headers, hasToken: Boolean(token) };
   }
 
-  private createAbortController(): AbortController {
+  /**
+   * Corre `fn` com um `AbortSignal` que dispara ao fim de `this.timeout`.
+   * O temporizador é sempre limpo no fim (sucesso, erro ou leitura do corpo).
+   */
+  private async withTimeout<T>(fn: (signal: AbortSignal) => Promise<T>): Promise<T> {
     const controller = new AbortController();
-
     const timeoutId = setTimeout(() => controller.abort(), this.timeout);
-    controller.signal.addEventListener("abort", () => clearTimeout(timeoutId));
-
-    return controller;
+    try {
+      return await fn(controller.signal);
+    } finally {
+      clearTimeout(timeoutId);
+    }
   }
 
-  /*private async processResponse<T>(
-    response: Response,
-  ): Promise<{ data: T; status: number }> {
-    if (!response.ok) {
-      let errorData: ApiErrorResponse;
+  /** Sessão inválida: limpa tudo e volta ao login (excepto nas páginas de auth). */
+  private handleUnauthorized(): void {
+    clearSession();
+    if (typeof window === "undefined") return;
+    const path = window.location.pathname;
+    if (AUTH_PAGE_PREFIXES.some((prefix) => path.startsWith(prefix))) return;
+    window.location.assign(SIGNIN_PATH);
+  }
 
-      try {
-        const contentType = response.headers.get("content-type");
+  /** Converte uma resposta não-2xx num `ApiError` a partir do envelope. */
+  private async toApiError(response: Response): Promise<ApiError> {
+    let payload: unknown = null;
+    try {
+      const contentType = response.headers.get("content-type") ?? "";
+      payload = contentType.includes("application/json")
+        ? await response.json()
+        : await response.text();
+    } catch {
+      payload = null;
+    }
 
-        if (contentType && contentType.includes("application/json")) {
-          errorData = (await response.json()) as ApiErrorResponse;
-        } else {
-          const textResponse = await response.text();
-          errorData = {
-            message: textResponse || `HTTP Error: ${response.status}`,
-            status: response.status,
-          };
-        }
-      } catch {
-        errorData = {
-          message: `HTTP Error: ${response.status} - ${response.statusText}`,
-          status: response.status,
+    let body: ApiErrorResponse = {};
+    if (payload && typeof payload === "object") {
+      const envelope = payload as {
+        error?: ApiErrorResponse | string;
+        message?: string;
+        code?: string;
+        details?: ApiErrorDetails;
+      };
+      if (envelope.error && typeof envelope.error === "object") {
+        body = envelope.error;
+      } else {
+        // Formatos antigos: `{ message }` ou `{ error: "texto" }`.
+        body = {
+          message:
+            envelope.message ??
+            (typeof envelope.error === "string" ? envelope.error : undefined),
+          code: envelope.code,
+          details: envelope.details,
         };
       }
-
-      let errorMessage = errorData.message || `HTTP Error: ${response.status}`;
-
-      if (response.status === 403) {
-        errorMessage =
-          "Acesso negado. Você não tem permissão para esta operação.";
-      } else if (response.status === 401) {
-        errorMessage = "Não autorizado. Faça login novamente.";
-      } else if (response.status === 404) {
-        errorMessage = "Recurso não encontrado.";
-      } else if (response.status === 500) {
-        errorMessage = "Erro interno do servidor.";
-      }
-
-      const error = new ApiError(
-        errorMessage,
-        response.status,
-        errorData.code,
-        errorData.details,
-      );
-
-      if (response.status === 401) {
-        this.clearAuthToken();
-      }
-
-      throw error;
+    } else if (typeof payload === "string" && payload.trim()) {
+      body = { message: payload };
     }
 
-    try {
-      const contentType = response.headers.get("content-type");
-      const responseText = await response.text();
-
-      let parsed: T;
-
-      if (contentType && contentType.includes("application/json")) {
-        if (!responseText.trim()) {
-          parsed = {
-            success: false,
-            message: "Resposta vazia do servidor",
-          } as T;
-        } else {
-          try {
-            parsed = JSON.parse(responseText) as T;
-          } catch (jsonError) {
-            console.error("Erro ao fazer parse JSON:", jsonError);
-            parsed = {
-              success: false,
-              message: "Resposta não é JSON válido",
-            } as T;
-          }
-        }
-      } else {
-        parsed = {
-          success: false,
-          message: "Resposta não é JSON válido",
-        } as T;
-      }
-
-      return { data: parsed, status: response.status };
-    } catch (error) {
-      console.error("Erro ao processar resposta completa:", error);
-      throw new Error("Resposta inválida do servidor");
-    }
-  }*/
-
-  private async request<T>(
-    endpoint: string,
-    options: ApiRequestOptions = {},
-  ): Promise<{ data: T; status: number }> {
-    const controller = this.createAbortController();
-
-    const headers = this.createHeaders(options.headers ?? {});
-
-    let body: BodyInit | null | undefined = null;
-    if (options.body === null) {
-      body = null;
-    } else if (
-      typeof options.body === "string" ||
-      options.body instanceof FormData ||
-      options.body instanceof URLSearchParams ||
-      options.body instanceof Blob ||
-      options.body instanceof ArrayBuffer
-    ) {
-      body = options.body as BodyInit;
-    } else if (typeof options.body === "object" && options.body !== undefined) {
-      body = JSON.stringify(options.body as Record<string, unknown>);
-    } else {
-      body = undefined;
-    }
-
-    const config: RequestInit = {
-      method: (options.method ?? "GET") as HttpMethod,
-      headers,
-      signal: controller.signal,
-      credentials: options.credentials,
-      cache: options.cache,
-      redirect: options.redirect,
-      referrer: options.referrer,
-      referrerPolicy: options.referrerPolicy,
-      integrity: options.integrity,
-      keepalive: options.keepalive,
-      mode: options.mode,
-      window: options.window,
-      body,
-    };
-
-    const url = `${this.baseURL}${endpoint}`;
-    const response = await fetch(url, config);
-
-    const contentType = response.headers.get("content-type");
-    const data = contentType?.includes("application/json")
-      ? await response.json()
-      : await response.text();
-
-    return { data, status: response.status };
-  }
-  
-  async getBlob(
-    endpoint: string,
-    params: Record<string, string | number | boolean> = {},
-  ): Promise<Blob> {
-    const searchParams = new URLSearchParams(
-      Object.entries(params).reduce<Record<string, string>>((acc, [k, v]) => {
-        acc[k] = String(v);
-        return acc;
-      }, {}),
+    return new ApiError(
+      body.message || `HTTP ${response.status}`,
+      body.status ?? response.status,
+      body.code || `HTTP_${response.status}`,
+      body.details ?? {},
     );
+  }
 
-    const url = searchParams.toString()
-      ? `${endpoint}?${searchParams.toString()}`
-      : endpoint;
+  private async send(
+    method: HttpMethod,
+    endpoint: string,
+    signal: AbortSignal,
+    body?: JsonBody,
+    accept = "application/json",
+  ): Promise<Response> {
+    // Token expirado localmente: na área privada não vale a pena ir ao
+    // servidor; nas páginas públicas o pedido segue anónimo.
+    if (localStorage.getItem("auth_token") && isStoredTokenExpired()) {
+      clearSession();
+      if (isPrivatePath()) {
+        this.handleUnauthorized();
+        throw new ApiError("Sessão expirada", 401, "UNAUTHORIZED");
+      }
+    }
 
-    const controller = this.createAbortController();
-    const headers = this.createHeaders();
+    const { headers, hasToken } = this.createHeaders({ Accept: accept });
 
-    const response = await fetch(`${this.baseURL}${url}`, {
-      method: "GET",
+    let requestBody: BodyInit | undefined;
+    if (body instanceof FormData || body instanceof URLSearchParams) {
+      requestBody = body;
+      if (body instanceof FormData) delete headers["Content-Type"];
+    } else if (body !== undefined) {
+      requestBody = JSON.stringify(body);
+    }
+
+    const response = await fetch(`${this.baseURL}${endpoint}`, {
+      method,
       headers,
-      signal: controller.signal,
+      signal,
+      body: requestBody,
     });
 
     if (!response.ok) {
-      throw new ApiError(`HTTP Error: ${response.status}`, response.status);
+      const error = await this.toApiError(response);
+      // Só `UNAUTHORIZED` invalida a sessão: outros 401 (ex.: credenciais
+      // erradas no login) são erros normais do formulário.
+      if (response.status === 401 && error.code === "UNAUTHORIZED" && hasToken) {
+        this.handleUnauthorized();
+      }
+      throw error;
     }
 
-    return await response.blob();
+    return response;
   }
 
-  async post<T = unknown>(
+  private request<T>(
+    method: HttpMethod,
     endpoint: string,
-    data: Record<string, unknown> | FormData | URLSearchParams = {},
+    body?: JsonBody,
   ): Promise<{ data: T; status: number }> {
-    return this.request<T>(endpoint, {
-      method: "POST",
-      body: data,
+    return this.withTimeout(async (signal) => {
+      const response = await this.send(method, endpoint, signal, body);
+
+      const contentType = response.headers.get("content-type") ?? "";
+      const text = await response.text();
+      const data = (
+        contentType.includes("application/json") && text.trim()
+          ? JSON.parse(text)
+          : text
+      ) as T;
+
+      return { data, status: response.status };
     });
   }
 
   async get<T>(
     endpoint: string,
-    params: Record<string, string | number | boolean> = {},
+    params: QueryParams = {},
   ): Promise<{ data: T; status: number }> {
-    const searchParams = new URLSearchParams(
-      Object.entries(params).reduce<Record<string, string>>((acc, [k, v]) => {
-        acc[k] = String(v);
-        return acc;
-      }, {}),
-    );
+    return this.request<T>("GET", buildQuery(endpoint, params));
+  }
 
-    const url = searchParams.toString()
-      ? `${endpoint}?${searchParams.toString()}`
-      : endpoint;
-
-    return this.request<T>(url, { method: "GET" });
+  async post<T = unknown>(
+    endpoint: string,
+    data: JsonBody = {},
+  ): Promise<{ data: T; status: number }> {
+    return this.request<T>("POST", endpoint, data);
   }
 
   async patch<T = unknown>(
     endpoint: string,
-    data: Record<string, unknown> | FormData | URLSearchParams = {},
+    data: JsonBody = {},
   ): Promise<{ data: T; status: number }> {
-    return this.request<T>(endpoint, { method: "PATCH", body: data });
+    return this.request<T>("PATCH", endpoint, data);
   }
 
   async put<T = unknown>(
     endpoint: string,
-    data: Record<string, unknown> | FormData | URLSearchParams = {},
+    data: JsonBody = {},
   ): Promise<{ data: T; status: number }> {
-    return this.request<T>(endpoint, { method: "PUT", body: data });
+    return this.request<T>("PUT", endpoint, data);
   }
 
   async delete<T = unknown>(
     endpoint: string,
   ): Promise<{ data: T; status: number }> {
-    return this.request<T>(endpoint, { method: "DELETE" });
+    return this.request<T>("DELETE", endpoint);
+  }
+
+  /** GET que devolve um ficheiro binário (download autenticado). */
+  getBlob(endpoint: string, params: QueryParams = {}): Promise<BlobDownload> {
+    return this.withTimeout(async (signal) => {
+      const response = await this.send(
+        "GET",
+        buildQuery(endpoint, params),
+        signal,
+        undefined,
+        "*/*",
+      );
+      return toBlobDownload(response);
+    });
+  }
+
+  /** POST com corpo JSON que devolve um ficheiro binário (download anónimo). */
+  postBlob(endpoint: string, data: JsonBody = {}): Promise<BlobDownload> {
+    return this.withTimeout(async (signal) => {
+      const response = await this.send("POST", endpoint, signal, data, "*/*");
+      return toBlobDownload(response);
+    });
   }
 }
 

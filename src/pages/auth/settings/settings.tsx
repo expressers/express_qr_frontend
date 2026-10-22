@@ -9,13 +9,23 @@ import {
   FormItem,
   FormLabel,
   FormControl,
+  FormDescription,
   FormMessage,
-  Toaster,
   Spinner,
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
 } from "@/components";
 import React from "react";
 
 import {
+  useDeleteAccount,
   useLang,
   useMyProfile,
   useUpdatePassword,
@@ -36,6 +46,7 @@ function Settings() {
   const t = translations.pages.MyProfile;
   const tProfileLayout = translations.layout.ProfileLayout;
   const initials = userNameParts(state.user_name);
+  const { DeleteAccount } = useDeleteAccount();
 
   const getNameParts = (userName?: string | null) => {
     if (!userName) return { firstName: "", lastName: "" };
@@ -58,18 +69,15 @@ function Settings() {
 
   const { firstName, lastName } = getNameParts(state.user_name);
 
-  const { form, onSubmit } = useMyProfile({
+  const { form, onSubmit, isLoading: isSavingProfile } = useMyProfile({
     email: state.user_email || "",
     firstName: firstName,
     lastName,
     phone: state.user_phone || "",
-    country: state.user_country || "",
-    address: state.user_city || "",
   });
 
   return (
     <React.Fragment>
-      <Toaster richColors />
       <div className="space-y-5 ">
         <div className="space-y-5">
           <h4 className="text-xl  " id="profile">
@@ -77,7 +85,7 @@ function Settings() {
           </h4>
           <div>
             <Avatar className="w-20 h-20 border-2 border-green-500">
-              <AvatarImage src={state.user_phone ?? ""} alt="@shadcn" />
+              <AvatarImage src={state.user_photo ?? ""} alt={state.user_name ?? ""} />
               <AvatarFallback>{initials}</AvatarFallback>
             </Avatar>
           </div>
@@ -137,9 +145,15 @@ function Settings() {
                           placeholder={t.form.email.placeholder}
                           type="email"
                           className="py-6  text-xs"
+                          readOnly
+                          aria-readonly="true"
+                          aria-describedby="email-readonly-hint"
                           {...field}
                         />
                       </FormControl>
+                      <FormDescription id="email-readonly-hint" className="text-xs">
+                        {t.form.email.readOnlyHint}
+                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -164,49 +178,12 @@ function Settings() {
                     </FormItem>
                   )}
                 />
-                <FormField
-                  control={form.control}
-                  name="country"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">
-                        {t.form.country.label}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t.form.country.placeholder}
-                          type="text"
-                          className="py-6  text-xs"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">
-                        {t.form.address.label}
-                      </FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t.form.address.placeholder}
-                          type="text"
-                          className="py-6  text-xs"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
                 <div className="md:block hidden"></div>
                 <div className="flex justify-end">
-                  <Button className="p-6">{t.form.button.update}</Button>
+                  <Button className="p-6" type="submit" disabled={isSavingProfile}>
+                    {isSavingProfile && <Spinner />}
+                    {t.form.button.update}
+                  </Button>
                 </div>
               </div>
             </form>
@@ -215,7 +192,7 @@ function Settings() {
 
         <div className="space-y-5">
           <h4 className="text-xl" id="security">
-            Segurança
+            {tProfileLayout.menu.security}
           </h4>
           <Form {...formUpdatePassword}>
             <form
@@ -281,17 +258,31 @@ function Settings() {
 
         <div className="space-y-5">
           <h4 className="text-xl" id="delete-account">
-            Apagar conta
+            {tProfileLayout.menu.delete}
           </h4>
           <p className="text-sm text-muted-foreground">
             {tProfileLayout.alertDialog.dialogDescription}
           </p>
 
-          <Button
-            variant="outline"
-            className="text-red-400 opacity-60 transition-all duration-300 hover:text-red-400 hover:backdrop-opacity-100">
-            Apagar conta
-          </Button>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button variant="outline">{tProfileLayout.menu.delete}</Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>{tProfileLayout.alertDialog.dialogTitle}</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {tProfileLayout.deleteConfirm}
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>{tProfileLayout.alertDialog.dialogCancel}</AlertDialogCancel>
+                <AlertDialogAction variant="destructive" onClick={DeleteAccount}>
+                  {tProfileLayout.alertDialog.dialogAction}
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
         </div>
       </div>
     </React.Fragment>
