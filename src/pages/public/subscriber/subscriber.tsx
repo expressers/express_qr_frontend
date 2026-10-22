@@ -1,32 +1,33 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Check } from "lucide-react";
-import {
-  Button,
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-  Separator,
-  Skeleton,
-} from "@/components";
+import { Check, Info, Minus } from "lucide-react";
+import { Button, Skeleton } from "@/components";
 import { useLang, usePlanManagement, useUserAccount } from "@/hooks";
 import { authService, type Plan } from "@/service/api";
+import { cn } from "@/lib/utils";
 import { buildUpgradeMailto, getErrorMessage } from "@/utils";
 
+type Feature = { label: string; included: boolean };
+
 /** Lista de características de um plano, derivada só dos dados da API. */
-function planFeatures(plan: Plan, t: Record<string, string>): string[] {
+function planFeatures(plan: Plan, t: Record<string, string>): Feature[] {
   const { STATIC, DYNAMIC } = plan.maxQrCodes;
-  const features = [
-    STATIC === -1 ? t.unlimitedStatic : t.staticLimit.replace("{n}", String(STATIC)),
-    DYNAMIC === -1 ? t.unlimitedDynamic : t.dynamicLimit.replace("{n}", String(DYNAMIC)),
-    plan.features.analytics === "full" ? t.analyticsFull : t.analyticsBasic,
-    t.windowDays.replace("{n}", String(plan.analyticsWindowDays)),
+  return [
+    {
+      label: STATIC === -1 ? t.unlimitedStatic : t.staticLimit.replace("{n}", String(STATIC)),
+      included: true,
+    },
+    {
+      label: DYNAMIC === -1 ? t.unlimitedDynamic : t.dynamicLimit.replace("{n}", String(DYNAMIC)),
+      included: true,
+    },
+    {
+      label: plan.features.analytics === "full" ? t.analyticsFull : t.analyticsBasic,
+      included: true,
+    },
+    { label: t.windowDays.replace("{n}", String(plan.analyticsWindowDays)), included: true },
+    { label: t.customColors, included: Boolean(plan.features.customColors) },
   ];
-  if (plan.features.customColors) features.push(t.customColors);
-  return features;
 }
 
 function Subscriber() {
@@ -38,30 +39,40 @@ function Subscriber() {
 
   return (
     <React.Fragment>
-      <div className="min-h-screen w-full">
-        <div className="md:py-40 py-32 px-4 space-y-8 max-w-6xl mx-auto">
-          <div className="text-center space-y-4">
-            <h4 className="md:text-3xl text-2xl font-bold">{t.title}</h4>
-            <p className="md:text-sm text-xs max-w-2xl mx-auto">{t.description}</p>
-            <p className="text-xs max-w-2xl mx-auto border rounded-md px-4 py-3">
-              {t.manualNotice}
+      <div className="min-h-dvh w-full">
+        <div className="mx-auto max-w-6xl space-y-10 px-4 pb-24 pt-28 md:pt-36">
+          <header className="max-w-2xl space-y-3">
+            <h1 className="text-[2.25rem] font-semibold leading-[1.1] tracking-[-0.03em] text-balance md:text-5xl">
+              {t.title}
+            </h1>
+            <p className="text-base text-muted-foreground text-pretty">{t.description}</p>
+          </header>
+
+          <div
+            role="note"
+            className="flex max-w-3xl items-start gap-3 rounded-xl border border-input bg-card p-4 text-sm">
+            <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+            <p>
+              <span className="font-semibold">{t.manualTitle}. </span>
+              <span className="text-muted-foreground">{t.manualNotice}</span>
             </p>
           </div>
 
           {isLoading ? (
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-3">
               {Array.from({ length: 3 }).map((_, index) => (
-                <Skeleton key={index} className="h-96 rounded-xl" />
+                <Skeleton key={index} className="h-[26rem] rounded-2xl" />
               ))}
             </div>
           ) : error ? (
-            <p className="text-center text-sm">
+            <p role="alert" className="text-sm">
               {getErrorMessage(error, translations.errors, t.loadError)}
             </p>
           ) : (
-            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 items-stretch">
+            <div className="grid grid-cols-1 items-stretch gap-4 lg:grid-cols-3">
               {plans.map((plan) => {
                 const isFree = plan.name === "FREE";
+                const recommended = plan.name === "PROFESSIONAL";
                 const upgradeHref = buildUpgradeMailto({
                   planName: plan.displayName,
                   accountEmail: state.user_email,
@@ -70,38 +81,76 @@ function Subscriber() {
                 });
 
                 return (
-                  <Card key={plan.name} className="flex flex-col">
-                    <CardHeader>
-                      <CardTitle>{plan.displayName}</CardTitle>
-                      <CardDescription>{isFree ? t.free : t.priceOnRequest}</CardDescription>
-                    </CardHeader>
+                  <section
+                    key={plan.name}
+                    aria-labelledby={`plan-${plan.name}`}
+                    className={cn(
+                      "flex flex-col gap-6 rounded-2xl border p-6",
+                      recommended
+                        ? "border-primary bg-primary text-primary-foreground"
+                        : "bg-card text-card-foreground",
+                    )}>
+                    <div className="space-y-4">
+                      <div className="flex items-center justify-between gap-3">
+                        <h2 id={`plan-${plan.name}`} className="text-lg font-semibold">
+                          {plan.displayName}
+                        </h2>
+                        {recommended && (
+                          <span className="rounded-full border border-primary-foreground/40 px-2.5 py-0.5 text-xs font-medium">
+                            {t.recommended}
+                          </span>
+                        )}
+                      </div>
+                      <p className="font-mono text-3xl font-semibold tracking-tight">
+                        {isFree ? t.free : t.priceOnRequest}
+                      </p>
+                    </div>
 
-                    <CardContent className="space-y-6">
-                      {isFree ? (
-                        <Button className="p-6 w-full" variant="outline" asChild>
-                          <Link to={isAuthenticated ? "/dashboard" : "/auth/signup"}>
-                            {isAuthenticated ? t.goToDashboard : t.startFree}
-                          </Link>
-                        </Button>
-                      ) : (
-                        <Button className="p-6 w-full" asChild>
-                          <a href={upgradeHref}>{t.cta}</a>
-                        </Button>
-                      )}
-                      <Separator />
-                    </CardContent>
+                    {isFree ? (
+                      <Button size="lg" variant="outline" className="w-full" asChild>
+                        <Link to={isAuthenticated ? "/dashboard" : "/auth/signup"}>
+                          {isAuthenticated ? t.goToDashboard : t.startFree}
+                        </Link>
+                      </Button>
+                    ) : (
+                      <Button
+                        size="lg"
+                        className={cn(
+                          "w-full",
+                          recommended &&
+                            "bg-primary-foreground text-primary hover:bg-primary-foreground/90",
+                        )}
+                        asChild>
+                        <a href={upgradeHref}>{t.cta}</a>
+                      </Button>
+                    )}
 
-                    <CardFooter>
-                      <ul className="space-y-4">
-                        {planFeatures(plan, t).map((feature) => (
-                          <li key={feature} className="flex justify-start items-center gap-2">
-                            <Check size={14} aria-hidden />
-                            <span className="text-xs">{feature}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    </CardFooter>
-                  </Card>
+                    <ul
+                      className={cn(
+                        "space-y-3 border-t pt-6 text-sm",
+                        recommended ? "border-primary-foreground/20" : "border-border",
+                      )}>
+                      {planFeatures(plan, t).map((feature) => (
+                        <li
+                          key={feature.label}
+                          className={cn(
+                            "flex items-start gap-3",
+                            !feature.included &&
+                              (recommended ? "text-primary-foreground/60" : "text-muted-foreground"),
+                          )}>
+                          {feature.included ? (
+                            <Check className="mt-0.5 size-4 shrink-0" aria-hidden />
+                          ) : (
+                            <Minus className="mt-0.5 size-4 shrink-0" aria-hidden />
+                          )}
+                          <span>
+                            {feature.label}
+                            {!feature.included && <span className="sr-only"> ({t.notIncluded})</span>}
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  </section>
                 );
               })}
             </div>

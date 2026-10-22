@@ -7,6 +7,6 @@ export { FormGeneratorQrc } from "./formGeneratorQrc";
 export { CardQrcode } from "./cardQrcode";
 export { CreateQrcode } from "./createQrcode";
 export { QrCodeGenerated } from "./qrCodeGenerated";
-export { ChartAreaInteractive }  from "./chartArea"
 export * from "./ui";
 export { BrandMark, BrandGlyph, BRAND_NAME } from "./brandMark";
+export { LazyBoundary } from "./lazyBoundary";

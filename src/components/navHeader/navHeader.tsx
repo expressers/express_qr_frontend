@@ -1,20 +1,14 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { useLang } from "@/hooks";
 
 function NavHeader() {
+  const { translations } = useLang();
+  const t = translations.components.header.nav;
   const itemMenu = [
-    {
-      title: "Home",
-      to: "/",
-    },
-    {
-      title: "About",
-      to: "/about",
-    },
-    {
-      title: "Price",
-      to: "/subscriber",
-    },
+    { title: t.home, to: "/" },
+    { title: t.about, to: "/about" },
+    { title: t.pricing, to: "/subscriber" },
   ];
 
   // Paleta P&B: o link activo é o texto principal sublinhado; os restantes ficam atenuados.

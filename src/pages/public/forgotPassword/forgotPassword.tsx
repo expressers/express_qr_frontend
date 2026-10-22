@@ -1,86 +1,70 @@
-import React from "react";
 import {
   Form,
   FormControl,
   FormField,
   FormItem,
-  FormMessage,
+  FormLabel,
   Input,
   Button,
   Spinner,
 } from "@/components";
+import { AuthShell, FieldError } from "@/components/authShell";
 import { ChevronLeft } from "lucide-react";
 import { Link } from "react-router-dom";
-import { useLang,  useForgotPassword } from "@/hooks";
+import { useLang, useForgotPassword } from "@/hooks";
 
 function ForgotPassword() {
   const { form, onSubmit, isLoading } = useForgotPassword();
   const { translations } = useLang();
   const t = translations.pages.ForgotPassword;
- 
 
   return (
-    <React.Fragment>
-      <div
-        className={`h-screen w-full  flex items-center justify-end  sm:p-4 bgImg`}>
-        <div
-          className=" dark:bg-black bg-white h-full lg:w-1/3 
-        md:w-2/3 w-full rounded-md  sm:px-8 px-4 ">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className="h-full lg:space-y-8  space-y-4 flex flex-col justify-center ">
-              <div className="mb-6 flex flex-col">
-                <span className="lg:text-2xl md:text-xl text-lg  text-center font-bold">
-                  {t.title}
-                </span>
-                <p
-                  className="text-xs font-medium mt-1  text-center"
-                  dangerouslySetInnerHTML={{ __html: t.subtitle }}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormControl>
-                      <Input
-                        placeholder={t.emailPlaceholder}
-                        type="email"
-                        className="lg:py-6 md:py-4 py-2 text-xs"
-                        {...field}
-                      />
-                    </FormControl>
+    <AuthShell>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          aria-busy={isLoading}
+          className="space-y-5">
+          <div className="space-y-1.5">
+            <h1 className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight">
+              {t.title}
+            </h1>
+            <p className="text-pretty text-sm text-muted-foreground">{t.subtitle}</p>
+          </div>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="gap-2">
+                <FormLabel className="text-sm">{t.email}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t.emailPlaceholder}
+                    type="email"
+                    autoComplete="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FieldError />
+              </FormItem>
+            )}
+          />
 
-              <Button
-                type="submit"
-                className="lg:p-6 md:p-6 p-2 cursor-pointer">
-                {" "}
-                {isLoading && <Spinner />}
-                {t.button}
-              </Button>
+          <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+            {isLoading && <Spinner />}
+            {t.button}
+          </Button>
 
-              <span className="text-center text-xs">
-                <Link
-                  to="/auth/signin"
-                  className="font-bold text-xs flex items-center justify-center gap-2">
-                  <span>
-                    <ChevronLeft size={16} />
-                  </span>
-                  <span>{t.backToLogin}</span>
-                </Link>
-              </span>
-            </form>
-          </Form>
-        </div>
-      </div>
-    </React.Fragment>
+          <Link
+            to="/auth/signin"
+            className="flex items-center justify-center gap-1.5 rounded-md py-2 text-sm font-medium underline-offset-4 hover:underline">
+            <ChevronLeft className="size-4" aria-hidden="true" />
+            {t.backToLogin}
+          </Link>
+        </form>
+      </Form>
+    </AuthShell>
   );
 }
 

@@ -1,13 +1,18 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState, type ComponentProps } from "react";
+import { Link } from "react-router-dom";
+import { Download, Eye, Pencil, ScanLine, Trash2 } from "lucide-react";
 
 import { Button } from "../ui";
-import { CalendarDays, Download, LinkIcon, Pencil, Eye, Trash2 } from "lucide-react";
+import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 import { QrCodeGenerated } from "../qrCodeGenerated";
-import { Link } from "react-router-dom";
-import { formattedDate } from "@/utils";
-import { useLang } from "@/hooks";
 import { PreviewQRCode } from "../previewQRCode";
 import { DeleteQrcodeDialog } from "./deleteQrcodeDialog";
+import { QR_ROW_GRID } from "./qrRowGrid";
+import { QrStatusBadge, QrTypeBadge } from "./qrBadges";
+import { formattedDate } from "@/utils";
+import { useLang } from "@/hooks";
+import type { QrType } from "@/service/api";
+import { cn } from "@/lib/utils";
 
 interface CardQrcodeProps {
   id: string;
@@ -16,9 +21,37 @@ interface CardQrcodeProps {
   link: string;
   date: string;
   scans: number;
+  type?: QrType;
   isActive?: boolean;
+  /** Posição na lista, para a entrada em cascata. */
+  index?: number;
   /** Chamado depois de apagar, para a lista recarregar. */
   onDeleted?: () => void;
+}
+
+/** Botão de ícone com tooltip (alvo de 44 px em toque, 36 px com rato). */
+function IconAction({
+  label,
+  className,
+  children,
+  ...props
+}: ComponentProps<typeof Button> & { label: string }) {
+  return (
+    <Tooltip>
+      <TooltipTrigger asChild>
+        <Button
+          type="button"
+          variant="ghost"
+          size="icon-sm"
+          aria-label={label}
+          className={cn("size-11 md:size-9", className)}
+          {...props}>
+          {children}
+        </Button>
+      </TooltipTrigger>
+      <TooltipContent sideOffset={6}>{label}</TooltipContent>
+    </Tooltip>
+  );
 }
 
 function CardQrcode({
@@ -28,7 +61,9 @@ function CardQrcode({
   link,
   date,
   scans,
+  type,
   isActive = true,
+  index = 0,
   onDeleted,
 }: CardQrcodeProps) {
   const { translations } = useLang();
@@ -38,92 +73,105 @@ function CardQrcode({
   const dateFormatted = useMemo(() => formattedDate(date), [date]);
 
   return (
-    <React.Fragment>
-      <div className="bg-card text-card-foreground rounded-xl border sm:px-6 px-3 py-4 flex flex-row justify-between space-y-2 w-full">
-        <div className="flex items-center gap-2 sm:gap-4">
-          <div className="w-16 overflow-hidden rounded-md">
-            <img src={image} alt={title} className="w-full" />
-          </div>
-          <div className="space-y-1.5">
-            <span className="block font-bold text-xs">{title}</span>
+    <li
+      style={{ "--i": index } as React.CSSProperties}
+      className={cn(
+        "row-enter grid grid-cols-[3rem_minmax(0,1fr)] items-center gap-x-3 gap-y-2 px-3 py-3 md:gap-x-4 md:px-4",
+        QR_ROW_GRID,
+        !isActive && "bg-muted/40",
+      )}>
+      <div className="size-12 overflow-hidden rounded-lg border bg-white p-1">
+        <img src={image} alt="" className="size-full object-contain" />
+      </div>
 
-            <div className="flex items-center gap-2">
-              <LinkIcon size={14} aria-hidden />
-              <span className="text-xs w-16 block truncate overflow-hidden whitespace-nowrap">
-                {link}
-              </span>
-            </div>
+      <div className="min-w-0">
+        <div className="flex min-w-0 items-center gap-2">
+          <p className="truncate text-sm font-medium">{title}</p>
+          {type && <QrTypeBadge type={type} className="h-5 shrink-0 px-2" />}
+        </div>
+        <p
+          className="truncate font-mono text-xs text-muted-foreground"
+          title={link}>
+          {link}
+        </p>
+      </div>
 
-            <div className="flex items-center gap-2">
-              <CalendarDays size={14} aria-hidden />
-              <span className="text-muted-foreground text-xs">
-                {dateFormatted}
-              </span>
-            </div>
+      <span className="hidden whitespace-nowrap text-sm text-muted-foreground tabular-nums xl:block">
+        {dateFormatted}
+      </span>
 
-            {!isActive && (
-              <span className="inline-block text-xs font-semibold text-muted-foreground border rounded px-1.5">
-                {t.inactive}
-              </span>
-            )}
-          </div>
+      {/* Móvel: segunda linha (estado, leituras, ações). Desktop: células da grelha. */}
+      <div className="col-span-2 flex items-center justify-between gap-2 md:contents">
+        <div className="flex items-center gap-2 md:contents">
+          <span className="flex items-center gap-1.5 md:justify-self-start">
+            <QrStatusBadge isActive={isActive} />
+          </span>
+          <span
+            className="flex items-center gap-1.5 font-mono text-sm tabular-nums md:justify-self-end"
+            title={t.scans}>
+            <ScanLine size={14} aria-hidden className="text-muted-foreground md:hidden" />
+            {scans}
+            <span className="sr-only">{t.scans}</span>
+          </span>
         </div>
 
-        <div className="flex flex-col justify-between">
-          <div className="flex items-center gap-2 justify-end">
-            <button
-              type="button"
-              className="bg-transparent p-0 border-none"
-              aria-label={t.preview}
-              onClick={() => setIsOpenDialog(true)}>
-              <Eye size={18} />
-            </button>
-            <PreviewQRCode
-              title={title}
-              image={image}
-              dateFormatted={dateFormatted}
-              link={link}
-              isOpen={isOpenDialog}
-              setIsOpen={setIsOpenDialog}
-            />
-
-            <span
-              className="sm:block py-1 px-2 rounded-md border text-[.8rem] sm:text-xs font-semibold"
-              title={t.scans}>
-              {scans}
-            </span>
-          </div>
-
-          <div className="flex justify-end gap-2 sm:gap-3">
-            <QrCodeGenerated
-              id={id}
-              isOpen={isVisibleDialogSaveImg}
-              setIsOpen={setIsVisibleDialogSaveImg}
-              qrcode={image}
-            />
-            <Button
-              size="icon-sm"
-              variant="outline"
-              aria-label={t.download}
-              onClick={() => setIsVisibleDialogSaveImg(true)}>
-              <Download size={14} />
-            </Button>
-
-            <Button size="icon-sm" variant="outline" asChild>
-              <Link to={`/dashboard/qrcode-edit/${id}`} aria-label={t.edit}>
-                <Pencil size={12} />
-              </Link>
-            </Button>
-
-            <DeleteQrcodeDialog id={id} title={title} onDeleted={onDeleted}>
-              <Button size="icon-sm" variant="outline" aria-label={t.delete}>
-                <Trash2 size={12} />
+        <div
+          role="group"
+          aria-label={t.actions.replace("{title}", title)}
+          className="-mr-2 flex items-center md:mr-0">
+          <IconAction label={t.preview} onClick={() => setIsOpenDialog(true)}>
+            <Eye aria-hidden />
+          </IconAction>
+          <IconAction label={t.download} onClick={() => setIsVisibleDialogSaveImg(true)}>
+            <Download aria-hidden />
+          </IconAction>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon-sm"
+                className="size-11 md:size-9"
+                asChild>
+                <Link to={`/dashboard/qrcode-edit/${id}`} aria-label={t.edit}>
+                  <Pencil aria-hidden />
+                </Link>
               </Button>
+            </TooltipTrigger>
+            <TooltipContent sideOffset={6}>{t.edit}</TooltipContent>
+          </Tooltip>
+          <Tooltip>
+            <DeleteQrcodeDialog id={id} title={title} onDeleted={onDeleted}>
+              <TooltipTrigger asChild>
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon-sm"
+                  aria-label={t.delete}
+                  className="size-11 md:size-9">
+                  <Trash2 aria-hidden />
+                </Button>
+              </TooltipTrigger>
             </DeleteQrcodeDialog>
-          </div>
+            <TooltipContent sideOffset={6}>{t.delete}</TooltipContent>
+          </Tooltip>
         </div>
       </div>
-    </React.Fragment>
+
+      <PreviewQRCode
+        title={title}
+        image={image}
+        dateFormatted={dateFormatted}
+        link={link}
+        isOpen={isOpenDialog}
+        setIsOpen={setIsOpenDialog}
+      />
+      <QrCodeGenerated
+        id={id}
+        isOpen={isVisibleDialogSaveImg}
+        setIsOpen={setIsVisibleDialogSaveImg}
+        qrcode={image}
+      />
+    </li>
   );
 }
 

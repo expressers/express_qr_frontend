@@ -1,27 +1,27 @@
-import React from "react";
-import { ArrowRight, QrCode } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardQrcode,
-  CardTitle,
-  CreateQrcode,
-  Skeleton,
-} from "@/components";
-
-import { useGetMeplan, useGetQrcodes, useLang, useUserGetMe } from "@/hooks";
+import { ArrowRight, QrCode, TriangleAlert } from "lucide-react";
 import { Link } from "react-router-dom";
+
+import { Button, Skeleton } from "@/components";
+import {
+  CardQrcode,
+  QrEmptyState,
+  QrList,
+  QrListSkeleton,
+} from "@/components/cardQrcode";
+import { CreateQrcode, PlanUsageCard } from "@/components/createQrcode";
+import { useGetMeplan, useGetQrcodes, useLang, useUserGetMe } from "@/hooks";
 import { images } from "@/assets";
 import { getImageUrl } from "@/config";
-import { PlanUsageCard } from "@/components/createQrcode";
 
 function Dashboard() {
-  const { data, total, isLoading, refetchQrcodes } = useGetQrcodes();
+  const { data, total, isLoading, error, refetchQrcodes } = useGetQrcodes();
   const { data: myPlan, isLoading: isLoadingPlan, refetch: refetchPlan } = useGetMeplan();
   const { translations } = useLang();
   useUserGetMe();
   const t = translations.pages.dashboard;
+
+  // `data` é null até ao primeiro pedido terminar: nunca mostrar "vazio" nesse intervalo.
+  const isPending = isLoading || data === null;
 
   const itemQrcode = (data ?? []).slice(0, 5).map((item) => ({
     id: item.id,
@@ -31,6 +31,7 @@ function Dashboard() {
       t.noLink,
     date: item.createdAt,
     scans: item.scanCount ?? 0,
+    type: item.type,
     isActive: item.isActive,
     image: getImageUrl(item.imageUrl ?? undefined) || images.qrCode.qr_code1,
   }));
@@ -41,63 +42,96 @@ function Dashboard() {
   };
 
   return (
-    <React.Fragment>
-      <div className="md:pb-0 pb-16 space-y-8">
+    <div className="mx-auto max-w-6xl space-y-10">
+      <header className="space-y-1">
+        <h1 className="text-2xl font-semibold tracking-tight">{t.title}</h1>
+        <p className="text-sm text-muted-foreground">{t.subtitle}</p>
+      </header>
 
-        <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1 sm:gap-8 gap-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>{t.totalQrcodes}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold">{total}</span>
-                <QrCode size={30} aria-hidden />
-              </div>
-            </CardContent>
-          </Card>
-          <PlanUsageCard
-            myPlan={myPlan}
-            isLoading={isLoadingPlan}
-            type="STATIC"
-            title={t.staticUsage}
-          />
-          <PlanUsageCard
-            myPlan={myPlan}
-            isLoading={isLoadingPlan}
-            type="DYNAMIC"
-            title={t.dynamicUsage}
-          />
-        </div>
-
-        <div className="space-y-5">
-          <div className="flex justify-between items-center">
-            <span className="text-sm font-bold block">{t.myQrcodes}</span>
-            <Link
-              to="/dashboard/my-qrcodes"
-              className="duration-300 hover:text-muted-foreground flex items-center gap-2">
-              <span className="text-sm">{t.viewAll}</span>
-              <ArrowRight size={18} aria-hidden />
-            </Link>
-          </div>
-
-          {isLoading ? (
-            <div className="grid grid-cols-3 sm:gap-8 gap-4 custom-cols-2 custom-cols-1">
-              {Array.from({ length: 5 }).map((_, index) => (
-                <Skeleton key={index} className="h-44 rounded-2xl" />
-              ))}
-            </div>
+      {/* Métricas: tipografia grande, sem cartões, separadas por hairlines */}
+      <section
+        aria-label={t.title}
+        className="grid grid-cols-1 gap-y-8 border-y py-6 md:grid-cols-3 md:gap-y-0 md:py-8">
+        <div className="space-y-3 md:pr-8">
+          <p className="text-sm text-muted-foreground">{t.totalQrcodes}</p>
+          {isPending ? (
+            <Skeleton className="h-9 w-16" />
           ) : (
-            <div className="grid grid-cols-3 sm:gap-8 gap-4 custom-cols-2 custom-cols-1">
-              {itemQrcode.map((item) => (
-                <CardQrcode {...item} key={item.id} onDeleted={handleDeleted} />
-              ))}
-              <CreateQrcode />
-            </div>
+            <p className="flex items-center gap-3 font-mono text-3xl font-semibold leading-none tracking-tight tabular-nums">
+              {total}
+              <QrCode size={22} strokeWidth={1.5} aria-hidden className="text-muted-foreground" />
+            </p>
           )}
         </div>
-      </div>
-    </React.Fragment>
+        <PlanUsageCard
+          className="md:border-l md:px-8"
+          myPlan={myPlan}
+          isLoading={isLoadingPlan}
+          type="STATIC"
+          title={t.staticUsage}
+        />
+        <PlanUsageCard
+          className="md:border-l md:pl-8"
+          myPlan={myPlan}
+          isLoading={isLoadingPlan}
+          type="DYNAMIC"
+          title={t.dynamicUsage}
+        />
+      </section>
+
+      <section className="space-y-4" aria-labelledby="recent-heading">
+        <div className="flex items-baseline justify-between gap-4">
+          <h2 id="recent-heading" className="text-base font-semibold">
+            {t.recent}
+          </h2>
+          <Link
+            to="/dashboard/my-qrcodes"
+            className="group inline-flex min-h-11 items-center gap-1.5 text-sm text-muted-foreground transition-colors duration-(--dur-fast) hover:text-foreground md:min-h-0">
+            {t.viewAll}
+            <ArrowRight
+              size={16}
+              aria-hidden
+              className="transition-transform duration-(--dur-fast) ease-(--ease-out) group-hover:translate-x-0.5"
+            />
+          </Link>
+        </div>
+
+        {isPending && !error ? (
+          <QrListSkeleton count={3} />
+        ) : error ? (
+          <QrEmptyState
+            role="alert"
+            icon={TriangleAlert}
+            title={t.loadError}
+            action={
+              <Button variant="outline" onClick={() => refetchQrcodes()}>
+                {t.retry}
+              </Button>
+            }
+          />
+        ) : itemQrcode.length === 0 ? (
+          <QrEmptyState
+            icon={QrCode}
+            title={t.emptyTitle}
+            body={t.emptyBody}
+            action={
+              <Button asChild>
+                <Link to="/dashboard/qrcode-generator">{t.emptyCta}</Link>
+              </Button>
+            }
+          />
+        ) : (
+          <>
+            <QrList>
+              {itemQrcode.map((item, index) => (
+                <CardQrcode {...item} index={index} key={item.id} onDeleted={handleDeleted} />
+              ))}
+            </QrList>
+            <CreateQrcode />
+          </>
+        )}
+      </section>
+    </div>
   );
 }
 

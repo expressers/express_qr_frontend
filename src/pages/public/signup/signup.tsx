@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import { GoogleMark } from "@/components/googleMark/googleMark";
 import { Link } from "react-router-dom";
 import {
@@ -7,194 +6,158 @@ import {
   FormField,
   FormItem,
   FormLabel,
-  FormMessage,
   Input,
   Button,
   Spinner,
 } from "@/components";
+import { AuthShell, FieldError, PasswordInput } from "@/components/authShell";
 
-import { useLang, useSignUp } from "@/hooks";
-import { Eye, EyeOff } from "lucide-react";
+import { useLang, useSignUp, useSigninGoogle } from "@/hooks";
 
 function SignUp() {
   const { form, onSubmit, isLoading } = useSignUp();
   const { translations } = useLang();
   const t = translations.pages.SignUp;
-  const [isVisiblity, setIsVisible] = useState(false);
+  const { login } = useSigninGoogle();
 
   return (
-    <React.Fragment>
-      <div className="h-screen w-full  flex items-center justify-start  sm:p-4 bgImg ">
-        <div className="dark:bg-black bg-white h-full lg:w-1/3 md:w-2/3 w-full transition-all duration-300  md:rounded-md lg:px-8 md:px-6 px-4 sm:overflow-y-hidden sm:hover:overflow-y-scroll overflow-y-scroll custom-scroll  flex items-center justify-center">
-          <Form {...form}>
-            <form
-              onSubmit={form.handleSubmit(onSubmit)}
-              className=" py-2 lg:space-y-4  space-y-3 flex flex-col justify-center w-full ">
-              <div className="sm:mb-6  flex flex-col mt-12">
-                <span className="lg:text-2xl md:text-xl text-lg lg:text-start md:text-start text-center font-bold p-1">
-                  {t.title}
-                </span>
-                <p className="text-xs font-medium mt-1 lg:text-start md:text-start text-center ">
-                  {t.subtitle}
-                </p>
-              </div>
+    <AuthShell>
+      <Form {...form}>
+        <form
+          onSubmit={form.handleSubmit(onSubmit)}
+          aria-busy={isLoading}
+          className="space-y-5">
+          <div className="space-y-1.5">
+            <h1 className="text-balance text-[1.75rem] font-semibold leading-tight tracking-tight">
+              {t.title}
+            </h1>
+            <p className="text-sm text-muted-foreground">{t.subtitle}</p>
+          </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 w-full">
-                <FormField
-                  control={form.control}
-                  name="firstName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t.firstName}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t.firstNamePlaceholder}
-                          type="text"
-                          className="lg:py-6 md:py-4 py-2 text-xs"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="lastName"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel className="text-xs">{t.lastName}</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder={t.lastNamePlaceholder}
-                          type="text"
-                          className="lg:py-6 md:py-4 py-2 text-xs"
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-              </div>
-              <FormField
-                control={form.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">{t.email}</FormLabel>
-                    <FormControl>
-                      <Input
-                        placeholder="Digite o seu Email"
-                        type="email"
-                        className="lg:py-6 md:py-4 py-2 text-xs"
-                        {...field}
-                      />
-                    </FormControl>
+          <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 sm:gap-4">
+            <FormField
+              control={form.control}
+              name="firstName"
+              render={({ field }) => (
+                <FormItem className="gap-2">
+                  <FormLabel className="text-sm">{t.firstName}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t.firstNamePlaceholder}
+                      type="text"
+                      autoComplete="given-name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FieldError />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="lastName"
+              render={({ field }) => (
+                <FormItem className="gap-2">
+                  <FormLabel className="text-sm">{t.lastName}</FormLabel>
+                  <FormControl>
+                    <Input
+                      placeholder={t.lastNamePlaceholder}
+                      type="text"
+                      autoComplete="family-name"
+                      {...field}
+                    />
+                  </FormControl>
+                  <FieldError />
+                </FormItem>
+              )}
+            />
+          </div>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">{t.password}</FormLabel>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Input
-                          placeholder={t.passwordPlaceholder}
-                          type={isVisiblity ? "text" : "password"}
-                          className="lg:py-6 md:py-4 py-2 text-xs w-full"
-                          {...field}
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-4 md:top-4 top-2 "
-                          onClick={() => setIsVisible((state) => !state)}>
-                          {isVisiblity ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
+          <FormField
+            control={form.control}
+            name="email"
+            render={({ field }) => (
+              <FormItem className="gap-2">
+                <FormLabel className="text-sm">{t.email}</FormLabel>
+                <FormControl>
+                  <Input
+                    placeholder={t.emailPlaceholder}
+                    type="email"
+                    autoComplete="email"
+                    {...field}
+                  />
+                </FormControl>
+                <FieldError />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="password"
+            render={({ field }) => (
+              <FormItem className="gap-2">
+                <FormLabel className="text-sm">{t.password}</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    placeholder={t.passwordPlaceholder}
+                    autoComplete="new-password"
+                    {...field}
+                  />
+                </FormControl>
+                <FieldError />
+              </FormItem>
+            )}
+          />
+          <FormField
+            control={form.control}
+            name="confpassword"
+            render={({ field }) => (
+              <FormItem className="gap-2">
+                <FormLabel className="text-sm">{t.confirmPassword}</FormLabel>
+                <FormControl>
+                  <PasswordInput
+                    placeholder={t.confirmPasswordPlaceholder}
+                    autoComplete="new-password"
+                    {...field}
+                  />
+                </FormControl>
+                <FieldError />
+              </FormItem>
+            )}
+          />
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name="confpassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel className="text-xs">
-                      {t.confirmPassword}
-                    </FormLabel>
-                    <FormControl>
-                      <div className="relative w-full">
-                        <Input
-                          placeholder={t.passwordPlaceholder}
-                          type={isVisiblity ? "text" : "password"}
-                          className="lg:py-6 md:py-4 py-2 text-xs w-full"
-                          {...field}
-                        />
-                        <button
-                          type="button"
-                          className="absolute right-4 md:top-4 top-2 "
-                          onClick={() => setIsVisible((state) => !state)}>
-                          {isVisiblity ? (
-                            <EyeOff size={18} />
-                          ) : (
-                            <Eye size={18} />
-                          )}
-                        </button>
-                      </div>
-                    </FormControl>
+          <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
+            {isLoading && <Spinner />}
+            {t.button}
+          </Button>
 
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="submit"
-                className="lg:p-6 md:p-6 p-2 cursor-pointer">
-                {" "}
-                {isLoading && <Spinner />}
-                {t.button}
-              </Button>
-              <div className="flex  items-center justify-center gap-4 mt-4">
-                <span className=" w-[20%] h-[1px] bg-gray-500 block" />
-                <span className=" text-center block text-xs">
-                  {t.orContinue}{" "}
-                </span>
-                <span className="  w-[20%] h-[1px] bg-gray-500 block" />
-              </div>
+          <div className="flex items-center gap-4">
+            <span aria-hidden className="h-px flex-1 bg-border" />
+            <span className="text-sm text-muted-foreground">{t.orContinue}</span>
+            <span aria-hidden className="h-px flex-1 bg-border" />
+          </div>
 
-              <Button
-                type="button"
-                className="lg:p-6 md:p-6 p-2 cursor-pointer text-xs"
-                variant="outline">
-                <span className="mr-2">
-                  <GoogleMark aria-hidden="true" />
-                </span>
-                {t.continueGoogle}
-              </Button>
-              <span className="text-center text-xs mt-2">
-                {t.haveAccount}{" "}
-                <Link to="/auth/signin" className="font-bold text-xs">
-                  {t.signinHere}
-                </Link>
-              </span>
-            </form>
-          </Form>
-        </div>
-      </div>
-    </React.Fragment>
+          <Button
+            type="button"
+            size="lg"
+            variant="outline"
+            className="w-full"
+            onClick={() => login()}>
+            <GoogleMark aria-hidden="true" className="size-4" />
+            {t.continueGoogle}
+          </Button>
+
+          <p className="text-center text-sm text-muted-foreground">
+            {t.haveAccount}{" "}
+            <Link
+              to="/auth/signin"
+              className="font-semibold text-foreground underline underline-offset-4">
+              {t.signinHere}
+            </Link>
+          </p>
+        </form>
+      </Form>
+    </AuthShell>
   );
 }
 

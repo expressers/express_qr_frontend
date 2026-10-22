@@ -29,9 +29,9 @@ function Profilelayaout() {
 
   return (
     <React.Fragment>
-      <div className="pt-8 h-[95%]">
-        <section className="grid md:grid-cols-4 grid-cols-1 gap-6 bg-card h-full  overflow-hidden rounded-2xl">
-          <div className="md:col-span-1 md:h-auto h-20  sm:px-8 px-4 dark:bg-zinc-800/10 bg-sidebar py-4 md:py-8 overflow-x-scroll  [&::-webkit-scrollbar]:hidden">
+      <div className="pt-8">
+        <section className="grid md:grid-cols-4 grid-cols-1 gap-6 bg-card overflow-hidden rounded-2xl border border-border">
+          <div className="md:col-span-1 md:h-auto h-20  sm:px-8 px-4 bg-sidebar py-4 md:py-8 overflow-x-scroll  [&::-webkit-scrollbar]:hidden">
             <ul className="flex md:flex-col flex-row gap-6">
               {itemMenuLink.map((item, index) => (
                 <li key={index}>
@@ -49,7 +49,7 @@ function Profilelayaout() {
               ))}
             </ul>
           </div>
-          <main className="md:col-span-3  sm:px-8 px-4  py-8 no-scrollbar overflow-y-auto h-[90%]">
+          <main className="md:col-span-3 sm:px-8 px-4 py-8">
             <Outlet />
           </main>
         </section>

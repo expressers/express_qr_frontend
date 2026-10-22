@@ -20,7 +20,13 @@
       "validation": {
         "required": "Enter the QR code content.",
         "tooLong": "Content cannot be longer than 2000 characters."
-      }
+      },
+      "urlLabel": "Destination link",
+      "typeText": "Text",
+      "typeWifi": "Wi-Fi",
+      "soon": "Soon",
+      "empty": "Your QR code appears here.",
+      "saveToAccount": "Save to account"
     },
     "UserMenu": {
       "myAccount": "My Account",
@@ -36,7 +42,12 @@
         "createAccount": "Sign up",
         "signIn": "Sign in"
       },
-      "openMenu": "Open menu"
+      "openMenu": "Open menu",
+      "nav": {
+        "home": "Home",
+        "about": "About",
+        "pricing": "Plans"
+      }
     },
     "SidebarAppPrivate": {
       "brand": "ExpressQR",
@@ -47,17 +58,23 @@
         "settings": "Settings",
         "subscription": "Subscription",
         "reports": "Statistic"
+      },
+      "menuShort": {
+        "myQrcodes": "QR codes"
       }
     },
     "CreateQrcode": {
-      "title": "Create QR codes",
+      "title": "Create QR code",
       "description": "Fill in the fields below to create your custom QR code.",
       "select": {
         "label": "Types",
         "placeholder": "Select type",
         "urlLabel": "URL types",
         "static": "Static",
-        "dynamic": "Dynamic"
+        "dynamic": "Dynamic",
+        "fieldLabel": "QR code type",
+        "staticHint": "The destination is baked into the image and cannot be changed.",
+        "dynamicHint": "Points to a short address. You can change the destination and track scans."
       },
       "form": {
         "typeLabel": "URL Type",
@@ -93,6 +110,16 @@
         "unlimited": "Unlimited",
         "limitReached": "Limit reached",
         "upgrade": "Request upgrade"
+      },
+      "cta": "New QR code",
+      "subtitle": "Pick the type, enter the destination and generate the QR code.",
+      "preview": {
+        "title": "Preview",
+        "empty": "Your QR code appears here once generated.",
+        "untitled": "Untitled",
+        "destination": "Destination",
+        "download": "Download",
+        "view": "View in list"
       }
     },
     "CardQrcode": {
@@ -107,7 +134,31 @@
       "cancel": "Cancel",
       "confirmDelete": "Delete",
       "deleteSuccess": "QR code deleted.",
-      "deleteError": "Could not delete the QR code."
+      "deleteError": "Could not delete the QR code.",
+      "active": "Active",
+      "typeStatic": "Static",
+      "typeDynamic": "Dynamic",
+      "actions": "Actions for {title}"
+    },
+    "Search": {
+      "label": "Search",
+      "field": "Search QR codes and pages",
+      "placeholder": "Type to search…",
+      "empty": "No results for \"{query}\".",
+      "page": "Page",
+      "qrcode": "QR code",
+      "hint": "Type the name of a QR code or a page.",
+      "loading": "Loading…",
+      "title": "Search"
+    },
+    "AuthShell": {
+      "tagline": "Create, share and track your QR codes.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password"
+    },
+    "LazyBoundary": {
+      "error": "Could not load this page.",
+      "retry": "Try again"
     }
   },
   "layout": {
@@ -119,7 +170,6 @@
         "logout": "Logout"
       },
       "logoutConfirm": "Are you sure you want to log out?",
-      "deleteConfirm": "Are you sure you want to delete your account?",
       "messages": {
         "logoutSuccess": "Logged out successfully.",
         "deleteSuccess": "Account deleted successfully.",
@@ -141,15 +191,23 @@
       "noTitle": "Untitled",
       "noLink": "No link",
       "staticUsage": "Static QR codes",
-      "dynamicUsage": "Dynamic QR codes"
+      "dynamicUsage": "Dynamic QR codes",
+      "title": "Dashboard",
+      "subtitle": "Your account at a glance and your latest QR codes.",
+      "recent": "Most recent",
+      "emptyTitle": "You have no QR codes yet",
+      "emptyBody": "Create your first one and follow its scans here.",
+      "emptyCta": "Create your first QR code",
+      "loadError": "Could not load the QR codes.",
+      "retry": "Try again"
     },
     "SignIn": {
       "welcome": "Welcome Back",
       "subtitle": "Login to start creating stunning QR codes.",
       "email": "Email",
-      "emailPlaceholder": "Enter your email",
+      "emailPlaceholder": "name@example.com",
       "password": "Password",
-      "passwordPlaceholder": "Enter your password",
+      "passwordPlaceholder": "Your password",
       "rememberMe": "Remember Me",
       "forgotPassword": "Forgot Password?",
       "login": "Login",
@@ -174,15 +232,15 @@
       "title": "Create Account",
       "subtitle": "Sign up to start creating QR codes.",
       "firstName": "First Name",
-      "firstNamePlaceholder": "Enter your first name",
+      "firstNamePlaceholder": "Your first name",
       "lastName": "Last Name",
-      "lastNamePlaceholder": "Enter your last name",
+      "lastNamePlaceholder": "Your last name",
       "email": "Email",
-      "emailPlaceholder": "Enter your email",
+      "emailPlaceholder": "name@example.com",
       "password": "Password",
-      "passwordPlaceholder": "Enter your password",
+      "passwordPlaceholder": "Create a password",
       "confirmPassword": "Confirm Password",
-      "confirmPasswordPlaceholder": "Re-enter your password",
+      "confirmPasswordPlaceholder": "Repeat the password",
       "button": "Create Account",
       "orContinue": "Or continue with",
       "continueGoogle": "Continue with Google",
@@ -225,7 +283,10 @@
       "mailSubject": "ExpressQR upgrade request",
       "mailBody": "Hello, I would like to activate the plan below on my account.",
       "free": "Free",
-      "goToDashboard": "Go to dashboard"
+      "goToDashboard": "Go to dashboard",
+      "recommended": "Recommended",
+      "notIncluded": "Not included",
+      "manualTitle": "Manual activation"
     },
     "MyProfile": {
       "title": "My Profile",
@@ -290,9 +351,9 @@
     },
     "ForgotPassword": {
       "title": "Forgot your password?",
-      "subtitle": "Please enter the email address associated with your account and we will send you <br /> a link to reset your password.",
+      "subtitle": "Enter the email of your account and we will send you a link to reset your password.",
       "email": "Email",
-      "emailPlaceholder": "Enter your email",
+      "emailPlaceholder": "name@example.com",
       "button": "Reset password",
       "backToLogin": "Back to login",
       "validation": {
@@ -304,11 +365,11 @@
     },
     "ResetPassword": {
       "title": "Reset password",
-      "subtitle": "Set a new password for your account. Make sure to <br /> choose a strong password that only you know.",
+      "subtitle": "Choose a new password for your account. Use a strong one that only you know.",
       "newPassword": "New password",
-      "newPasswordPlaceholder": "Enter the new password",
+      "newPasswordPlaceholder": "New password",
       "confirmNewPassword": "Confirm new password",
-      "confirmNewPasswordPlaceholder": "Re-enter the new password",
+      "confirmNewPasswordPlaceholder": "Repeat the new password",
       "button": "Reset password",
       "back": "Back",
       "validation": {
@@ -350,7 +411,20 @@
       "noTitle": "Untitled",
       "noLink": "No link",
       "noQrFiltered": "No QR codes match this filter.",
-      "clearFilter": "Show all"
+      "clearFilter": "Show all",
+      "subtitle": "Search, filter, download or edit your QR codes.",
+      "search": "Search QR codes",
+      "colQr": "QR code",
+      "colCreated": "Created",
+      "colStatus": "Status",
+      "colScans": "Scans",
+      "colActions": "Actions",
+      "previous": "Previous",
+      "next": "Next",
+      "pageOf": "Page {page} of {total}",
+      "showing": "{from}-{to} of {total}",
+      "retry": "Try again",
+      "emptyBody": "Create the first one to see it here."
     },
     "VerifyEmail": {
       "verifyingTitle": "Verifying your account…",
@@ -401,7 +475,13 @@
         "maxDescription": "Description can be at most 500 characters",
         "requiredTitle": "Title is required",
         "minTitle": "Title must be at least 3 characters"
-      }
+      },
+      "dangerTitle": "Delete QR code",
+      "dangerBody": "This cannot be undone. If the QR code is dynamic, it stops redirecting.",
+      "backShort": "My QR codes",
+      "errorTitle": "Could not open the QR code",
+      "retry": "Try again",
+      "staticNote": "The content is baked into the image. To change it, create a new QR code."
     },
     "Subscription": {
       "title": "Subscription",
@@ -426,7 +506,10 @@
       "footer": {
         "limited": "* Limits count the total number of saved QR codes, not a monthly quota.",
         "unlimited": "* \"Unlimited\" means your plan has no limit for this QR code type."
-      }
+      },
+      "currentPlan": "Current plan",
+      "usageTitle": "Usage",
+      "ofLimit": "of {limit}"
     },
     "Statistic": {
       "title": "Statistics",
@@ -447,7 +530,46 @@
       "basicNotice": "Your plan includes basic analytics. Pro and Premium also show devices and scan sources.",
       "loadError": "Could not load the statistics.",
       "direct": "Direct",
-      "loadMore": "Load more QR codes ({loaded}/{total})"
+      "loadMore": "Load more QR codes ({loaded}/{total})",
+      "daysShort": "{n} days",
+      "windowLimit": "Your plan keeps up to {n} days of history.",
+      "tableView": "View as table",
+      "tableDate": "Day",
+      "chartLabel": "Chart of scans per day",
+      "loadingMore": "Loading..."
+    },
+    "Settings": {
+      "profileDesc": "Your account details.",
+      "securityDesc": "Change your account password.",
+      "dangerDesc": "Deleting your account permanently removes your QR codes and statistics.",
+      "confirmWord": "DELETE",
+      "confirmLabel": "Type {word} to confirm",
+      "deleteAction": "Delete account"
+    },
+    "System": {
+      "notFound": {
+        "title": "Page not found",
+        "text": "The link you followed does not exist or has moved.",
+        "action": "Back to home"
+      },
+      "construction": {
+        "title": "Under construction",
+        "text": "This page is not available yet.",
+        "action": "Back to home"
+      },
+      "redirect": {
+        "loadingTitle": "Redirecting",
+        "loadingText": "Opening the QR code destination.",
+        "errorTitle": "QR code not found",
+        "errorText": "This QR code may have been removed or deactivated.",
+        "action": "Go to home"
+      }
+    },
+    "Home": {
+      "title": "QR codes that never expire.",
+      "subtitle": "Paste a link, generate the QR code and download it as PNG, SVG or PDF. No sign-up.",
+      "accountNote": "Dynamic QR codes you can edit, with scan statistics, need an account.",
+      "accountCta": "Create account"
     }
   },
   "errors": {
