@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useNavigate } from "react-router-dom";
 
 import { userService } from "@/service/api";
+import { applyFieldErrors, getErrorMessage } from "@/utils";
 import { useLang } from "./use_Lang";
 
 
@@ -67,29 +68,20 @@ function useSignUp() {
 
     try {
       setIsLoading(true);
-
-      const response = await userService.register(payload);
-
-     
-
-      if ( response.data.success === false) {
-        throw new Error(`Erro ${response.status}`);
-      }
-
-     
-      toast.success("Conta criada com sucesso!", {
-        className: "bg-green-500 text-white font-semibold",
+      await userService.register(payload);
+      toast.success(t.toastSuccess);
+      navigate("/auth/verify-account", {
+        replace: true,
+        state: { email: payload.email },
       });
-      navigate("/auth/verify-account", { replace: true });
-     
-    
-      
     } catch (error) {
-      toast.error("Erro ao criar conta", {
-        className: "bg-red-500/10 text-white font-semibold",
-      });
-
-      console.error("error:", error);
+      applyFieldErrors(
+        error,
+        form.setError,
+        { firstName: "firstName", lastName: "lastName", email: "email", password: "password" },
+        translations.errors.FIELD_INVALID,
+      );
+      toast.error(getErrorMessage(error, translations.errors, t.toastError));
     } finally {
       setIsLoading(false);
     }

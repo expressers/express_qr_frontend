@@ -1,0 +1,4 @@
+[test]
+preload = ["./src/test/setup.ts"]
+# Only unit tests; Playwright specs live in e2e/ and use a different runner.
+root = "./src"

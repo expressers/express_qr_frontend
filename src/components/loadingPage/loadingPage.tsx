@@ -26,22 +26,22 @@ function LoadingPage() {
           fadeOut ? "opacity-0" : "opacity-100"
         }`}>
         <span
-          data-text="BISC"
+          data-text="Express"
           className="relative sm:text-6xl text-4xl font-bold tracking-[.4rem]
             [-webkit-text-fill-color:transparent] [-webkit-text-stroke-width:1px]
             dark:text-white text-black before:content-[attr(data-text)] before:absolute before:top-0 before:left-0
             before:overflow-hidden before:[width:0] before:dark:text-white before:text-black
             before:[-webkit-text-stroke-width:0px] dark:before:[-webkit-text-fill-color:white]
             before:[-webkit-text-fill-color:black] before-animate-fillText">
-          BISC
+          Express
           <span
-            data-text="8QR"
-            className="relative text-green-600
+            data-text="QR"
+            className="relative text-muted-foreground
               before:content-[attr(data-text)] before:absolute
-              before:overflow-hidden before:[width:0] before:text-green-600
+              before:overflow-hidden before:[width:0] before:text-muted-foreground
               before:[-webkit-text-stroke-width:0px]
               before-text-fill-green before-animate-fillText-qr">
-            8QR
+            QR
           </span>
         </span>
       </div>

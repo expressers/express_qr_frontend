@@ -1,32 +1,28 @@
 import { useCallback, useEffect, useState } from "react";
-import { userService, type GetUserMe } from "@/service/api";
-import { useUserAccount } from "@/hooks"; 
+import { userService, type UserMe } from "@/service/api";
 import { CACHE } from "@/utils";
+import { useUserAccount } from "./userAccount";
 
 const CACHE_KEY = "user_me";
 const CACHE_TTL = 2 * 60 * 60 * 1000;
+
 export function useUserGetMe() {
-  const [data, setData] = useState<GetUserMe["data"] | undefined>();
+  const [data, setData] = useState<UserMe | undefined>();
   const [isLoading, setIsLoading] = useState(false);
   const { dispatch } = useUserAccount();
-  
 
   const syncUser = useCallback(
-    (userData: GetUserMe["data"]) => {
-      const name = `${userData.firstName} ${userData.lastName}`;
-      const updatedUser = {
-        user_id: userData.id,
-        user_email: userData.email,
-        user_name: name,
-        user_phone: userData.phone,
-        user_role: userData.role,
-      };
-
-     
-      dispatch({ type: "UPDATE", payload: updatedUser });
-
-      
-     
+    (userData: UserMe) => {
+      dispatch({
+        type: "UPDATE",
+        payload: {
+          user_id: userData.id,
+          user_email: userData.email ?? null,
+          user_name: `${userData.firstName ?? ""} ${userData.lastName ?? ""}`.trim() || null,
+          user_phone: userData.phone ?? null,
+          user_role: userData.role ?? null,
+        },
+      });
     },
     [dispatch],
   );
@@ -34,7 +30,7 @@ export function useUserGetMe() {
   const fetchUserMe = useCallback(
     async (force = false) => {
       if (!force) {
-        const cached = CACHE.get<GetUserMe["data"]>(CACHE_KEY, CACHE_TTL);
+        const cached = CACHE.get<UserMe>(CACHE_KEY, CACHE_TTL);
         if (cached) {
           setData(cached);
           syncUser(cached);
@@ -44,24 +40,18 @@ export function useUserGetMe() {
 
       try {
         setIsLoading(true);
-        const response = await userService.getUserMe();
-        const { data } = response.data;
-
-        if (response.data.success) {
-          setData(data);
-          CACHE.set(CACHE_KEY, data);
-          syncUser(data);
-        }
-      } catch (error) {
-        console.error("Erro ao buscar usuário:", error);
+        const user = await userService.getUserMe();
+        setData(user);
+        CACHE.set(CACHE_KEY, user);
+        syncUser(user);
+      } catch {
+        // 401 já é tratado no apiClient; outros erros deixam os dados em cache.
       } finally {
         setIsLoading(false);
       }
     },
     [syncUser],
   );
-
-
 
   useEffect(() => {
     fetchUserMe();

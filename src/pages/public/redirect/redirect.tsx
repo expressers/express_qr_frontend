@@ -1,49 +1,39 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { config } from "@/config";
-
-interface RedirectResponse {
-  targetUrl?: string;
-  notFound?: boolean;
-}
+import { getSafeRedirectUrl } from "@/utils/safeUrl";
 
 export function Redirect() {
   const { slug } = useParams<{ slug: string }>();
   const [error, setError] = useState(false);
+  // Cada pedido regista uma leitura: em StrictMode o efeito correria duas vezes.
+  const requested = useRef(false);
 
   useEffect(() => {
-    if (!slug) return;
+    if (!slug || requested.current) return;
+    requested.current = true;
 
     const resolveRedirect = async () => {
       try {
-        const apiUrl = config.apiUrl;
-        
-        const response = await fetch(`${apiUrl}/r/${slug}?json=true`, {
-          method: 'GET',
-          mode: 'cors'
-        });
-
-        console.log('[Redirect] Status:', response.status);
-
-        if (response.status === 404) {
-          const data = await response.json() as RedirectResponse;
-          console.log('[Redirect] Data:', data);
-          if (data.notFound) {
-            setError(true);
-            return;
-          }
+        const response = await fetch(
+          `${config.apiUrl}/r/${encodeURIComponent(slug)}?json=true`,
+          { method: "GET", mode: "cors" },
+        );
+        // QR inactivo ou apagado → 404 com envelope de erro `NOT_FOUND`.
+        if (!response.ok) {
+          setError(true);
+          return;
         }
 
-        const data = await response.json() as { targetUrl: string };
-        console.log('[Redirect] Data:', data);
-
-        if (data.targetUrl) {
-          window.location.href = data.targetUrl;
+        const data = (await response.json()) as { targetUrl?: unknown };
+        // Só destinos http(s): `javascript:`, `data:` e afins nunca são seguidos.
+        const target = getSafeRedirectUrl(data.targetUrl);
+        if (target) {
+          window.location.replace(target);
         } else {
           setError(true);
         }
-      } catch (err) {
-        console.error('[Redirect] Error:', err);
+      } catch {
         setError(true);
       }
     };

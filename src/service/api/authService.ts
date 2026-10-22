@@ -1,110 +1,79 @@
-import apiClient from "./apiClient.js";
+import { jwtDecode } from "jwt-decode";
+import { clearSession } from "@/utils/session";
+import apiClient from "./apiClient";
+import type { ApiEnvelope } from "./qrCodeService";
 
 interface CredentialsProps {
   email: string;
   password: string;
 }
-interface User {
-  id?: string;
-  firstName?: string;
-  lastName?: string;
-  name?: string;
-  username?: string;
-  email?: string;
-  photo?: string;
-  role?: string;
-  phone?: string;
-  city?: string;
-  country?: string;
-}
-interface ResponseProps {
-  token?: string;
-  message?: string;
-  success?: boolean;
-  user: User;
-  data: {
-    accessToken?: string;
-    token?: string;
-    user?: User;
-    success?: boolean;
-  };
-}
 
-interface VerifyEmail {
-  message: string;
-  success: string;
-  data: {
-    message: string;
-    success: string;
-  };
-}
+type SessionResponse = ApiEnvelope<{ accessToken: string }>;
+type MessageResponse = ApiEnvelope<{ message?: string }>;
 
 export const authService = {
   async login(credentials: CredentialsProps) {
-    const response = await apiClient.post<ResponseProps>("/api/sessions", {
+    // Nunca misturar dados da conta anterior com a nova sessão.
+    clearSession();
+    const response = await apiClient.post<SessionResponse>("/api/sessions", {
       email: credentials.email,
       password: credentials.password,
     });
-
-    if (response.status === 200) {
-      const accessToken = response.data.data.accessToken || response.data.token;
-
-      if (accessToken) {
-        this.storeToken(accessToken);
-      }
-    }
-
-    return response;
+    this.storeToken(response.data.data.accessToken);
+    return response.data.data;
   },
 
   /** Troca o access token da Google por uma sessão da API (validado no servidor). */
   async loginWithGoogle(googleAccessToken: string) {
-    const response = await apiClient.post<ResponseProps>("/api/sessions/google", {
-      accessToken: googleAccessToken,
-    });
-
-    if (response.status === 200) {
-      const accessToken = response.data.data.accessToken;
-
-      if (accessToken) {
-        this.storeToken(accessToken);
-      }
-    }
-
-    return response;
+    clearSession();
+    const response = await apiClient.post<SessionResponse>(
+      "/api/sessions/google",
+      { accessToken: googleAccessToken },
+    );
+    this.storeToken(response.data.data.accessToken);
+    return response.data.data;
   },
 
-  storeToken(token: string) {
+  storeToken(token: string | undefined) {
+    if (!token) return;
+    localStorage.setItem("auth_token", token);
     try {
-      const payload = JSON.parse(atob(token.split(".")[1]));
-      const expMs = payload?.exp ? payload.exp * 1000 : null;
-
-      localStorage.setItem("auth_token", token);
-      if (expMs) {
-        localStorage.setItem("auth_token_exp", String(expMs));
-      }
+      const { exp } = jwtDecode<{ exp?: number }>(token);
+      if (exp) localStorage.setItem("auth_token_exp", String(exp * 1000));
+      else localStorage.removeItem("auth_token_exp");
     } catch {
-      localStorage.setItem("auth_token", token);
+      localStorage.removeItem("auth_token_exp");
     }
   },
 
+  /** Remove token, utilizador e caches da conta. */
   logout() {
-    apiClient.clearAuthToken();
+    clearSession();
   },
 
   async forgotPassword(credentials: { email: string }) {
-    const response = await apiClient.post<ResponseProps>(
+    const response = await apiClient.post<MessageResponse>(
       "/api/sessions/forgot-password",
       { email: credentials.email },
     );
-    return response;
+    return response.data.data;
   },
-  async resetPassword(credentials: { newPassword:string }) {
-    const response = await apiClient.post<ResponseProps>(
+
+  async resetPassword(credentials: { token: string; newPassword: string }) {
+    const response = await apiClient.post<MessageResponse>(
       "/api/sessions/reset-password",
-      { newPassword: credentials.newPassword },
+      { token: credentials.token, newPassword: credentials.newPassword },
     );
-    return response;
+    return response.data.data;
+  },
+
+  /** Público e com resposta neutra: devolve sempre 200 (salvo rate limit). */
+  async resendVerification(email: string) {
+    const response = await apiClient.post<MessageResponse>(
+      "/api/auth/resend-verification",
+      { email },
+    );
+    return response.data.data;
   },
 
   isAuthenticated() {
@@ -116,10 +85,9 @@ export const authService = {
   },
 
   async verifyEmail(token: string) {
-    const response = await apiClient.get<VerifyEmail>("/api/auth/verify", {
+    const response = await apiClient.get<MessageResponse>("/api/auth/verify", {
       token,
     });
-
-    return response.data;
+    return response.data.data;
   },
 };

@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { UserMenu } from '../userMenu';
 import { Link } from 'react-router-dom';
 import { ToggleTheme } from '../toggleTheme';
+import { BRAND_NAME } from '../brandMark/brand';
 
 function Header3() {
     
@@ -39,7 +40,7 @@ function Header3() {
             {" "}
             <Link to="/">
               <span className="md:text-2xl text-lg font-semibold text-white">
-                BISC8R
+                {BRAND_NAME}
               </span>
             </Link>
           </div>

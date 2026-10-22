@@ -1,98 +1,52 @@
 import apiClient from "./apiClient";
+import type { ApiEnvelope } from "./qrCodeService";
+
+export type PlanName = "FREE" | "PROFESSIONAL" | "BUSINESS" | "INTERNAL";
 
 export interface PlanFeatures {
-  basicQrGeneration?: boolean;
   customColors?: boolean;
-  customLogo?: boolean;
-  analytics?: boolean;
-  apiAccess?: boolean;
-  teamCollaboration?: boolean;
-  prioritySupport?: boolean;
+  analytics?: "basic" | "full";
+  [feature: string]: unknown;
 }
 
-export interface PlanInfo {
-  name: string;
+export interface Plan {
+  name: PlanName;
+  /** "Free" | "Pro" | "Premium" (ou "Equipa ExpressQR" para INTERNAL). */
   displayName: string;
-  maxQrCodes: {
-    STATIC: number;
-    DYNAMIC: number;
-    TOTAL: number;
-  };
-  price: number;
+  /** -1 = ilimitado. */
+  maxQrCodes: { STATIC: number; DYNAMIC: number };
   features: PlanFeatures;
+  analyticsWindowDays: number;
 }
 
 export interface PlanUsage {
-  currentQrCount: number;
-  remainingQrCodes: number;
-  static?: {
-    current: number;
-    limit: number;
-    remaining: number;
-    percentage: number;
-  };
-  dynamic?: {
-    current: number;
-    limit: number;
-    remaining: number;
-    percentage: number;
-  };
-  total?: {
-    current: number;
-    limit: number;
-    remaining: number;
-    percentage: number;
-  };
+  static: number;
+  dynamic: number;
 }
 
-export interface PlanData {
-  currentPlan: PlanInfo;
+export interface Subscription {
+  currentPeriodEnd: string | null;
+  status: string;
+}
+
+export interface MyPlan {
+  plan: Plan;
   usage: PlanUsage;
-  upgradeOptions: PlanInfo[];
-  subscription: {
-    status: string;
-    currentPeriodStart: string;
-    currentPeriodEnd: string
-  };
+  /** -1 = ilimitado. */
+  remaining: PlanUsage;
+  subscription: Subscription | null;
 }
-
-export interface PlanMeResponse {
-  success: boolean;
-  data: PlanData;
-}
-
-
-export interface PlansResponse {
-  success: boolean;
-  data: {
-    plans: PlanInfo[];
-  };
-  status: number;
-}
-
-interface CheckFeatureResponse {
-  success: boolean;
-  data: {
-    feature: string;
-    hasAccess: boolean;
-    currentPlan: string;
-    message: string;
-  };
-}
-
 
 export const plansManagementService = {
   async getPlans() {
-    return await apiClient.get<PlansResponse>("/api/plans");
+    const response =
+      await apiClient.get<ApiEnvelope<{ plans: Plan[] }>>("/api/plans");
+    return response.data.data.plans;
   },
 
-  async getPlanMe() {
-    return await apiClient.get<PlanMeResponse>("/api/plans/my-plan");
-  },
-
-  async checkFeature(feature: string) {
-    return await apiClient.get<CheckFeatureResponse>(
-      `/api/plans/check-feature/${feature}`,
-    );
+  async getMyPlan() {
+    const response =
+      await apiClient.get<ApiEnvelope<MyPlan>>("/api/plans/my-plan");
+    return response.data.data;
   },
 };

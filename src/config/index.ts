@@ -3,14 +3,14 @@ export interface AppConfig {
   googleClientId: string;
 }
 
-const DEFAULT_API_URL = "https://api-qr.bisc8.digital";
+// Em desenvolvimento usa a API local; em produção VITE_API_URL é obrigatório
+// (definido na Vercel). Sem ele o apiClient falha logo com uma mensagem clara.
+const DEFAULT_API_URL = import.meta.env.DEV ? "http://localhost:8080" : "";
 const DEFAULT_GOOGLE_CLIENT_ID =
   "821167179033-4tids9e4pc9pcg4h275r2nfgj6lt8ccl.apps.googleusercontent.com";
 
 const trimTrailingSlash = (url: string): string => url.replace(/\/+$/, "");
 
-// Definir VITE_API_URL no .env.local (ex.: http://localhost:8080) para usar
-// um backend local; sem isso o frontend fala com a API de produção.
 const apiUrl = trimTrailingSlash(
   import.meta.env.VITE_API_URL?.trim() || DEFAULT_API_URL,
 );

@@ -1,167 +1,111 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import { Check } from "lucide-react";
 import {
   Button,
   Card,
-  CardAction,
   CardContent,
   CardDescription,
   CardFooter,
   CardHeader,
   CardTitle,
   Separator,
-  Tabs,
-  TabsContent,
-  TabsList,
-  TabsTrigger,
+  Skeleton,
 } from "@/components";
-import { Check } from "lucide-react";
-import { useAccountype, useLang} from "@/hooks";
+import { useLang, usePlanManagement, useUserAccount } from "@/hooks";
+import { authService, type Plan } from "@/service/api";
+import { buildUpgradeMailto, getErrorMessage } from "@/utils";
+
+/** Lista de características de um plano, derivada só dos dados da API. */
+function planFeatures(plan: Plan, t: Record<string, string>): string[] {
+  const { STATIC, DYNAMIC } = plan.maxQrCodes;
+  const features = [
+    STATIC === -1 ? t.unlimitedStatic : t.staticLimit.replace("{n}", String(STATIC)),
+    DYNAMIC === -1 ? t.unlimitedDynamic : t.dynamicLimit.replace("{n}", String(DYNAMIC)),
+    plan.features.analytics === "full" ? t.analyticsFull : t.analyticsBasic,
+    t.windowDays.replace("{n}", String(plan.analyticsWindowDays)),
+  ];
+  if (plan.features.customColors) features.push(t.customColors);
+  return features;
+}
 
 function Subscriber() {
-  const { valueAccountype } = useAccountype();
   const { translations } = useLang();
- 
- 
   const t = translations.pages.Subscriber;
-
-  const itemsPlan = [
-    {
-      ...t.plans.free,
-      category: "basic",
-    },
-    {
-      ...t.plans.ultimate,
-      category: "popular",
-    },
-    {
-      ...t.plans.teams,
-      category: "company",
-    },
-  ];
-
-
+  const { data: plans, isLoading, error } = usePlanManagement();
+  const { state } = useUserAccount();
+  const isAuthenticated = authService.isAuthenticated();
 
   return (
     <React.Fragment>
-      <div className="h-screen w-full">
-        <div className="md:py-64 py-44 px-4 space-y-8">
-          {/* Cabeçalho da página */}
+      <div className="min-h-screen w-full">
+        <div className="md:py-40 py-32 px-4 space-y-8 max-w-6xl mx-auto">
           <div className="text-center space-y-4">
             <h4 className="md:text-3xl text-2xl font-bold">{t.title}</h4>
-            <p
-              className="md:text-sm text-xs"
-              dangerouslySetInnerHTML={{ __html: t.description }}
-            />
+            <p className="md:text-sm text-xs max-w-2xl mx-auto">{t.description}</p>
+            <p className="text-xs max-w-2xl mx-auto border rounded-md px-4 py-3">
+              {t.manualNotice}
+            </p>
           </div>
 
-          {/* Abas de planos */}
-          <Tabs
-            defaultValue="weekly"
-            className="flex items-center justify-center space-y-8">
-            <TabsList className="p-6">
-              <TabsTrigger value="weekly" className="p-4">
-                {t.tabs.weekly}
-              </TabsTrigger>
-              <TabsTrigger value="monthly" className="p-4">
-                {t.tabs.monthly}
-              </TabsTrigger>
-              <TabsTrigger value="annual" className="p-4">
-                {t.tabs.annual}
-              </TabsTrigger>
-            </TabsList>
+          {isLoading ? (
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4">
+              {Array.from({ length: 3 }).map((_, index) => (
+                <Skeleton key={index} className="h-96 rounded-xl" />
+              ))}
+            </div>
+          ) : error ? (
+            <p className="text-center text-sm">
+              {getErrorMessage(error, translations.errors, t.loadError)}
+            </p>
+          ) : (
+            <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 items-stretch">
+              {plans.map((plan) => {
+                const isFree = plan.name === "FREE";
+                const upgradeHref = buildUpgradeMailto({
+                  planName: plan.displayName,
+                  accountEmail: state.user_email,
+                  subject: t.mailSubject,
+                  body: t.mailBody,
+                });
 
-            {/* Conteúdo das abas */}
-            <TabsContent value="weekly">
-              <div className="grid lg:grid-cols-3 md:grid-cols-2 grid-cols-1 gap-4 items-center ">
-                {itemsPlan.map((plan, index) => (
-                  <div
-                    key={index}
-                    className={`${
-                      plan.category === "popular"
-                        ? "dark:bg-green-500 bg-green-400 px-1 pb-1 pt-3 rounded-xl space-y-4"
-                        : ""
-                    }`}>
-                    {plan.category === "popular" && (
-                      <div>
-                        <span className="block text-sm font-bold text-center text-white">
-                          {t.popular}
-                        </span>
-                      </div>
-                    )}
+                return (
+                  <Card key={plan.name} className="flex flex-col">
+                    <CardHeader>
+                      <CardTitle>{plan.displayName}</CardTitle>
+                      <CardDescription>{isFree ? t.free : t.priceOnRequest}</CardDescription>
+                    </CardHeader>
 
-                    <Card>
-                      <CardHeader>
-                        <CardTitle>{plan.title}</CardTitle>
-                        <CardDescription>
-                          <p
-                            dangerouslySetInnerHTML={{
-                              __html: plan.description,
-                            }}
-                          />
-                        </CardDescription>
-                        <CardAction />
-                      </CardHeader>
+                    <CardContent className="space-y-6">
+                      {isFree ? (
+                        <Button className="p-6 w-full" variant="outline" asChild>
+                          <Link to={isAuthenticated ? "/dashboard" : "/auth/signup"}>
+                            {isAuthenticated ? t.goToDashboard : t.startFree}
+                          </Link>
+                        </Button>
+                      ) : (
+                        <Button className="p-6 w-full" asChild>
+                          <a href={upgradeHref}>{t.cta}</a>
+                        </Button>
+                      )}
+                      <Separator />
+                    </CardContent>
 
-                      <CardContent>
-                        <div className="space-y-7">
-                          <div className="space-y-1">
-                            <span className="font-bold text-2xl">
-                              {plan.price}
-                            </span>
-                            <p className="text-xs">{plan.subText}</p>
-                          </div>
-
-                          <div className="space-y-3">
-                            <Button
-                              className="p-6 w-full"
-                              variant={
-                                valueAccountype === plan.title.toLowerCase()
-                                  ? "outline"
-                                  : "default"
-                              }
-                              disabled={
-                                valueAccountype === plan.title.toLowerCase()
-                              }>
-                              {valueAccountype === plan.title.toLowerCase()
-                                ? t.currentPlan
-                                : t.continue}
-                            </Button>
-                            <p className="text-xs text-center">{plan.note}</p>
-                          </div>
-
-                          <Separator />
-                        </div>
-                      </CardContent>
-
-                      <CardFooter>
-                        <ul className="space-y-4">
-                          {plan.features.map((item: string, i: number) => (
-                            <li
-                              key={i}
-                              className="flex justify-start items-center gap-2">
-                              <span
-                                className={`${
-                                  plan.category === "popular" &&
-                                  "text-green-400"
-                                }`}>
-                                <Check size={14} />
-                              </span>
-                              <span
-                                className="text-xs"
-                                dangerouslySetInnerHTML={{
-                                  __html: item,
-                                }}/>
-                                
-                            </li>
-                          ))}
-                        </ul>
-                      </CardFooter>
-                    </Card>
-                  </div>
-                ))}
-              </div>
-            </TabsContent>
-          </Tabs>
+                    <CardFooter>
+                      <ul className="space-y-4">
+                        {planFeatures(plan, t).map((feature) => (
+                          <li key={feature} className="flex justify-start items-center gap-2">
+                            <Check size={14} aria-hidden />
+                            <span className="text-xs">{feature}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </CardFooter>
+                  </Card>
+                );
+              })}
+            </div>
+          )}
         </div>
       </div>
     </React.Fragment>

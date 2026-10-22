@@ -12,6 +12,7 @@ import {
   DrawerHeader,
   DrawerTitle,
   DrawerTrigger,
+  SidebarTrigger,
   useSidebar,
 } from "@/components";
 
@@ -20,6 +21,7 @@ import { Search } from "../search";
 import { useLang, useLoadingPage, useUserAccount } from "@/hooks";
 
 import { ToggleLang } from "../toggleLang";
+import { BRAND_NAME } from "../brandMark/brand";
 import { userNameParts } from "@/utils";
 import { LogOut } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -70,11 +72,15 @@ function HeaderSidebar() {
               ? "after:dark:bg-zinc-400/30"
               : "after:dark:bg-transparent"
           } after:-z-10`}>
+          <div className="flex items-center gap-2">
+          {/* No telemóvel a sidebar é um Sheet: este é o único gatilho visível. */}
+          <SidebarTrigger className="md:hidden size-9" aria-label={t.openMenu} />
           <div className="bg-popover text-popover-foreground  relative z-50 max-h-(--radix-select-content-available-height) min-w-[8rem] origin-(--radix-select-content-transform-origin) overflow-x-hidden overflow-y-auto rounded-md border px-3 py-1 ">
             <span className="h-[var(--radix-select-trigger-height)] w-full min-w-[var(--radix-select-trigger-width)] scroll-my-1">
               {" "}
               {t.free}
             </span>
+          </div>
           </div>
 
           <div className="flex items-center gap-4">
@@ -87,7 +93,7 @@ function HeaderSidebar() {
                 <Avatar className="md:w-12 md:h-12 border-2 border-green-500 cursor-pointer">
                   <AvatarImage
                     src={state.user_photo ? state.user_photo : ""}
-                    alt={state.user_name ? state.user_name : "bisc8qr"}
+                    alt={state.user_name ? state.user_name : BRAND_NAME}
                   />
                   <AvatarFallback>{initials}</AvatarFallback>
                 </Avatar>
@@ -102,7 +108,7 @@ function HeaderSidebar() {
                     <Avatar className="w-24 h-24 border-2 border-green-500 ">
                       <AvatarImage
                         src={state.user_photo ? state.user_photo : ""}
-                        alt={state.user_name ? state.user_name : "bisc8qr"}
+                        alt={state.user_name ? state.user_name : BRAND_NAME}
                       />
                       <AvatarFallback className="font-bold">
                         {initials}
@@ -110,7 +116,7 @@ function HeaderSidebar() {
                     </Avatar>
                     <div className="space-y-1.5">
                       <span className="text-sm text-center font-medium block capitalize">
-                        {state.user_name ? state.user_name : "bisc8qr"}
+                        {state.user_name ? state.user_name : BRAND_NAME}
                       </span>
                       <span className="text-sm text-center font-medium block ">
                         {state.user_email ? state.user_email : "qr@bic8.co"}

@@ -3,14 +3,24 @@
     "FormGeneratorQrc": {
       "title": "Gerador de QR Code",
       "description": "Crie o seu QR Code de forma rápida e simples.",
-      "placeholder": "Adicione seu link",
+      "placeholder": "Cole aqui o seu link",
       "button": "Gerar",
       "formatsLabel": "Formatos",
       "typesLabel": "Tipos",
       "typeLink": "Link",
-      "readyTitle": "Seu QR Code está pronto",
-      "readyDescription": "Faça uma leitura e verifique o seu código QR mágico",
-      "formatPlaceholder": "Formato"
+      "readyTitle": "O seu QR code está pronto",
+      "readyDescription": "Leia-o com o telemóvel para confirmar que funciona.",
+      "formatPlaceholder": "Formato",
+      "imageAlt": "QR code gerado",
+      "download": "Transferir",
+      "downloadSuccess": "Transferência concluída.",
+      "downloadError": "Não foi possível transferir o QR code.",
+      "success": "QR code criado.",
+      "error": "Não foi possível criar o QR code.",
+      "validation": {
+        "required": "Indique o conteúdo do QR code.",
+        "tooLong": "O conteúdo não pode ter mais de 2000 caracteres."
+      }
     },
     "UserMenu": {
       "myAccount": "Minha Conta",
@@ -18,17 +28,18 @@
     },
     "header": {
       "account": "Conta",
-      "free": "Grátis",
-      "pro": "Profissional",
+      "free": "Free",
+      "pro": "Pro",
       "profile": "Perfil",
       "myProfile": "Meu perfil",
       "buttons": {
         "createAccount": "Criar conta",
         "signIn": "Entrar"
-      }
+      },
+      "openMenu": "Abrir menu"
     },
     "SidebarAppPrivate": {
-      "brand": "BISC8R",
+      "brand": "ExpressQR",
       "menu": {
         "dashboard": "Painel",
         "myQrcodes": "Meus QR Codes",
@@ -41,7 +52,6 @@
     "CreateQrcode": {
       "title": "Criar códigos Qr",
       "description": "Preenche os campos abaixo para criar o teu código QR personalizado.",
-
       "select": {
         "label": "Tipos",
         "placeholder": "Seleciona o tipo",
@@ -63,21 +73,43 @@
       "button": {
         "generate": "Gerar QR Code"
       },
-
       "validation": {
         "requiredType": "O tipo é obrigatório",
         "requiredTitle": "O título é obrigatório",
         "minTitle": "O título deve conter no mínimo 3 caracteres",
         "requiredUrl": "A URL é obrigatória",
         "invalidUrl": "Digite uma URL válida",
-        "toastSucces": "Qrcode criado com sucesso!",
-        "toastError": "Erro ao criar o Qrcode!",
-        "execeedeLim": "Você excedeu limite",
-        "btnAction": "Subscrever"
+        "toastSucces": "QR code criado.",
+        "toastError": "Não foi possível criar o QR code.",
+        "execeedeLim": "Atingiu o limite do seu plano.",
+        "btnAction": "Pedir upgrade",
+        "maxTitle": "O título pode ter no máximo 120 caracteres",
+        "maxDescription": "A descrição pode ter no máximo 500 caracteres",
+        "requiredContent": "O conteúdo é obrigatório"
+      },
+      "usage": {
+        "label": "Utilização do plano",
+        "of": "{used} de {limit}",
+        "unlimited": "Ilimitado",
+        "limitReached": "Limite atingido",
+        "upgrade": "Pedir upgrade"
       }
+    },
+    "CardQrcode": {
+      "inactive": "Inactivo",
+      "preview": "Pré-visualizar",
+      "scans": "Leituras",
+      "download": "Transferir",
+      "edit": "Editar",
+      "delete": "Apagar",
+      "deleteTitle": "Apagar este QR code?",
+      "deleteDescription": "\"{title}\" será apagado de forma permanente. Se for dinâmico, deixa de redireccionar.",
+      "cancel": "Cancelar",
+      "confirmDelete": "Apagar",
+      "deleteSuccess": "QR code apagado.",
+      "deleteError": "Não foi possível apagar o QR code."
     }
   },
-
   "layout": {
     "ProfileLayout": {
       "menu": {
@@ -90,7 +122,8 @@
       "deleteConfirm": "Tem certeza de que deseja apagar a sua conta?",
       "messages": {
         "logoutSuccess": "Sessão encerrada com sucesso.",
-        "deleteSuccess": "Conta apagada com sucesso."
+        "deleteSuccess": "Conta apagada com sucesso.",
+        "deleteError": "Não foi possível apagar a conta."
       },
       "alertDialog": {
         "dialogTitle": "Tem a certeza?",
@@ -102,11 +135,13 @@
   },
   "pages": {
     "dashboard": {
-      "totalQrcodes": "Total de codigos QR",
-      "myQrcodes": "Meus codigos QR",
+      "totalQrcodes": "Total de QR codes",
+      "myQrcodes": "Os meus QR codes",
       "viewAll": "Ver todos",
       "noTitle": "Sem título",
-      "noLink": "Sem link"
+      "noLink": "Sem link",
+      "staticUsage": "QR estáticos",
+      "dynamicUsage": "QR dinâmicos"
     },
     "SignIn": {
       "welcome": "Bem-vindo de volta",
@@ -121,7 +156,7 @@
       "orContinue": "Ou continue com",
       "continueGoogle": "Continuar com o Google",
       "noAccount": "Não tem uma conta?",
-      "signupHere": "Cadastre-se aqui",
+      "signupHere": "Registe-se aqui",
       "validation": {
         "emailRequired": "O email é obrigatório",
         "emailInvalid": "Digite um email válido",
@@ -130,11 +165,14 @@
         "number": "A senha deve conter pelo menos um número",
         "letter": "A senha deve conter pelo menos uma letra",
         "special": "A senha deve conter pelo menos um caractere especial"
-      }
+      },
+      "toastSuccess": "Sessão iniciada.",
+      "toastError": "Não foi possível iniciar sessão.",
+      "toastGoogleError": "Não foi possível iniciar sessão com a Google."
     },
     "SignUp": {
       "title": "Criar Conta",
-      "subtitle": "Cadastre-se para começar a criar qr codes incríveis.",
+      "subtitle": "Registe-se para começar a criar QR codes.",
       "firstName": "Primeiro Nome",
       "firstNamePlaceholder": "Digite o seu primeiro nome",
       "lastName": "Último Nome",
@@ -164,60 +202,30 @@
         "passwordSpecial": "A senha deve conter pelo menos um caractere especial",
         "confpasswordRequired": "Confirme a senha",
         "passwordMatch": "As senhas devem ser iguais."
-      }
+      },
+      "toastSuccess": "Conta criada. Confirme o seu email para continuar.",
+      "toastError": "Não foi possível criar a conta."
     },
     "Subscriber": {
-      "title": "Planos e preços",
-      "description": "Não importa se quer compartilhar links rápidos ou divulgar seu negócio com estilo.<br/> Gere seus QR Codes personalizados com o Bisc8Qr.",
-      "tabs": {
-        "weekly": "Semanal",
-        "monthly": "Mensal",
-        "annual": "Anual"
-      },
-      "popular": "Mais popular",
-      "currentPlan": "Plano atual",
-      "continue": "Continuar",
-      "plans": {
-        "free": {
-          "title": "Grátis",
-          "description": "Perfeito para quem cria QR Codes de vez em quando ou está conhecendo o Bisc8Qr pela primeira vez.",
-          "price": "0 kz",
-          "subText": "Aproveite o Bisc8Qr de forma gratuita",
-          "note": "Apenas para uso individual, não comercial",
-          "features": [
-            "Gere e baixe até 30 QR Codes por mês",
-            "10 criações mensais disponíveis",
-            "Cada QR Code expira após 3 dias"
-          ]
-        },
-        "ultimate": {
-          "title": "Ultimate",
-          "description": "A opção ideal para quem cria e compartilha QR Codes ilimitados o dia todo, todos os dias.",
-          "price": "1000 kz",
-          "subText": "Por semana, cobrado semanalmente.",
-          "note": "Para uso individual solo",
-          "features": [
-            "Sem limites na geração de QR Codes",
-            "Criações ilimitadas por mês",
-            "QR Codes sem data de expiração",
-            "Design personalizado para cada QR Code",
-            "Recupere QR Codes arquivados"
-          ]
-        },
-        "teams": {
-          "title": "Teams",
-          "description": "Ideal para pequenas equipes que precisam de uma solução de compartilhamento de arquivos poderosa e robusta.",
-          "price": "4000 kz",
-          "subText": "Por usuário / mês, cobrado anualmente.",
-          "note": "Até 25 membros",
-          "features": [
-            "Tudo no Ultimate, além de:",
-            "Criação de equipe",
-            "Até 25 membros na sua equipe",
-            "Cobrança centralizada"
-          ]
-        }
-      }
+      "title": "Planos",
+      "description": "Escolha o plano que serve o seu uso. Todos os planos incluem transferência em PNG, SVG e PDF, sem marca de água.",
+      "priceOnRequest": "Sob consulta",
+      "manualNotice": "Os pagamentos online ainda não estão disponíveis. Peça o upgrade e a nossa equipa activa o plano manualmente.",
+      "cta": "Pedir upgrade",
+      "startFree": "Criar conta grátis",
+      "staticLimit": "{n} QR codes estáticos",
+      "dynamicLimit": "{n} QR codes dinâmicos (destino editável)",
+      "unlimitedStatic": "QR codes estáticos ilimitados",
+      "unlimitedDynamic": "QR codes dinâmicos ilimitados",
+      "analyticsBasic": "Estatísticas básicas: total de leituras e série diária",
+      "analyticsFull": "Estatísticas completas: série diária, dispositivos e origem",
+      "windowDays": "Histórico de leituras: {n} dias",
+      "customColors": "Cores personalizadas",
+      "loadError": "Não foi possível carregar os planos.",
+      "mailSubject": "Pedido de upgrade ExpressQR",
+      "mailBody": "Olá, gostaria de activar o plano indicado na minha conta.",
+      "free": "Grátis",
+      "goToDashboard": "Ir para o painel"
     },
     "MyProfile": {
       "title": "Meu perfil",
@@ -238,24 +246,20 @@
         "email": {
           "label": "Email",
           "placeholder": "Seu email",
-          "required": "O email é obrigatório"
+          "required": "O email é obrigatório",
+          "invalid": "Formato de email inválido",
+          "readOnlyHint": "O email não pode ser alterado aqui."
         },
         "phone": {
           "label": "Telefone",
           "placeholder": "Seu telefone"
         },
-        "country": {
-          "label": "País",
-          "placeholder": "Seu país"
-        },
-        "address": {
-          "label": "Cidade",
-          "placeholder": "Sua cidade"
-        },
         "button": {
           "update": "Atualizar"
         }
-      }
+      },
+      "toastSuccess": "Perfil actualizado.",
+      "toastError": "Não foi possível actualizar o perfil."
     },
     "UpdatePassword": {
       "title": "Segurança",
@@ -280,7 +284,9 @@
         "letter": "A senha deve conter pelo menos uma letra",
         "special": "A senha deve conter pelo menos um caractere especial",
         "match": "As senhas devem ser diferentes"
-      }
+      },
+      "toastSuccess": "Palavra-passe alterada.",
+      "toastError": "Não foi possível alterar a palavra-passe."
     },
     "ForgotPassword": {
       "title": "Esqueceu a senha?",
@@ -292,7 +298,9 @@
       "validation": {
         "requiredEmail": "O email é obrigatório",
         "invalidEmail": "Por favor, insira um endereço de email válido"
-      }
+      },
+      "toastSuccess": "Se o email estiver registado, vai receber um link para redefinir a palavra-passe.",
+      "toastError": "Não foi possível enviar o pedido."
     },
     "ResetPassword": {
       "title": "Redefinir senha",
@@ -311,59 +319,98 @@
         "letter": "A senha deve conter pelo menos uma letra",
         "special": "A senha deve conter pelo menos um caractere especial",
         "match": "As senhas devem coincidir"
-      }
+      },
+      "missingTokenTitle": "Link inválido",
+      "missingToken": "Este link de reposição está incompleto ou expirou. Peça um novo.",
+      "requestNewLink": "Pedir novo link",
+      "toastSuccess": "Palavra-passe redefinida. Já pode iniciar sessão.",
+      "toastError": "Não foi possível redefinir a palavra-passe."
     },
     "Verifyaccount": {
       "title": "Verifique o seu email",
       "subtitle": " Enviámos um link de verificação para o seu endereço de email. Clique no link do email para ativar a sua conta.",
       "description": "  Não recebeu o email? Verifique a pasta de spam ou contacte o suporte.",
       "codePlaceholder": "Digite o código de verificação",
-      "button": "Voltar ao Login"
+      "button": "Voltar ao início de sessão",
+      "emailLabel": "Email",
+      "emailPlaceholder": "O seu email",
+      "resendButton": "Reenviar email de verificação",
+      "resendSuccess": "Se a conta existir e ainda não estiver confirmada, enviámos um novo email.",
+      "resendError": "Não foi possível reenviar o email."
     },
     "MyQrcodes": {
       "title": "Meus QR Codes",
       "filter": "Filtrar por status",
       "all": "Todos",
       "active": "Activo",
-      "inactive": "Desactivo",
-      "noQr": "Sem qrcodes"
+      "inactive": "Inactivo",
+      "noQr": "Ainda não tem QR codes.",
+      "total": "Total: {total}",
+      "loadError": "Não foi possível carregar os QR codes.",
+      "noTitle": "Sem título",
+      "noLink": "Sem link",
+      "noQrFiltered": "Nenhum QR code corresponde a este filtro.",
+      "clearFilter": "Ver todos"
     },
     "VerifyEmail": {
-      "verifyingTitle": "Verificando conta...",
-      "verifyingSubtitle": "Aguarde enquanto validamos o seu email.",
+      "verifyingTitle": "A verificar a conta…",
+      "verifyingSubtitle": "Aguarde enquanto confirmamos o seu email.",
       "successTitle": "Conta Verificada!",
       "successDescription": "A sua conta foi verificada com sucesso. Já pode iniciar sessão na plataforma.",
-      "redirectMessage": "Você será redirecionado automaticamente em 5 segundos...",
+      "redirectMessage": "Vai ser redireccionado para o início de sessão dentro de 5 segundos.",
       "errorTitle": "Erro na Verificação",
-      "errorDescription": "Ocorreu um erro ao verificar a sua conta. Por favor, tente novamente ou contacte o suporte.",
+      "errorDescription": "Não foi possível confirmar a sua conta. O link pode ter expirado.",
       "buttonLogin": "Iniciar Sessão Agora",
       "invalidToken": "Token inválido ou expirado",
       "tokenNotProvided": "Token de verificação não fornecido",
       "verifyError": "Erro ao verificar conta",
-      "verifyFailure": "Falha na verificação"
+      "verifyFailure": "Falha na verificação",
+      "resendLink": "Pedir novo email de verificação"
     },
     "QrcodeEdit": {
-      "editQrCode": "Editar Qr code",
-      "static": "Estatico",
-      "dynamic": "Dinamico",
-      "active": "Activo",
-      "inactive": "Desactivo",
+      "editQrCode": "Editar QR code",
+      "static": "Estático",
+      "dynamic": "Dinâmico",
       "title": "Título",
       "titlePlaceholder": "Adiciona um título",
-      "link": "URL de distino",
+      "link": "URL de destino",
       "linkPlaceholder": "Adiciona a URL",
       "tags": "Tags",
       "tagsPlaceholder": "adiciona tags",
       "description": "Descrição",
       "descriptionPlaceholder": "adicionar descrição",
-      "save": "Salvar"
+      "save": "Guardar",
+      "type": "Tipo",
+      "typeHint": "O tipo não pode ser alterado depois de criado.",
+      "linkHint": "Mudar o destino não altera a imagem: o QR impresso continua válido.",
+      "content": "Conteúdo",
+      "activeLabel": "Activo",
+      "activeHint": "Um QR inactivo deixa de redireccionar e mostra \"não encontrado\".",
+      "tagsHint": "Separe as tags por vírgulas.",
+      "cancel": "Cancelar",
+      "delete": "Apagar",
+      "back": "Voltar aos meus QR codes",
+      "notFound": "QR code não encontrado.",
+      "toastSuccess": "QR code actualizado.",
+      "toastError": "Não foi possível actualizar o QR code.",
+      "validation": {
+        "requiredLink": "O URL de destino é obrigatório",
+        "invalidLink": "Indique um URL válido (https://…)",
+        "requiredContent": "O conteúdo é obrigatório",
+        "maxTitle": "O título pode ter no máximo 120 caracteres",
+        "maxDescription": "A descrição pode ter no máximo 500 caracteres",
+        "requiredTitle": "O título é obrigatório",
+        "minTitle": "O título deve conter no mínimo 3 caracteres"
+      }
     },
     "Subscription": {
       "title": "Subscrição",
-      "planButton": "Plano",
-      "price": "Preço",
-      "startDate": "Data inicial",
-      "endDate": "Data final",
+      "planButton": "Ver planos",
+      "endDate": "Válido até",
+      "noEndDate": "Sem data de fim",
+      "status": "Estado",
+      "upgrade": "Pedir upgrade",
+      "loadError": "Não foi possível carregar o seu plano.",
       "table": {
         "type": "Tipo",
         "inUse": "Em uso",
@@ -371,21 +418,64 @@
         "remaining": "Restante",
         "usage": "Uso (%)"
       },
-      "limit": "Limite",
       "type": {
         "static": "Estático",
-        "Dynamic": "Dinamico",
-        "total": "Total"
+        "Dynamic": "Dinâmico"
       },
-      "plan": {
-        "BUSINESS": "Negócios",
-        "FREE": "Grátis",
-        "PROFESSIONAL": "Profissional"
-      },
+      "unlimited": "Ilimitado",
       "footer": {
-        "limited": "* Seu plano possui limites definidos para criação de QR Codes.",
-        "unlimited": "* “Ilimitado” significa que seu plano não possui restrição para este tipo de QR Code."
+        "limited": "* Os limites contam o total de QR codes guardados, não uma quota mensal.",
+        "unlimited": "* \"Ilimitado\" significa que o seu plano não tem limite para este tipo de QR code."
       }
+    },
+    "Statistic": {
+      "title": "Estatísticas",
+      "allQrCodes": "Todos os QR codes",
+      "selectQr": "Escolher QR code",
+      "range": "Período",
+      "lastDays": "Últimos {n} dias",
+      "totalScans": "Leituras totais",
+      "scansInWindow": "Leituras no período",
+      "scansLast24h": "Últimas 24 horas",
+      "totalQrCodes": "QR codes",
+      "seriesTitle": "Leituras por dia",
+      "scans": "Leituras",
+      "byDevice": "Por dispositivo",
+      "byReferrer": "Por origem",
+      "topQrCodes": "QR codes mais lidos",
+      "noData": "Ainda não há leituras neste período.",
+      "basicNotice": "O seu plano inclui estatísticas básicas. Os planos Pro e Premium mostram também dispositivos e origem das leituras.",
+      "loadError": "Não foi possível carregar as estatísticas.",
+      "direct": "Directo",
+      "loadMore": "Carregar mais QR codes ({loaded}/{total})"
     }
+  },
+  "errors": {
+    "UNAUTHORIZED": "A sua sessão expirou. Inicie sessão novamente.",
+    "MISSING_TOKEN": "A sua sessão expirou. Inicie sessão novamente.",
+    "INVALID_CREDENTIALS": "Email ou palavra-passe incorrectos.",
+    "EMAIL_NOT_VERIFIED": "Confirme o seu email antes de iniciar sessão.",
+    "EMAIL_IN_USE": "Este email já está registado.",
+    "EMAIL_ALREADY_VERIFIED": "Este email já foi confirmado. Já pode iniciar sessão.",
+    "INVALID_OR_EXPIRED_TOKEN": "O link é inválido ou expirou. Peça um novo.",
+    "INVALID_TOKEN": "O link é inválido ou expirou. Peça um novo.",
+    "TOKEN_EXPIRED": "O link é inválido ou expirou. Peça um novo.",
+    "PLAN_LIMIT_EXCEEDED": "Atingiu o limite do seu plano para este tipo de QR code.",
+    "FEATURE_NOT_AVAILABLE": "Esta funcionalidade não está incluída no seu plano.",
+    "RATE_LIMITED": "Demasiados pedidos. Aguarde um momento e tente novamente.",
+    "RATE_LIMIT_EXCEEDED": "Demasiados pedidos. Aguarde um momento e tente novamente.",
+    "VALIDATION_ERROR": "Há dados inválidos. Reveja o formulário.",
+    "CONTENT_TOO_LONG": "O conteúdo não pode ter mais de 2000 caracteres.",
+    "QR_CODE_NOT_FOUND": "QR code não encontrado.",
+    "NOT_FOUND": "Não encontrado.",
+    "FORBIDDEN": "Não tem permissão para esta operação.",
+    "ACCESS_DENIED": "Não tem permissão para esta operação.",
+    "ACCOUNT_SUSPENDED": "A sua conta está suspensa. Contacte o suporte.",
+    "ACCOUNT_INACTIVE": "A sua conta não está activa. Contacte o suporte.",
+    "INVALID_GOOGLE_TOKEN": "Não foi possível validar a sessão Google.",
+    "NETWORK_ERROR": "Sem ligação ao servidor. Verifique a sua ligação à internet.",
+    "INTERNAL_ERROR": "Ocorreu um erro no servidor. Tente novamente.",
+    "FIELD_INVALID": "Valor inválido.",
+    "INVALID_CURRENT_PASSWORD": "A senha actual está incorrecta."
   }
 }

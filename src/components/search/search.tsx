@@ -24,6 +24,14 @@ const routeMap = {
   "/dashboard/settings": "Settings",
 };
 
+interface QrcodeResult {
+  name: string;
+  date: string;
+  link: string | null;
+  image: string;
+  type: "qrcode";
+}
+
 function Search() {
   const [search, setSearch] = useState("");
   const { translations } = useLang();
@@ -32,7 +40,7 @@ function Search() {
 
   const [isOpenDialogPrev, setIsOpenDialogPrev] = useState(false);
   const [searchIsOpenDialog, setSearchIsOpenDialog] = useState(false);
-  const [selectedQrCode, setSelectedQrCode] = useState<any>(null);
+  const [selectedQrCode, setSelectedQrCode] = useState<QrcodeResult | null>(null);
 
   const availablePages = useMemo(
     () =>
@@ -60,17 +68,19 @@ function Search() {
 
     return [
       ...filteredPages,
-      ...filteredQrcodes.map((qrcode) => ({
-        name: qrcode.title,
-        date: qrcode.createdAt,
-        link: qrcode.targetUrl,
-        image: getImageUrl(qrcode.imageUrl),
-        type: "qrcode" as const,
-      })),
+      ...filteredQrcodes.map(
+        (qrcode): QrcodeResult => ({
+          name: qrcode.title ?? "",
+          date: qrcode.createdAt,
+          link: qrcode.targetUrl ?? qrcode.staticContent,
+          image: getImageUrl(qrcode.imageUrl ?? undefined),
+          type: "qrcode",
+        }),
+      ),
     ];
   }, [search, availablePages, data]);
 
-  function handleOpenPreview(item: any) {
+  function handleOpenPreview(item: QrcodeResult) {
     setSelectedQrCode(item);
     setSearchIsOpenDialog(false);
     setIsOpenDialogPrev(true);
@@ -96,7 +106,7 @@ function Search() {
             <SearchIcon size={18} />
             <input
               className="outline-none border-b border-input w-full text-sm py-2"
-              placeholder="Digite para buscar..."
+              placeholder="Escreva para pesquisar…"
               value={search}
               onChange={(e) => setSearch(e.target.value)}
             />
@@ -147,7 +157,7 @@ function Search() {
         <PreviewQRCode
           title={selectedQrCode.name}
           link={selectedQrCode.link ?? "Sem link"}
-          image={selectedQrCode.image ?? images.qrCode.qr_code1}
+          image={selectedQrCode.image || images.qrCode.qr_code1}
           dateFormatted={formattedDate(selectedQrCode.date)}
           isOpen={isOpenDialogPrev}
           setIsOpen={setIsOpenDialogPrev}

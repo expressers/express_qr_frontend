@@ -1,140 +1,84 @@
-import { Button } from '@/components';
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { MailCheck } from "lucide-react";
+import { Button, Spinner } from "@/components";
+import { authService } from "@/service/api";
+import { useLang } from "@/hooks";
+import { getErrorCode, getErrorMessage } from "@/utils";
 
-import { MailCheck } from 'lucide-react';
-import React, { useEffect, useState } from 'react'
-import {  useNavigate, useSearchParams } from 'react-router-dom';
-import { authService } from "@/service/api"
-import { useLang } from '@/hooks';
+type Status = "loading" | "success" | "error";
+
 function VerifyEmail() {
+  const { translations } = useLang();
+  const t = translations.pages.VerifyEmail;
+  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const token = searchParams.get("token");
 
-    const { translations } = useLang();
-    const t = translations.pages.VerifyEmail;
+  const [status, setStatus] = useState<Status>(token ? "loading" : "error");
+  const [message, setMessage] = useState(token ? "" : t.tokenNotProvided);
+  // O token é de uso único: em StrictMode o efeito corre duas vezes e a 2.ª chamada falharia.
+  const requested = useRef(false);
 
-     const [searchParams] = useSearchParams();
-     const navigate = useNavigate();
-     const [loading, setLoading] = useState(true);
-     const [success, setSuccess] = useState(false);
-     const [error, setError] = useState("");
+  useEffect(() => {
+    if (!token || requested.current) return;
+    requested.current = true;
 
-     useEffect(() => {
+    authService
+      .verifyEmail(token)
+      .then(() => setStatus("success"))
+      .catch((error) => {
+        if (getErrorCode(error) === "EMAIL_ALREADY_VERIFIED") {
+          setStatus("success");
+          return;
+        }
+        setMessage(getErrorMessage(error, translations.errors, t.errorDescription));
+        setStatus("error");
+      });
+  }, [token, translations.errors, t.errorDescription]);
 
-       const verifyEmailToken = async () => {
-         const token = searchParams.get("token");
-         const errorParam = searchParams.get("error");
-         const successParam = searchParams.get("success");
-         const messageParam = searchParams.get("message");
+  useEffect(() => {
+    if (status !== "success") return;
+    const timer = setTimeout(() => navigate("/auth/signin"), 5000);
+    return () => clearTimeout(timer);
+  }, [status, navigate]);
 
-         
-         if (errorParam) {
-           setError(
-             decodeURIComponent(messageParam || t.invalidToken),
-           );
-           setLoading(false);
-           return;
-         }
-
-         if (successParam === "true") {
-           setSuccess(true);
-           setLoading(false);
-
-         
-           setTimeout(() => {
-             navigate("/auth/signin");
-           }, 5000);
-           return;
-         }
-
-         
-         if (!token) {
-           setError(t.tokenNotProvided);
-           setLoading(false);
-           return;
-         }
-
-         try {
-           const response = await authService.verifyEmail(token);
-           
-           if (response.success) {
-             setSuccess(true);
-             
-             setTimeout(() => {
-               navigate("/auth/signin");
-             }, 5000);
-           } else {
-             setError(response.message || t.verifyFailure);
-           }
-         } catch (error) {
-             setError(t.verifyError);
-             console.log(error)
-         } finally {
-           setLoading(false);
-         }
-       };
-
-       verifyEmailToken();
-     }, [searchParams, navigate, t]);
-
-     const handleGoToLogin = () => {
-       navigate("/auth/signin");
-     };
-    console.log(error)
   return (
     <React.Fragment>
-      <div
-        className={`h-screen w-full  flex items-center justify-center  p-2 bg-gray-800/10`}>
-        <div className=" dark:bg-black bg-white flex flex-col gap-6 justify-center items-center  p-6   rounded-md">
-          <span>
-            {" "}
-            <MailCheck size={30} />
-          </span>
+      <div className="min-h-screen w-full flex items-center justify-center p-2 bg-gray-800/10">
+        <div className="dark:bg-black bg-white flex flex-col gap-6 justify-center items-center p-6 rounded-md max-w-md w-full text-center">
+          <MailCheck size={30} aria-hidden />
 
-          {loading && (
+          {status === "loading" && (
             <>
-              <h4 className="sm:text-2xl text-xl font-bold">
-                {t.verifyingTitle}
-              </h4>
-              <div className="space-y-2">
-                <p className="text-center text-sm"></p>
-                <p className="block text-center  text-sm">
-                  {t.verifyingSubtitle}
-                </p>
-              </div>
+              <h4 className="sm:text-2xl text-xl font-bold">{t.verifyingTitle}</h4>
+              <p className="text-sm">{t.verifyingSubtitle}</p>
+              <Spinner />
             </>
           )}
-          {!loading && success ? (
+
+          {status === "success" && (
             <>
-              <h4 className="sm:text-2xl text-xl font-bold">
-                {t.successTitle}
-              </h4>
-              <div className="space-y-2">
-                <p className="text-center text-sm">{t.successDescription}</p>
-                <p className="block text-center  text-sm"></p>
-              </div>
-              <Button
-                variant="default"
-                type="button"
-                className="p-6"
-                onClick={handleGoToLogin}>
+              <h4 className="sm:text-2xl text-xl font-bold">{t.successTitle}</h4>
+              <p className="text-sm">{t.successDescription}</p>
+              <p className="text-xs text-muted-foreground">{t.redirectMessage}</p>
+              <Button className="p-6" onClick={() => navigate("/auth/signin")}>
                 {t.buttonLogin}
               </Button>
             </>
-          ) : (
-            <div className=" flex flex-col items-center justify-center gap-6">
-              <h4 className="sm:text-2xl text-xl font-bold">{t.verifyError}</h4>
-              <div className="space-y-2">
-                <p className="text-center text-sm">{t.errorDescription}</p>
-                <p className="block text-center  text-sm"></p>
-              </div>
-              
-                <Button
-                  variant="default"
-                  type="button"
-                  className="p-6"
-                  onClick={handleGoToLogin}>
-                  <span>{t.errorDescription}</span>
-                </Button>
-              
-            </div>
+          )}
+
+          {status === "error" && (
+            <>
+              <h4 className="sm:text-2xl text-xl font-bold">{t.errorTitle}</h4>
+              <p className="text-sm">{message || t.errorDescription}</p>
+              <Button className="p-6" asChild>
+                <Link to="/auth/verify-account">{t.resendLink}</Link>
+              </Button>
+              <Link to="/auth/signin" className="text-xs underline">
+                {t.buttonLogin}
+              </Link>
+            </>
           )}
         </div>
       </div>
@@ -142,4 +86,4 @@ function VerifyEmail() {
   );
 }
 
-export {VerifyEmail}
+export { VerifyEmail };

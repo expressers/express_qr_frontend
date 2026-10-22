@@ -17,7 +17,7 @@ import { AppLayoutPublic } from "@/Layout";
 const Home = lazy(() => import("@/pages/public/home/home").then(m => ({ default: m.Home })));
 
 function Loading() {
-  return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>Loading...</div>;
+  return <div style={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "100vh" }}>A carregar…</div>;
 }
 
 function PublicRouter() {
@@ -28,6 +28,8 @@ function PublicRouter() {
         <Route path="/auth/signin" element={<SignIn />} />
         <Route path="/auth/signup" element={<SignUp />} />
         <Route path="/auth/forgotpassword" element={<ForgotPassword />} />
+        {/* O link do email aponta para /reset-password?token=...; o caminho antigo fica como alias. */}
+        <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/auth/resetPassword" element={<ResetPassword />} />
         <Route path="/subscriber" element={<Subscriber />} />
         <Route path="/about" element={<About />} />

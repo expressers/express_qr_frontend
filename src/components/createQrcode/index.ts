@@ -1,1 +1,2 @@
-export * from "./createQrcode"
+export * from "./createQrcode";
+export { PlanUsageCard } from "./planUsageCard";

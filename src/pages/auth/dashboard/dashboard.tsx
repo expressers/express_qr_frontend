@@ -7,70 +7,77 @@ import {
   CardQrcode,
   CardTitle,
   CreateQrcode,
-  Toaster,
   Skeleton,
 } from "@/components";
 
-import { useGetQrcodes,  useLang, useUserGetMe } from "@/hooks";
+import { useGetMeplan, useGetQrcodes, useLang, useUserGetMe } from "@/hooks";
 import { Link } from "react-router-dom";
 import { images } from "@/assets";
 import { getImageUrl } from "@/config";
+import { PlanUsageCard } from "@/components/createQrcode";
+
 function Dashboard() {
- 
-  const { data, isLoading } = useGetQrcodes();
+  const { data, total, isLoading, refetchQrcodes } = useGetQrcodes();
+  const { data: myPlan, isLoading: isLoadingPlan, refetch: refetchPlan } = useGetMeplan();
   const { translations } = useLang();
   useUserGetMe();
-  const t = translations.pages.dashboard
+  const t = translations.pages.dashboard;
 
+  const itemQrcode = (data ?? []).slice(0, 5).map((item) => ({
+    id: item.id,
+    title: item.title || t.noTitle,
+    link:
+      (item.targetUrl ?? item.staticContent)?.replace(/^https?:\/\//, "") ||
+      t.noLink,
+    date: item.createdAt,
+    scans: item.scanCount ?? 0,
+    isActive: item.isActive,
+    image: getImageUrl(item.imageUrl ?? undefined) || images.qrCode.qr_code1,
+  }));
 
-
-  const totalQrcodes = Array.isArray(data) ? data.length : 0;
-  const itemQrcode = Array.isArray(data)
-    ? [...data]
-        .sort(
-          (a, b) =>
-            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime(),
-        )
-        .slice(0, 5)
-        .map((item) => ({
-          id: item.id,
-          title: item.title || t.noTitle,
-          link: item.targetUrl?.replace(/^https?:\/\//, "") || t.noLink,
-          date: item.createdAt,
-          scans: 0,
-          image: getImageUrl(item.imageUrl) || images.qrCode.qr_code1,
-        }))
-    : [];
-
-
+  const handleDeleted = () => {
+    refetchQrcodes();
+    refetchPlan();
+  };
 
   return (
     <React.Fragment>
       <div className="md:pb-0 pb-16 space-y-8">
-        <Toaster richColors />
 
         <div className="grid lg:grid-cols-3 md:grid-cols-2 sm:grid-cols-2 grid-cols-1 sm:gap-8 gap-4">
           <Card>
             <CardHeader>
-              <CardTitle>{t.totalQrcodes }</CardTitle>
+              <CardTitle>{t.totalQrcodes}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex justify-between items-center">
-                <span className="text-2xl font-bold">{totalQrcodes}</span>
-                <QrCode size={30} />
+                <span className="text-2xl font-bold">{total}</span>
+                <QrCode size={30} aria-hidden />
               </div>
             </CardContent>
           </Card>
+          <PlanUsageCard
+            myPlan={myPlan}
+            isLoading={isLoadingPlan}
+            type="STATIC"
+            title={t.staticUsage}
+          />
+          <PlanUsageCard
+            myPlan={myPlan}
+            isLoading={isLoadingPlan}
+            type="DYNAMIC"
+            title={t.dynamicUsage}
+          />
         </div>
 
         <div className="space-y-5">
           <div className="flex justify-between items-center">
-            <span className="text-sm font-bold block">{ t.myQrcodes}</span>
+            <span className="text-sm font-bold block">{t.myQrcodes}</span>
             <Link
               to="/dashboard/my-qrcodes"
-              className="duration-300 hover:text-muted flex items-center gap-2">
-              <span className="text-sm">{ t.viewAll}</span>
-              <ArrowRight size={18} />
+              className="duration-300 hover:text-muted-foreground flex items-center gap-2">
+              <span className="text-sm">{t.viewAll}</span>
+              <ArrowRight size={18} aria-hidden />
             </Link>
           </div>
 
@@ -82,8 +89,8 @@ function Dashboard() {
             </div>
           ) : (
             <div className="grid grid-cols-3 sm:gap-8 gap-4 custom-cols-2 custom-cols-1">
-              {itemQrcode.map((item, index) => (
-                <CardQrcode {...item} key={index} />
+              {itemQrcode.map((item) => (
+                <CardQrcode {...item} key={item.id} onDeleted={handleDeleted} />
               ))}
               <CreateQrcode />
             </div>
