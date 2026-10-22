@@ -51,10 +51,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id: string) {
-          // The 3D stack lives in one chunk that only HomeBackground (lazy) pulls in.
-          if (/node_modules\/(three|three-stdlib|maath|@react-three|@react-spring|@shadergradient)\//.test(id)) {
-            return 'vendor-three';
-          }
           if (/node_modules\/(react|react-dom|react-router|react-router-dom|scheduler|use-sync-external-store|zustand|react-redux|@reduxjs|redux|reselect|immer)\//.test(id)) {
             return 'vendor-react';
           }

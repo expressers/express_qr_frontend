@@ -38,6 +38,8 @@ export function passesStaticGates(): boolean {
   }
 
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return false;
+  // Phones keep the static backdrop: saves battery and keeps the first paint light.
+  if (window.matchMedia("(max-width: 767px)").matches) return false;
 
   const nav = navigator as NavigatorLike;
   const connection = nav.connection;

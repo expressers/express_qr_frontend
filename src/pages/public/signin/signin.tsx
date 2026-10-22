@@ -12,7 +12,7 @@ import {
   Spinner,
   Checkbox
 } from "@/components";
-import { FcGoogle } from "react-icons/fc";
+import { GoogleMark } from "@/components/googleMark/googleMark";
 import { Link} from "react-router-dom";
 import { useLang, useSignIn, useSigninGoogle } from "@/hooks";
 import {Eye, EyeOff} from "lucide-react"
@@ -132,7 +132,7 @@ function SignIn() {
                 variant="outline"
                 onClick={() => login()}>
                 <span className="mr-2">
-                  <FcGoogle />
+                  <GoogleMark aria-hidden="true" />
                 </span>
                 {t.continueGoogle}
               </Button>

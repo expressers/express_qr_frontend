@@ -2,7 +2,7 @@ import { lazy, Suspense } from "react";
 import { StaticBackdrop } from "./StaticBackdrop";
 import { useBackgroundGate } from "./useBackgroundGate";
 
-// Dynamic import: the 3D stack is only requested after idle and once every gate passes.
+// Dynamic import: the shader chunk is only requested after idle and once every gate passes.
 const HomeBackground = lazy(() => import("./HomeBackground"));
 
 /**

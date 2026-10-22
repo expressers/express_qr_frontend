@@ -1,31 +1,28 @@
-import React, {Activity} from "react";
+import React from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import { Header, Header2, LoadingPage } from "@/components";
-import { useLoadingPage } from "@/hooks";
+import { SiteHeader, LoadingPage } from "@/components";
+
+const AUTH_PATHS = new Set([
+  "/auth/signup",
+  "/auth/signin",
+  "/auth/forgotpassword",
+  "/auth/resetPassword",
+  "/auth/verifyaccount",
+]);
 
 function AppLayoutPublic() {
   const location = useLocation();
-  const { visibleLoadingPage } = useLoadingPage();
- 
-  const pathNameSigns =
-    location.pathname === "/auth/signup" ||
-    location.pathname === "/auth/signin" ||
-    location.pathname === "/auth/forgotpassword" ||
-    location.pathname === "/auth/resetPassword" ||
-    location.pathname === "/auth/verifyaccount";
- 
+  const isAuthScreen = AUTH_PATHS.has(location.pathname);
+
   return (
     <React.Fragment>
-      <section className="h-screen relative">
-        {pathNameSigns ? <Header2 /> : <Header />}
-
+      <section className="relative min-h-dvh">
+        <SiteHeader variant={isAuthScreen ? "auth" : "public"} />
+        <main className="grid min-h-dvh grid-rows-[minmax(0,1fr)]">
+          <Outlet />
+        </main>
+        {/* Overlay above the page: content is mounted underneath, never held back */}
         <LoadingPage />
-
-        <Activity mode={visibleLoadingPage ? "hidden" : "visible"}>
-          <main className="h-full">
-            <Outlet />
-          </main>
-        </Activity>
       </section>
     </React.Fragment>
   );

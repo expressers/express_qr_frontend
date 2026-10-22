@@ -72,7 +72,7 @@ const styles: Record<string, React.CSSProperties> = {
     alignItems: "center",
     justifyContent: "center",
     minHeight: "100vh",
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "var(--background)",
   },
   content: {
     textAlign: "center",
@@ -82,10 +82,10 @@ const styles: Record<string, React.CSSProperties> = {
     fontSize: "1.5rem",
     fontWeight: 600,
     marginBottom: "1rem",
-    color: "#333",
+    color: "var(--foreground)",
   },
   text: {
     fontSize: "1rem",
-    color: "#666",
+    color: "var(--muted-foreground)",
   },
 };

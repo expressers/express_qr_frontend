@@ -57,7 +57,7 @@ function FormGeneratorQrc() {
             </div>
             {errors?.url && (
               <div className="py-1">
-                <span className="text-xs text-red-400 font-semibold">
+                <span className="text-xs text-destructive font-semibold">
                   {errors.url.message}
                 </span>
               </div>

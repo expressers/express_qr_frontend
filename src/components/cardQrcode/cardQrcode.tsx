@@ -56,13 +56,13 @@ function CardQrcode({
 
             <div className="flex items-center gap-2">
               <CalendarDays size={14} aria-hidden />
-              <span className="text-muted-foreground sm:text-xs text-[.65rem]">
+              <span className="text-muted-foreground text-xs">
                 {dateFormatted}
               </span>
             </div>
 
             {!isActive && (
-              <span className="inline-block text-[.65rem] font-semibold text-muted-foreground border rounded px-1.5">
+              <span className="inline-block text-xs font-semibold text-muted-foreground border rounded px-1.5">
                 {t.inactive}
               </span>
             )}

@@ -5,6 +5,12 @@
 
 
 
+@theme {
+  /* Geist (UI) + Geist Mono (URLs, counts, prices, ids), self-hosted via @fontsource-variable */
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+}
+
 @theme inline {
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -162,62 +168,13 @@
   html{
     @apply scroll-smooth;
   }
-  /* ============= Font ============= */
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Regular.ttf") format("truetype");
-  font-weight: 400;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Medium.ttf") format("truetype");
-  font-weight: 500;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-SemiBold.ttf") format("truetype");
-  font-weight: 600;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Bold.ttf") format("truetype");
-  font-weight: 700;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-ExtraBold.ttf") format("truetype");
-  font-weight: 800;
-  font-style: normal;
-}
-
-@font-face {
-  font-family: "Poppins";
-  src: url("../assets/fonts/Poppins-Black.ttf") format("truetype");
-  font-weight: 900;
-  font-style: normal;
-}
-@font-face {
-  font-family: "Montserrat";
-  src: url("../assets/fonts/Montserrat-VariableFont_wght.ttf") format("truetype");
-  
-  font-style: normal;
-}
-
   * {
     @apply border-border;
   }
 
   body {
     @apply bg-background text-foreground;
-    font-family:"Poppins" ;
+    font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -236,31 +193,6 @@
   button{
     @apply cursor-pointer;
   }
-
-  .before-text-fill-green::before {
-    color: var(--muted-foreground);
-    -webkit-text-fill-color: var(--muted-foreground);
-  }
-  .before-animate-fillText::before {
-    animation: fillText 3s ease-in forwards;
-  }
-  .before-animate-fillText-qr::before {
-    animation: fillText 3s ease-in forwards;
-    animation-delay: 1.8s;
-  }
-  
-
-
-  @keyframes fillText {
-  0% {
-    width: 0%;
-  }
-
-  100% {
-    width: 100%;
-  }
-}
-
 
 .custom-scroll {
   scrollbar-width: thin;
@@ -296,9 +228,6 @@
 }
 @layer utilities {
   
-  .font-montserrat{
-    font-family: "Montserrat";
-  }
   @media (max-width: 1309px) {
     .custom-cols-2 {
       grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -310,6 +239,76 @@
     .custom-cols-1 {
       grid-template-columns: repeat(1, minmax(0, 1fr));
     }
+  }
+}
+
+/* ============= Entry animation (ExpressQR wordmark) ============= */
+@layer components {
+  /* Outline text whose fill sweeps in from the left. The fill is a ::before copy
+     clipped by width, so only the clip animates (no layout, text stays put). */
+  .intro-word {
+    position: relative;
+    display: inline-block;
+    color: transparent;
+    -webkit-text-stroke: 1px var(--intro-ink);
+  }
+  .intro-word::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 0;
+    overflow: hidden;
+    white-space: nowrap;
+    color: var(--intro-ink);
+    -webkit-text-stroke: 0;
+    animation: intro-fill var(--intro-dur) var(--ease-out) var(--intro-delay) forwards;
+  }
+  .intro-express {
+    --intro-ink: var(--foreground);
+    --intro-dur: 900ms;
+    --intro-delay: 0ms;
+  }
+  .intro-qr {
+    --intro-ink: var(--muted-foreground);
+    --intro-dur: 500ms;
+    --intro-delay: 700ms;
+  }
+  .intro-layer {
+    animation: intro-out 300ms var(--ease-out) 1500ms forwards;
+  }
+  @keyframes intro-fill {
+    to { width: 100%; }
+  }
+  @keyframes intro-out {
+    to { opacity: 0; visibility: hidden; }
+  }
+  @keyframes intro-fade {
+    0% { opacity: 0; }
+    20%, 75% { opacity: 1; }
+    100% { opacity: 0; visibility: hidden; }
+  }
+  /* Reduced motion: wordmark already filled, plain fade in / hold / fade out */
+  @media (prefers-reduced-motion: reduce) {
+    .intro-word { color: var(--intro-ink); -webkit-text-stroke: 0; }
+    .intro-word::before { display: none; }
+    .intro-layer {
+      animation: intro-fade 900ms ease both !important;
+    }
+  }
+}
+
+/* ============= Site header surface ============= */
+@layer components {
+  .site-header-surface {
+    background-color: transparent;
+    border-bottom: 1px solid transparent;
+    transition: background-color var(--dur-base) ease, border-color var(--dur-base) ease;
+  }
+  .site-header-surface[data-scrolled="true"] {
+    background-color: color-mix(in oklab, var(--background) 82%, transparent);
+    border-bottom-color: var(--border);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
   }
 }
 

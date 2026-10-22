@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { FcGoogle } from "react-icons/fc";
+import { GoogleMark } from "@/components/googleMark/googleMark";
 import { Link } from "react-router-dom";
 import {
   Form,
@@ -180,7 +180,7 @@ function SignUp() {
                 className="lg:p-6 md:p-6 p-2 cursor-pointer text-xs"
                 variant="outline">
                 <span className="mr-2">
-                  <FcGoogle />
+                  <GoogleMark aria-hidden="true" />
                 </span>
                 {t.continueGoogle}
               </Button>
