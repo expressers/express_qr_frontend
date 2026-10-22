@@ -1,1 +1,2 @@
-export {ProtectedRoutes} from "./protectedRoute"
+export { ProtectedRoutes } from "./protectedRoute";
+export { StaffRoute, StaffGate } from "./staffRoute";

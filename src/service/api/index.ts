@@ -25,6 +25,7 @@ export {
   type QrCodeList,
   type QrType,
   type QrFormat,
+  type QrDesign,
   type CreateQrCodeInput,
   type UpdateQrCodeInput,
   type PublicStaticQr,
@@ -37,3 +38,15 @@ export {
   type FieldCount,
   type AnalyticsBreakdown,
 } from "./analyticsService";
+export {
+  adminService,
+  type AdminUser,
+  type AdminUsersPage,
+  type AdminUsersQuery,
+  type AdminAuditLog,
+  type AdminAuditPage,
+  type AdminPagination,
+  type ManagedPlan,
+  type ManagedStatus,
+  type PlanPeriodDays,
+} from "./adminService";

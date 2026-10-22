@@ -8,6 +8,12 @@ export interface ApiEnvelope<T> {
   data: T;
 }
 
+/** Cores do QR em `#RRGGBB`: `dark` = módulos, `light` = fundo. */
+export interface QrDesign {
+  dark: string;
+  light: string;
+}
+
 export interface QrCode {
   id: string;
   type: QrType;
@@ -19,6 +25,8 @@ export interface QrCode {
   staticContent: string | null;
   isActive: boolean;
   imageUrl: string | null;
+  /** Cores guardadas (Pro/Premium); `null` = preto sobre branco. */
+  design?: QrDesign | null;
   scanCount: number;
   createdAt: string;
   updatedAt: string;
@@ -38,6 +46,7 @@ export interface CreateQrCodeInput {
   title?: string;
   description?: string;
   tags?: string[];
+  design?: QrDesign;
 }
 
 export interface UpdateQrCodeInput {
@@ -47,6 +56,7 @@ export interface UpdateQrCodeInput {
   targetUrl?: string;
   staticContent?: string;
   isActive?: boolean;
+  design?: QrDesign;
 }
 
 export interface PublicStaticQr {

@@ -3,13 +3,17 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { toast } from "sonner";
-import { userService } from "@/service/api";
+import { useNavigate } from "react-router-dom";
+import { authService, userService } from "@/service/api";
 import { applyFieldErrors, getErrorCode, getErrorMessage } from "@/utils";
 import { useLang } from "./use_Lang";
+import { useUserAccount } from "./userAccount";
 
 function useUpdatePassword() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const { translations } = useLang();
+  const navigate = useNavigate();
+  const { dispatch } = useUserAccount();
   const t = translations.pages.UpdatePassword;
   const schema = z
     .object({
@@ -37,12 +41,21 @@ function useUpdatePassword() {
   async function onSubmit(value: z.infer<typeof schema>) {
     try {
       setIsLoading(true);
-      await userService.changePassword({
+      const result = await userService.changePassword({
         currentPassword: value.oldPassword,
         newPassword: value.newpassword,
       });
       form.reset();
       toast.success(t.toastSuccess);
+      if (result?.token) {
+        // O servidor revogou as outras sessões e emitiu um token novo para esta:
+        // o utilizador continua com sessão iniciada neste dispositivo.
+        authService.storeToken(result.token);
+        return;
+      }
+      // Sem token novo (API antiga), esta sessão também foi revogada: pede novo login.
+      dispatch({ type: "LOGOUT" });
+      navigate("/auth/signin?reason=password-changed", { replace: true });
     } catch (error) {
       // Senha actual errada → 400 INVALID_CURRENT_PASSWORD: erro do formulário,
       // a sessão mantém-se.

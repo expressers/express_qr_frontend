@@ -16,8 +16,9 @@ import {
   LayoutDashboard,
   CreditCard,
   ChartColumnIncreasing,
+  ShieldCheck,
 } from "lucide-react";
-import { useLang } from "@/hooks";
+import { useCanManage, useLang } from "@/hooks";
 import { BrandMark } from "../brandMark/brandMark";
 import { BRAND_NAME } from "../brandMark/brand";
 
@@ -26,6 +27,7 @@ function SidebarAppPrivate() {
   const { translations } = useLang();
   const { setOpenMobile } = useSidebar();
   const t = translations.components.SidebarAppPrivate;
+  const isStaff = useCanManage();
 
   const items = [
     { title: t.menu.dashboard, url: "/dashboard", icon: LayoutDashboard },
@@ -45,6 +47,9 @@ function SidebarAppPrivate() {
       url: "/dashboard/settings",
       icon: Settings,
     },
+    ...(isStaff
+      ? [{ title: t.menu.admin, url: "/dashboard/admin", icon: ShieldCheck }]
+      : []),
   ];
 
   return (

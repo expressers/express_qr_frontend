@@ -12,7 +12,8 @@ import {
 } from "@/components";
 import { AuthShell, FieldError, PasswordInput } from "@/components/authShell";
 import { GoogleMark } from "@/components/googleMark/googleMark";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
+import { Info } from "lucide-react";
 import { useLang, useSignIn, useSigninGoogle } from "@/hooks";
 
 function SignIn() {
@@ -20,6 +21,15 @@ function SignIn() {
   const { translations } = useLang();
   const t = translations.pages.SignIn;
   const { login } = useSigninGoogle();
+  const [searchParams] = useSearchParams();
+  const reason = searchParams.get("reason");
+  // Mensagem persistente (não toast): explica por que o utilizador voltou ao login.
+  const notice =
+    reason === "session-ended"
+      ? t.sessionEnded
+      : reason === "password-changed"
+        ? t.passwordChanged
+        : null;
 
   return (
     <AuthShell>
@@ -34,6 +44,16 @@ function SignIn() {
             </h1>
             <p className="text-sm text-muted-foreground">{t.subtitle}</p>
           </div>
+
+          {notice && (
+            <p
+              role="status"
+              data-testid="signin-notice"
+              className="flex items-start gap-2.5 rounded-lg border border-input bg-muted/50 px-3 py-2.5 text-sm">
+              <Info className="mt-0.5 size-4 shrink-0" aria-hidden />
+              <span>{notice}</span>
+            </p>
+          )}
 
           <FormField
             control={form.control}
